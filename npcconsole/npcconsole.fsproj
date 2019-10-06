@@ -5,6 +5,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Attributes.fs" />
+    <Compile Include="Skills.fs" />
+    <Compile Include="Feats.fs" />
     <Compile Include="Ancestry.fs" />
     <Compile Include="Build.fs" />
     <Compile Include="Program.fs" />

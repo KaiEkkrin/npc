@@ -40,6 +40,10 @@ type ConsoleInteract () =
                 let score = Map.find ab c.Abilities
                 printfn "  %15s %4d (%+2d)" (ab.ToString ()) score (Derive.modifier score)
             )
+            printfn "Feats:"
+            c.Feats |> List.sortBy (fun f -> f.Name) |> List.iter (fun f ->
+                printfn "  %30s [%s]" f.Name f.Category
+            )
 
 // Arguments
 type Args = {
