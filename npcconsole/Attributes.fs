@@ -28,6 +28,9 @@ type Ability = Strength | Dexterity | Constitution | Intelligence | Wisdom | Cha
 // Proficiency ranks are enumerated thus
 type ProficiencyRank = Untrained | Trained | Expert | Master | Legendary
 
+// Characters have a size
+type Size = Tiny | Small | Medium | Large | Huge | Gargantuan
+
 // This defines a skill
 // (TODO Add actions?)
 type Skill = { Name: string; KeyAbility: Ability }
@@ -36,7 +39,7 @@ type Skill = { Name: string; KeyAbility: Ability }
 // qualify for, and which may result in further improvements to
 // the character.
 type Feat = {
-    Name: string;
+    Name: string
     MeetsPrerequisites: Character -> bool
     Improvements: Improvement list
 }
@@ -44,19 +47,19 @@ type Feat = {
 // An ancestry is like this too, except a character can only have one,
 // and they have no prerequisites:
 and Ancestry = {
-    Name: string;
+    Name: string
     Improvements: Improvement list
 }
 
 // A background is similar too
 and Background = {
-    Name: string;
+    Name: string
     Improvements: Improvement list
 }
 
 // A class offers improvements at each character level
 and Class = {
-    Name: string;
+    Name: string
     Improvements: int<Level> -> Improvement list
 }
 
@@ -68,10 +71,9 @@ and Class = {
 // player accept it) and a number of choices the player can make from them.
 // (If the number of choices equals the number of improvements in the
 // list, we need no interaction -- the character gets all of them.)
-// The change function also accepts a list of the names of the previous
-// choices the player has made while handling the same Improvement list.
 and Improvement = {
-    Choices: (string * (string list -> Character -> Character)) list
+    Prompt: string
+    Choices: (string * (Character -> Character)) list
     Count: int
 }
 
@@ -79,13 +81,23 @@ and Improvement = {
 // so that we can build them incrementally.)
 and Character = {
     Name: string
-    Ancestry: Ancestry option
+    Ancestry: Ancestry option // TODO heritage as an ancestry choice
     Background: Background option
     Class: Class option
     Level: int<Level>
+    HitPoints: int
+    Size: Size option
+    Speed: int<Feet>
     Abilities: Map<Ability, int<Score>>
     Skills: Map<Skill, ProficiencyRank>
     Feats: Feat list
+
+    // This is a list of further improvements that have yet to be
+    // applied to the character; when it's empty, the character is
+    // compelete.
+    // Improvements such as feats and ancestries that present further
+    // options can add to this.
+    FurtherImprovements: Improvement list
 }
 
 // A helper for deriving stats:
@@ -105,3 +117,80 @@ module Derive =
             | Expert -> 4<Modifier> + lm
             | Master -> 6<Modifier> + lm
             | Legendary -> 8<Modifier> + lm
+
+// Describes the interactive UI with the player.
+type IInteraction =
+    interface
+
+    // Offers the player, under a prompt, a selection of options so that
+    // they can pick some number of them (returned).
+    abstract member Prompt : string * string list * int -> string list
+
+    end
+
+// A module of canned improvements.
+// TODO Whenever an improvement is applied to a character, I want to be able
+// to recursively apply any further improvements it implies (e.g. ancestries
+// implying ability boosts and things; some feats implying a choice of other
+// feats, etc.)
+module Improve =
+    // Any single improvement, with no prompt or interaction.
+    let single name func = {
+        Prompt = name
+        Choices = [name, func]
+        Count = 1
+    }
+
+    // Adds hit points.
+    let hitPoints n = single "Hit Points" (fun c -> { c with HitPoints = c.HitPoints + n })
+
+    // Sets size.
+    let size sz = single "Size" (fun c -> { c with Size = Some sz })
+
+    // Adds speed.
+    let speed n = single "Speed" (fun c -> { c with Speed = c.Speed + n })
+
+    // Adds one or more ability boosts out of the list.
+    let ability choices count =
+        // An ability boost is +2 unless the ability is >= 18, then it's +1
+        let boost score = if score >= 18<Score> then score + 1<Score> else score + 2<Score>
+        let boostAbility ab c = { c with Abilities = Map.add ab (Map.find ab c.Abilities |> boost) c.Abilities }
+        {
+            Prompt = "Ability boost"
+            Choices = choices |> List.map (fun ch -> (sprintf "%A boost" ch, boostAbility ch))
+            Count = count
+        }
+
+    // Helper -- adds a single, fixed ability boost.
+    let singleAbility ab = ability [ab] 1
+
+    // Helper -- adds some number of boosts to any (unique) ability.
+    let anyAbility count = ability [Strength; Dexterity; Constitution; Intelligence; Wisdom; Charisma] count
+
+    // Adds an ability flaw (always just the one)
+    let abilityFlaw ab = single (sprintf "%A flaw" ab) (fun c -> { c with Abilities = Map.add ab ((Map.find ab c.Abilities) - 2<Score>) c.Abilities })
+
+module Interact =
+    // Prompts the player for a single improvement and applies it to
+    // the character.  Accumulates a set of choices that have been
+    // chosen already so they can't be chosen again.
+    let promptOne (interact: IInteraction) (seen, c) imp =
+        // Filter out our existing choices:
+        let fImp = { imp with Choices = imp.Choices |> List.filter (fun (ch, _) -> not (Set.contains ch seen)) }
+
+        // Work out how many to choose.  If it's only as many as there are
+        // in the list the choice is forced and we don't need to prompt.
+        // (Show them instead?)
+        let impCount = List.length fImp.Choices
+        let chosen =
+            if impCount < fImp.Count then failwithf "Found %A improvements, needed %A\n" impCount (fImp.Count)
+            elif impCount = fImp.Count then fImp.Choices
+            else
+                let choices = fImp.Choices |> List.map fst
+                let chosen = interact.Prompt (fImp.Prompt, choices, imp.Count)
+                fImp.Choices |> List.filter (fun (ch, _) -> List.contains ch chosen)
+        chosen |> List.fold (fun (seen, c) (ch, func) -> (Set.add ch seen, func c)) (seen, c)
+
+    // How to prompt the player for a whole list of improvements.
+    let prompt (interact: IInteraction) c imps =
+        imps |> List.fold (promptOne interact) (Set.empty<string>, c) |> snd
