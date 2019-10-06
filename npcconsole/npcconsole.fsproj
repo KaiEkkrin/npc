@@ -6,9 +6,7 @@
   <ItemGroup>
     <Compile Include="Attributes.fs" />
     <Compile Include="Ancestry.fs" />
+    <Compile Include="Build.fs" />
     <Compile Include="Program.fs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="netstandard" />
   </ItemGroup>
 </Project>

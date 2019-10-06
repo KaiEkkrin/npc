@@ -92,12 +92,14 @@ and Character = {
     Skills: Map<Skill, ProficiencyRank>
     Feats: Feat list
 
-    // This is a list of further improvements that have yet to be
+    // This is a list of further improvement lists that have yet to be
     // applied to the character; when it's empty, the character is
     // compelete.
     // Improvements such as feats and ancestries that present further
     // options can add to this.
-    FurtherImprovements: Improvement list
+    // It's a double list because each individual list of improvements is
+    // a collection of mutually exclusive things.
+    FurtherImprovements: Improvement list list
 }
 
 // A helper for deriving stats:
@@ -125,6 +127,9 @@ type IInteraction =
     // Offers the player, under a prompt, a selection of options so that
     // they can pick some number of them (returned).
     abstract member Prompt : string * string list * int -> string list
+
+    // Shows the final character to the player.
+    abstract member Show : Character -> unit
 
     end
 
@@ -170,7 +175,17 @@ module Improve =
     // Adds an ability flaw (always just the one)
     let abilityFlaw ab = single (sprintf "%A flaw" ab) (fun c -> { c with Abilities = Map.add ab ((Map.find ab c.Abilities) - 2<Score>) c.Abilities })
 
+    // Adds ancestries, including queueing up their improvements.
+    let ancestries (ass: Ancestry list) = {
+        Prompt = "Ancestry"
+        Choices = ass |> List.map (fun a -> a.Name, fun c -> { c with Ancestry = Some a; FurtherImprovements = a.Improvements::c.FurtherImprovements })
+        Count = 1
+    }
+
 module Interact =
+    // The order to show abilities in.  (Most other things can be alphabetical)
+    let abilityOrder = [ Strength; Dexterity; Constitution; Intelligence; Wisdom; Charisma ]
+
     // Prompts the player for a single improvement and applies it to
     // the character.  Accumulates a set of choices that have been
     // chosen already so they can't be chosen again.
