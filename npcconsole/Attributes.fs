@@ -38,6 +38,8 @@ type Skill = { Name: string; KeyAbility: Ability }
 // This defines a feat -- which any given character may or may not
 // qualify for, and which may result in further improvements to
 // the character.
+// (I'm going to classify special class features as feats too, they
+// just won't be in easily acquirable lists.)
 type Feat = {
     Name: string
     MeetsPrerequisites: Character -> bool
@@ -105,7 +107,7 @@ and Character = {
 // A helper for deriving stats:
 module Derive =
     // Convert an ability score to a modifier:
-    let modifier s = (s - 1<Score>) * 1<Modifier> / 2<Score>
+    let modifier s = s * 1<Modifier> / 2<Score> - 5<Modifier>
 
     // Convert a modifier to a DC:
     let dc m = 10<DC> + m * 1<DC> / 1<Modifier>
@@ -134,10 +136,6 @@ type IInteraction =
     end
 
 // A module of canned improvements.
-// TODO Whenever an improvement is applied to a character, I want to be able
-// to recursively apply any further improvements it implies (e.g. ancestries
-// implying ability boosts and things; some feats implying a choice of other
-// feats, etc.)
 module Improve =
     // Any single improvement, with no prompt or interaction.
     let single name func = {
@@ -181,6 +179,17 @@ module Improve =
         Choices = ass |> List.map (fun a -> a.Name, fun c -> { c with Ancestry = Some a; FurtherImprovements = a.Improvements::c.FurtherImprovements })
         Count = 1
     }
+
+    // Adds `count` out of the list of feats (with a prompt qualifier, e.g. "General"), including queueing up their improvements.
+    // TODO Be able to filter the list for only the feats the character qualifies for ...
+    let feats (fs: Feat list) count qual = {
+        Prompt = sprintf "%s Feat" qual
+        Choices = fs |> List.map (fun f -> f.Name, fun c -> { c with Feats = f::c.Feats; FurtherImprovements = f.Improvements::c.FurtherImprovements })
+        Count = count
+    }
+
+    // Adds a single special feat automatically (this won't prompt.)
+    let specialFeat f = feats [f] 1 "Special"
 
 module Interact =
     // The order to show abilities in.  (Most other things can be alphabetical)

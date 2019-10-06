@@ -32,8 +32,13 @@ type ConsoleInteract () =
             printfn ""
             printfn "%s" c.Name
             printfn "Level %d %s" c.Level c.Ancestry.Value.Name
+            printfn "  %15s %d" "Hit Points" c.HitPoints
+            printfn "  %15s %A" "Size" c.Size.Value
+            printfn "  %15s %d" "Speed" c.Speed
+            printfn "Abilities:"
             Interact.abilityOrder |> List.iter (fun ab ->
-                printfn "%10A %2d" ab (Map.find ab c.Abilities)
+                let score = Map.find ab c.Abilities
+                printfn "  %15s %4d (%+2d)" (ab.ToString ()) score (Derive.modifier score)
             )
 
 // Arguments
