@@ -15,5 +15,8 @@ module Feats =
         Improvements = []
     }
 
+    // How to make a feat grant improvements.
+    let improve imps (f: Feat) = { f with Improvements = List.concat [f.Improvements; imps] }
+
     let darkvision = Improve.specialFeat (simpleFeat special "Darkvision")
     let lowLightVision = Improve.specialFeat (simpleFeat special "Low-light vision")

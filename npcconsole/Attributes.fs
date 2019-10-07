@@ -31,9 +31,27 @@ type ProficiencyRank = Untrained = 0 | Trained = 2 | Expert = 4 | Master = 6 | L
 // Characters have a size
 type Size = Tiny | Small | Medium | Large | Huge | Gargantuan
 
-// This defines a skill
-// (TODO Add actions?)
-type Skill = { Name: string; KeyAbility: Ability }
+// Various things have rarity
+type Rarity = Common | Uncommon
+
+// These are weapons
+// "Group" and "Traits" should have matching strings, but I won't enforce this
+type WeaponCategory = Unarmed | SimpleWeapon | MartialWeapon | AdvancedWeapon
+type WeaponType = Melee | Ranged
+type Weapon = {
+    Name: string
+    Type: WeaponType
+    Category: WeaponCategory
+    Rarity: Rarity
+    Damage: string // XdY
+    Group: string
+    Traits: string list
+}
+
+// This defines a skill.  As well as things officially called "skills", we also
+// include some other things that work the same way here:
+type SkillType = RegularSkill | ArmorProficiency | WeaponProficiency | Perception | SavingThrow
+type Skill = { Name: string; Type: SkillType; KeyAbility: Ability }
 
 // This defines a feat -- which any given character may or may not
 // qualify for, and which may result in further improvements to
@@ -120,10 +138,19 @@ module Derive =
     // Convert a modifier to a DC:
     let dc m = 10<DC> + m * 1<DC> / 1<Modifier>
 
+    // Gets a character's skill rank
+    let rank sk c = match Map.tryFind sk c.Skills with | Some p -> p | None -> ProficiencyRank.Untrained
+
     // Convert a character's level and their proficiency rank to a modifier
-    let proficiency rank level =
+    let proficiency (rank: ProficiencyRank) level =
         let lm = level * 1<Modifier> / 1<Level>
-        if rank = 0 then 0<Modifier> else rank * 1<Modifier> + lm
+        if rank = ProficiencyRank.Untrained then 0<Modifier> else (int rank) * 1<Modifier> + lm
+
+    // Calculates the total bonus for a character's skill
+    let bonus sk c =
+        let r = rank sk c
+        let m = Map.find sk.KeyAbility c.Abilities |> modifier
+        (proficiency r c.Level) + m
 
 // Describes the interactive UI with the player.
 type IInteraction =
@@ -208,6 +235,7 @@ module Improve =
         | _ -> false
 
     // Adds a skill from the list at a particular proficiency.
+    // TODO How to allow input of a custom lore skill (or even one at all)?
     let skills (sks: Skill list) prof = {
         Prompt = sprintf "%A Skill" prof
         Choices = sks |> List.map (fun sk -> sk.Name, (hasSkill sk prof) >> not, addSkill sk prof)
@@ -218,9 +246,9 @@ module Improve =
     // has it already, adds a different skill from the list instead.
     let skillOr sk sks prof =
         let addOr c =
-            match Map.tryFind sk c.Skills with
-            | Some p when p < prof -> { c with Skills = Map.add sk prof c.Skills }
-            | _ -> { c with FurtherImprovements = [skills sks prof]::c.FurtherImprovements }
+            if (Derive.rank sk c) < prof
+            then { c with Skills = Map.add sk prof c.Skills }
+            else { c with FurtherImprovements = [skills sks prof]::c.FurtherImprovements }
         {
             Prompt = sprintf "%A %s" prof sk.Name
             Choices = [sk.Name, (fun _ -> true), addOr]

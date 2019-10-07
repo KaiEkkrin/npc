@@ -38,8 +38,17 @@ type ConsoleInteract () =
             printfn "Abilities:"
             Interact.abilityOrder |> List.iter (fun ab ->
                 let score = Map.find ab c.Abilities
-                printfn "  %15s %4d (%+2d)" (ab.ToString ()) score (Derive.modifier score)
+                printfn "  %15s %4d (%+3d)" (ab.ToString ()) score (Derive.modifier score)
             )
+            // TODO Armor, saving throws, weapon skills and that kind of thing
+            // Regular skills, in alphabetical order
+            printfn "Skills:"
+            Skills.regularSkillsForCharacter c |> List.iter (fun sk ->
+                let rank = Derive.rank sk c
+                let bonus = Derive.bonus sk c
+                printfn "  %20s %+3d %15s (%15s)" sk.Name bonus (rank.ToString ()) (sk.KeyAbility.ToString ())
+            )
+            // All feats, in alphabetical order
             printfn "Feats:"
             c.Feats |> List.sortBy (fun f -> f.Name) |> List.iter (fun f ->
                 printfn "  %30s [%s]" f.Name f.Category

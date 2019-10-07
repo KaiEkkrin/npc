@@ -29,7 +29,11 @@ module Ancestry =
     }
 
     let dwarfAncestryFeats = [
-        ancestryFeat (level 1) "Dwarven Lore" dwarf // TODO encode crafting or religion choice
+        ancestryFeat (level 1) "Dwarven Lore" dwarf |> Feats.improve [
+            Improve.skillOr Skills.crafting Skills.regularSkills ProficiencyRank.Trained
+            Improve.skillOr Skills.religion Skills.regularSkills ProficiencyRank.Trained
+            Improve.skills [Skills.lore "Dwarven"] ProficiencyRank.Trained
+        ] // TODO encode crafting or religion choice
         ancestryFeat (level 1) "Dwarven Weapon Familiarity" dwarf // TODO encode weapon proficiencies
         ancestryFeat (level 1) "Rock Runner" dwarf
         ancestryFeat (level 1) "Stonecunning" dwarf
