@@ -26,7 +26,7 @@ type Feet
 type Ability = Strength | Dexterity | Constitution | Intelligence | Wisdom | Charisma
 
 // Proficiency ranks are enumerated thus
-type ProficiencyRank = Untrained = 0 | Trained = 2 | Expert = 4 | Master = 6 | Legendary = 8
+type ProficiencyRank = Untrained | Trained | Expert | Master | Legendary
 
 // Characters have a size
 type Size = Tiny | Small | Medium | Large | Huge | Gargantuan
@@ -141,10 +141,22 @@ module Derive =
     // Gets a character's skill rank
     let rank sk c = match Map.tryFind sk c.Skills with | Some p -> p | None -> ProficiencyRank.Untrained
 
+    // Convert a proficiency rank to the bonus it applies
+    let proficiencyBonus (rank: ProficiencyRank) =
+        match rank with
+        | Untrained -> 0<Modifier>
+        | Trained -> 2<Modifier>
+        | Expert -> 4<Modifier>
+        | Master -> 6<Modifier>
+        | Legendary -> 8<Modifier>
+
     // Convert a character's level and their proficiency rank to a modifier
     let proficiency (rank: ProficiencyRank) level =
         let lm = level * 1<Modifier> / 1<Level>
-        if rank = ProficiencyRank.Untrained then 0<Modifier> else (int rank) * 1<Modifier> + lm
+        let pb = proficiencyBonus rank
+        match rank with
+        | Untrained -> pb // no level modifier for untrained
+        | _ -> lm + pb
 
     // Calculates the total bonus for a character's skill
     let bonus sk c =
