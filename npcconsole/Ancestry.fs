@@ -54,10 +54,10 @@ module Ancestry =
                 Improve.hitPoints 10
                 Improve.size Medium
                 Improve.speed 20<Feet>
+                Improve.abilityFlaw Charisma
                 Improve.singleAbility Constitution
                 Improve.singleAbility Wisdom
-                Improve.anyAbility 1
-                Improve.abilityFlaw Charisma
+                Improve.anyAbility 1 // TODO nope -- any ability except those two?
                 Feats.darkvision
                 Improve.addFeats dwarfAncestryFeats 1
             ])
@@ -65,10 +65,10 @@ module Ancestry =
                 Improve.hitPoints 6
                 Improve.size Medium
                 Improve.speed 30<Feet>
+                Improve.abilityFlaw Constitution
                 Improve.singleAbility Dexterity
                 Improve.singleAbility Wisdom
-                Improve.anyAbility 1
-                Improve.abilityFlaw Constitution
+                Improve.anyAbility 1 // TODO nope -- any ability except those two?
                 Feats.lowLightVision
                 Improve.addFeats elfAncestryFeats 1
             ])

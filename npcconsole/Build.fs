@@ -38,10 +38,7 @@ type Builder (interact: IInteraction) =
                 elif applicCount = imp.Count then applicable |> List.head |> fun (n, _, _) -> n
                 else interact.Prompt (imp.Prompt, (applicable |> List.map (fun (n, _, _) -> n)))
 
-            let chosenFunc =
-                applicable
-                |> List.choose (fun (n, _, fn) -> if n = chosenName then Some fn else None)
-                |> List.head
+            let chosenFunc = applicable |> List.pick (fun (n, _, fn) -> if n = chosenName then Some fn else None)
 
             // Apply that improvement, and then continue to prompt for the rest:
             let remaining = imp.Choices |> List.filter (fun (n, _, _) -> n <> chosenName )
