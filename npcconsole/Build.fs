@@ -25,32 +25,38 @@ type Builder (interact: IInteraction) =
     // How to prompt the user which improvement(s) they want and apply them
     // recursively.
     let rec prompt imp c =
-        // Create a list of the names of the choices that can actually be
-        // applied to this character:
-        let applicable = imp.Choices |> List.filter (fun (_, req, _) -> req c)
-        let applicCount = List.length applicable
+        if imp.Count = 0 then c // No improvements to apply
+        else
+            // Create a list of the names of the choices that can actually be
+            // applied to this character:
+            let applicable = imp.Choices |> List.filter (fun (_, req, _) -> req c)
+            let applicCount = List.length applicable
 
-        // Get the next one to be applied to the character, interrogating the user if need be
-        let chosenName =
-            if applicCount < imp.Count then failwithf "%s : Needed at least %d choices, have %d" imp.Prompt imp.Count applicCount
-            elif applicCount = imp.Count then applicable |> List.head |> fun (n, _, _) -> n
-            else interact.Prompt (imp.Prompt, (applicable |> List.map (fun (n, _, _) -> n)))
+            // Get the next one to be applied to the character, interrogating the user if need be
+            let chosenName =
+                if applicCount < imp.Count then failwithf "%s : Needed at least %d choices, have %d" imp.Prompt imp.Count applicCount
+                elif applicCount = imp.Count then applicable |> List.head |> fun (n, _, _) -> n
+                else interact.Prompt (imp.Prompt, (applicable |> List.map (fun (n, _, _) -> n)))
 
-        let chosenFunc =
-            applicable
-            |> List.choose (fun (n, _, fn) -> if n = chosenName then Some fn else None)
-            |> List.head
+            let chosenFunc =
+                applicable
+                |> List.choose (fun (n, _, fn) -> if n = chosenName then Some fn else None)
+                |> List.head
 
-        // Apply that improvement, and then continue to prompt for the rest:
-        (chosenFunc c) >>= (prompt { imp with Choices = imp.Choices |> List.filter (fun (n, _, _) -> n <> chosenName ) })
+            // Apply that improvement, and then continue to prompt for the rest:
+            let remaining = imp.Choices |> List.filter (fun (n, _, _) -> n <> chosenName )
+            (chosenFunc c) >>= (prompt { imp with Choices = remaining; Count = imp.Count - 1 })
 
-    // Character-improvement monad.
+    // Character-improvement bind.
     and (>>=) (c, i) f =
         match i with
         | [] -> f c // no more improvements to apply
         | imp::imps ->
             // Prompt for this improvement, then apply the others:
             (prompt imp c, imps) >>= f
+
+    // The canonical ability order (useful for display)
+    static member AbilityOrder = [Strength; Dexterity; Constitution; Intelligence; Wisdom; Charisma]
 
     // Creates a starting-level character.
     member this.Start name =
@@ -64,7 +70,7 @@ type Builder (interact: IInteraction) =
             HitPoints = 0
             Size = None
             Speed = 0<Feet>
-            Abilities = [Strength; Dexterity; Constitution; Intelligence; Wisdom; Charisma] |> List.map (fun a -> a, 10<Score>) |> Map.ofList
+            Abilities = Builder.AbilityOrder |> List.map (fun a -> a, 10<Score>) |> Map.ofList
             Skills = Map.empty
             Feats = []
         }, [

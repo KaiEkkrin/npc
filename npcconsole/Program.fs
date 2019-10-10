@@ -8,35 +8,28 @@ open NpcConsole.Attributes
 // A console interaction.
 type ConsoleInteract () = 
     interface IInteraction with
-        member this.Prompt (prompt, choices, count) =
-            printfn "Choose %d of %s:" count prompt
+        member this.Prompt (prompt, choices) =
+            printfn "Choose %s:" prompt
 
             // Number all the choices, starting at 1:
             let numberedChoices = choices |> List.mapi (fun i ch -> i + 1, ch)
             numberedChoices |> List.iter (fun (n, ch) -> printfn "%4d. %s" n ch)
 
-            // Read them all in.  Make sure we can't read duplicate choices.
+            // Read in the first intelligible number the user types that
+            // maps to a choice, and return that:
             seq { while true do yield Console.ReadLine () }
-            |> Seq.scan (fun (chosen, ncs) l ->
-                match Int32.TryParse l with
-                | false, _ -> (chosen, ncs)
-                | true, n ->
-                    match List.tryFind (fun (m, ch) -> m = n) ncs with
-                    | None -> (chosen, ncs)
-                    | Some (m, ch) -> (ch::chosen, List.filter (fun (m, ch) -> m <> n) ncs)
-            ) ([], numberedChoices)
-            |> Seq.find (fun (chosen, ncs) -> (List.length chosen) = count)
-            |> fst
+            |> Seq.choose (fun l -> match Int32.TryParse l with | true, n -> Some n | _ -> None)
+            |> Seq.pick (fun n -> List.tryPick (fun (n2, ch) -> if n2 = n then Some ch else None) numberedChoices)
 
         member this.Show c =
             printfn ""
             printfn "%s" c.Name
-            printfn "Level %d %s" c.Level c.Ancestry.Value.Name
+            printfn "Level %d %s" c.Level c.Ancestry.Value
             printfn "  %15s %d" "Hit Points" c.HitPoints
             printfn "  %15s %A" "Size" c.Size.Value
             printfn "  %15s %d" "Speed" c.Speed
             printfn "Abilities:"
-            Interact.abilityOrder |> List.iter (fun ab ->
+            Builder.AbilityOrder |> List.iter (fun ab ->
                 let score = Map.find ab c.Abilities
                 printfn "  %15s %4d (%+3d)" (ab.ToString ()) score (Derive.modifier score)
             )
@@ -51,7 +44,7 @@ type ConsoleInteract () =
             // All feats, in alphabetical order
             printfn "Feats:"
             c.Feats |> List.sortBy (fun f -> f.Name) |> List.iter (fun f ->
-                printfn "  %30s [%s]" f.Name f.Category
+                printfn "  %30s [%A]" f.Name f.Category
             )
 
 // Arguments
@@ -91,6 +84,7 @@ module Program =
                 // We create a base character, and then interact with the user to
                 // offer them options, thus
                 let interact = ConsoleInteract () :> IInteraction
-                let c = Build.start args.Name.Value |> Build.build interact
+                let build = Builder interact
+                let c = build.Start args.Name.Value
                 interact.Show c
                 0
