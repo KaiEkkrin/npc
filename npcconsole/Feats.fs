@@ -44,5 +44,70 @@ module Feats =
 
     // TODO list general feats here
     let generalFeats = [
-        feat GeneralFeat (fun _ -> true) "Ride" []
+        ride
+    ]
+
+    // -- SKILL FEATS --
+    // TODO fill these in with the necessaries
+
+    let assurance (sk: Skill) = feat SkillFeat (fun _ -> true) (sprintf "Assurance (%s)" sk.Name) []
+    let bargainHunter = feat SkillFeat (fun _ -> true) "Bargain Hunter" []
+    let battleMedic = feat SkillFeat (fun _ -> true) "Battle Medic" []
+    let catFall = feat SkillFeat (fun _ -> true) "Cat Fall" []
+    let charmingLiar = feat SkillFeat (fun _ -> true) "Charming Liar" []
+    let courtlyGraces = feat SkillFeat (fun _ -> true) "Courtly Graces" []
+    let dubiousKnowledge = feat SkillFeat (fun _ -> true) "Dubious Knowledge" []
+    let experiencedSmuggler = feat SkillFeat (fun _ -> true) "Experienced Smuggler" []
+    let experiencedTracker = feat SkillFeat (fun _ -> true) "Experienced Tracker" []
+    let fascinatingPerformance = feat SkillFeat (fun _ -> true) "Fascinating Performance" []
+    let forager = feat SkillFeat (fun _ -> true) "Forager" []
+    let groupImpression = feat SkillFeat (fun _ -> true) "Group Impression" []
+    let heftyHauler (sk: Skill) = feat SkillFeat (fun _ -> true) (sprintf "Hefty Hauler (%s)" sk.Name) []
+    let hobnobber = feat SkillFeat (fun _ -> true) "Hobnobber" []
+    let impressivePerformance = feat SkillFeat (fun _ -> true) "Impressive Performance" []
+    let intimidatingGlare = feat SkillFeat (fun _ -> true) "Intimidating Glare" []
+    let lieToMe = feat SkillFeat (fun _ -> true) "Lie to Me" []
+    let multilingual = feat SkillFeat (fun _ -> true) "Multilingual" []
+    let naturalMedicine = feat SkillFeat (fun _ -> true) "Natural Medicine" []
+    let oddityIdentification = feat SkillFeat (fun _ -> true) "Oddity Identification" []
+    let pickpocket = feat SkillFeat (fun _ -> true) "Pickpocket" []
+    let quickCoercion = feat SkillFeat (fun _ -> true) "Quick Coercion" []
+    let specialtyCrafting = feat SkillFeat (fun _ -> true) "Specialty Crafting" []
+    let steadyBalance = feat SkillFeat (fun _ -> true) "Steady Balance" []
+    let streetwise = feat SkillFeat (fun _ -> true) "Streetwise" []
+    let studentOfTheCanon = feat SkillFeat (fun _ -> true) "Student of the Canon" []
+    let surveyWildlife = feat SkillFeat (fun _ -> true) "Survey Wildlife" []
+    let terrainExpertise terrain = feat SkillFeat (fun _ -> true) (sprintf "Terrain Expertise (%s)" terrain) [] // TODO terrain types
+    let trainAnimal = feat SkillFeat (fun _ -> true) "Train Animal" []
+    let underwaterMarauder = feat SkillFeat (fun _ -> true) "Underwater Marauder" []
+
+    // TODO list skill feats here
+    // TODO *2 include choice feats e.g. Assurance
+    let skillFeats = [
+        bargainHunter
+        battleMedic
+        catFall
+        charmingLiar
+        courtlyGraces
+        dubiousKnowledge
+        experiencedSmuggler
+        experiencedTracker
+        fascinatingPerformance
+        forager
+        groupImpression
+        hobnobber
+        impressivePerformance
+        lieToMe
+        multilingual
+        naturalMedicine
+        oddityIdentification
+        pickpocket
+        quickCoercion
+        specialtyCrafting
+        steadyBalance
+        streetwise
+        studentOfTheCanon
+        surveyWildlife
+        trainAnimal
+        underwaterMarauder
     ]

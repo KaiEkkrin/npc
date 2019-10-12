@@ -7,7 +7,7 @@ module Ancestry =
     let dwarf = "Dwarf"
     let elf = "Elf"
 
-    let hasNone c = match c.Ancestry with | Some _ -> false | None -> true
+    let hasNone c = Option.isNone c.Ancestry
     let hasHeritage h c = match c.Heritage with | Some h2 when h2 = h -> true | _ -> false
 
     let noHeritage = "None", (fun _ -> true), fun c -> c, []

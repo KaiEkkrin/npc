@@ -72,6 +72,7 @@ type Builder (interact: IInteraction) =
             Feats = []
         }, [
             Ancestry.ancestries
+            Background.backgrounds
         ])
         >>= id
 
