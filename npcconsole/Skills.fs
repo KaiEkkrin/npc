@@ -3,6 +3,9 @@ namespace NpcConsole
 open NpcConsole.Attributes
 
 module Skills =
+    // Perception
+    let perception = { Name = "Perception"; Type = Perception; KeyAbility = Wisdom }
+
     // Saving throws
     let fortitudeSave = { Name = "Fortitude"; Type = SavingThrow; KeyAbility = Constitution }
     let reflexSave = { Name = "Reflex"; Type = SavingThrow; KeyAbility = Dexterity }
@@ -64,3 +67,34 @@ module Skills =
         |> Set.union loreSkills
         |> Set.toList
         |> List.sortBy (fun sk -> sk.Name)
+
+    let weaponSkill (category, ty) =
+        let catName =
+            match category with
+            | Unarmed -> "Unarmed"
+            | SimpleWeapon -> "Simple weapons"
+            | MartialWeapon -> "Martial weapons"
+            | AdvancedWeapon -> "Advanced weapons"
+        {
+            Name = sprintf "%s (%A)" catName ty
+            Type = WeaponProficiency
+            KeyAbility = match ty with | Melee -> Strength | Ranged -> Dexterity // TODO admit finesse weapons
+        }
+
+    let alchemicalBombs = {
+        Name = "Alchemical Bombs"
+        Type = WeaponProficiency
+        KeyAbility = Dexterity
+    }
+
+    let armorSkill category = {
+        Name = match category with | Unarmored -> "Unarmored" | c -> sprintf "%A armor" c
+        Type = ArmorProficiency
+        KeyAbility = Dexterity // TODO cap
+    }
+
+    let classSkill (cl, ab) = {
+        Name = sprintf "%A Class" cl
+        Type = ClassSkill
+        KeyAbility = ab
+    }

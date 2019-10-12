@@ -48,9 +48,12 @@ type Weapon = {
     Traits: string list
 }
 
+// These are armors:
+type ArmorCategory = Light | Medium | Heavy | Unarmored
+
 // This defines a skill.  As well as things officially called "skills", we also
 // include some other things that work the same way here:
-type SkillType = RegularSkill | ArmorProficiency | WeaponProficiency | Perception | SavingThrow
+type SkillType = RegularSkill | ArmorProficiency | WeaponProficiency | Perception | SavingThrow | ClassSkill
 type Skill = { Name: string; Type: SkillType; KeyAbility: Ability }
 
 // This defines a feat -- which any given character may or may not
@@ -58,7 +61,8 @@ type Skill = { Name: string; Type: SkillType; KeyAbility: Ability }
 // the character.
 // (I'm going to classify special class features as feats too, they
 // just won't be in easily acquirable lists.)
-type FeatCategory = AncestryFeat | ClassFeat | GeneralFeat | SkillFeat | SpecialFeat
+type Class = Alchemist | Barbarian | Bard | Champion | Cleric | Druid | Fighter | Monk | Ranger | Rogue | Sorcerer | Wizard
+type FeatCategory = AncestryFeat | ClassFeat of Class | GeneralFeat | SkillFeat | SpecialFeat
 type Feat = { Name: string; Category: FeatCategory }
 
 // Here's a whole character.  (Various things need to be optional,
@@ -68,7 +72,7 @@ type Character = {
     Ancestry: string option // TODO heritage as an ancestry choice
     Heritage: string option
     Background: string option
-    Class: string option
+    Class: Class option
     Level: int<Level>
     HitPoints: int
     Size: Size option

@@ -40,6 +40,7 @@ module Feats =
 
     // -- GENERAL FEATS --
 
+    let alchemicalCrafting = feat GeneralFeat (fun c -> Improve.hasSkill Skills.crafting Trained c) "Alchemical Crafting" [] // TODO count items and formulas
     let ride = feat GeneralFeat (fun _ -> true) "Ride" []
 
     // TODO list general feats here

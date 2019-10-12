@@ -10,6 +10,7 @@
     <Compile Include="Feats.fs" />
     <Compile Include="Ancestry.fs" />
     <Compile Include="Background.fs" />
+    <Compile Include="Class.fs" />
     <Compile Include="Build.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
