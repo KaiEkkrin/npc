@@ -33,7 +33,10 @@ module Improve =
 
     let hitPoints n = single "Hit Points" (fun c -> { c with HitPoints = c.HitPoints + n }, [])
     let size sz = single "Size" (fun c -> { c with Size = Some sz }, [])
-    let speed n = single "Speed" (fun c -> { c with Speed = n }, [])
+    let speed n = single "Speed" (fun c -> { c with Speed = c.Speed + n }, [])
+
+    // How to require a bunch of things
+    let require reqs c = reqs |> List.fold (fun ok r -> ok && (r c)) true
 
     // How to require a particular character level (and no more)
     let hasLevel n c = c.Level >= (n * 1<Level>)
@@ -84,22 +87,31 @@ module Improve =
     // Adds a skill to a character at a particular proficiency.
     let addSkill sk prof c =
         match Map.tryFind sk c.Skills with
-        | Some p when p < prof -> { c with Skills = Map.add sk prof c.Skills }, []
-        | _ -> c, []
+        | Some p when p >= prof -> c, []
+        | _ -> { c with Skills = Map.add sk prof c.Skills }, []
 
     // True if a character already has a skill at a particular proficiency,
     // else false.
     let hasSkill sk prof c =
-        match Map.tryFind sk c.Skills with
-        | Some p when p >= prof -> true
-        | _ -> false
+        if prof = Untrained then true
+        else
+            match Map.tryFind sk c.Skills with
+            | Some p when p >= prof -> true
+            | _ -> false
 
-    // Adds a skill from the list at a particular proficiency.
+    // Adds one or more skills from the list at a particular proficiency.
     // TODO How to allow input of a custom lore skill?  (Maybe that's just a UI twiddle
     // to how lore skills are rendered and I could do it entirely based on the string?)
-    let skills (sks: Skill list) prof = {
+    let skills (sks: Skill list) prof count = {
         Prompt = sprintf "%A Skill" prof
         Choices = sks |> List.map (fun sk -> sk.Name, (hasSkill sk prof) >> not, addSkill sk prof)
+        Count = count
+    }
+
+    // Adds a specific skill at a particular proficiency.
+    let skill (sk: Skill) prof = {
+        Prompt = sprintf "%A %s" prof sk.Name
+        Choices = [sk.Name, (fun _ -> true), addSkill sk prof]
         Count = 1
     }
 
@@ -109,9 +121,16 @@ module Improve =
         let addOr c =
             if (Derive.rank sk c) < prof
             then { c with Skills = Map.add sk prof c.Skills }, []
-            else c, [skills sks prof]
+            else c, [skills sks prof 1]
         {
             Prompt = sprintf "%A %s" prof sk.Name
             Choices = [sk.Name, (fun _ -> true), addOr]
             Count = 1
         }
+
+    // Adds a heritage.
+    let heritage hs = {
+        Prompt = "Heritage"
+        Choices = hs
+        Count = 1
+    }

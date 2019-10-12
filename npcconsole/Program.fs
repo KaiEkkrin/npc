@@ -24,7 +24,9 @@ type ConsoleInteract () =
         member this.Show c =
             printfn ""
             printfn "%s" c.Name
-            printfn "Level %d %s" c.Level c.Ancestry.Value
+            if Option.isSome c.Heritage
+            then printfn "Level %d %s %s" c.Level c.Heritage.Value c.Ancestry.Value
+            else printfn "Level %d %s" c.Level c.Ancestry.Value
             printfn "  %15s %d" "Hit Points" c.HitPoints
             printfn "  %15s %A" "Size" c.Size.Value
             printfn "  %15s %d" "Speed" c.Speed
@@ -71,7 +73,6 @@ module Program =
 
     [<EntryPoint>]
     let main argv =
-        printfn "Hello World from F#!  %A" argv
         match (parseArgs argv) with
         | Failed str ->
             printfn "Unrecognised argument: %s" str
