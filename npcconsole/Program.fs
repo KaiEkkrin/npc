@@ -7,6 +7,21 @@ open NpcConsole.Attributes
 
 // A console interaction.
 type ConsoleInteract () = 
+    let formatLevel c = Some (sprintf "Level %d" c.Level)
+    let formatClass c = match c.Class with | Some cl -> Some (sprintf "%A" cl) | None -> None
+    let print (name, value) = printfn "%30s: %s" name value
+
+    let printTitle c =
+        let elements =
+            [formatLevel c; c.Heritage; c.Ancestry; formatClass c]
+            |> List.choose id
+        print ("Is a", String.Join (" ", elements))
+
+    let printSkill c sk =
+        let rank = (Derive.rank sk c).ToString ()
+        let bonus = Derive.bonus sk c
+        print (sk.Name, sprintf "%+3d %15s (%15s)" bonus rank (sk.KeyAbility.ToString ()))
+
     interface IInteraction with
         member this.Prompt (prompt, choices) =
             printfn "Choose %s:" prompt
@@ -23,30 +38,31 @@ type ConsoleInteract () =
 
         member this.Show c =
             printfn ""
-            printfn "%s" c.Name
-            if Option.isSome c.Heritage
-            then printfn "Level %d %s %s" c.Level c.Heritage.Value c.Ancestry.Value
-            else printfn "Level %d %s" c.Level c.Ancestry.Value
-            printfn "  %15s %d" "Hit Points" c.HitPoints
-            printfn "  %15s %A" "Size" c.Size.Value
-            printfn "  %15s %d" "Speed" c.Speed
+            print ("Name", c.Name)
+            printTitle c
+            if Option.isSome c.Background then print ("Background", c.Background.Value)
+            if Option.isSome c.Class then print ("Class", c.Class.Value.ToString ())
+            print ("Hit Points", c.HitPoints.ToString ())
+            if Option.isSome c.Size then print ("Size", c.Size.ToString ())
+            print ("Speed", c.Speed.ToString ())
             printfn "Abilities:"
             Builder.AbilityOrder |> List.iter (fun ab ->
                 let score = Map.find ab c.Abilities
-                printfn "  %15s %4d (%+3d)" (ab.ToString ()) score (Derive.modifier score)
+                print (ab.ToString (), sprintf "%4d (%+2d)" score (Derive.modifier score))
             )
+            printfn "Saves:"
+            Skills.saves |> List.iter (printSkill c)
             // TODO Armor, saving throws, weapon skills and that kind of thing
             // Regular skills, in alphabetical order
             printfn "Skills:"
-            Skills.regularSkillsForCharacter c |> List.iter (fun sk ->
-                let rank = Derive.rank sk c
-                let bonus = Derive.bonus sk c
-                printfn "  %20s %+3d %15s (%15s)" sk.Name bonus (rank.ToString ()) (sk.KeyAbility.ToString ())
-            )
+            Skills.regularSkillsForCharacter c |> List.iter (printSkill c)
             // All feats, in alphabetical order
+            // TODO separate class features and that kind of thing?  Show in order
+            // of what level they were taken at, instead?  Show page numbers (that
+            // would be really useful for checking what they all mean!)
             printfn "Feats:"
             c.Feats |> List.sortBy (fun f -> f.Name) |> List.iter (fun f ->
-                printfn "  %30s [%A]" f.Name f.Category
+                print (f.Name, f.Category.ToString ())
             )
 
 // Arguments

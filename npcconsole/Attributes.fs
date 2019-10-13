@@ -49,7 +49,7 @@ type Weapon = {
 }
 
 // These are armors:
-type ArmorCategory = Light | Medium | Heavy | Unarmored
+type ArmorCategory = LightArmor | MediumArmor | HeavyArmor | Unarmored
 
 // This defines a skill.  As well as things officially called "skills", we also
 // include some other things that work the same way here:

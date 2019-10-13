@@ -40,7 +40,7 @@ module Classes =
                 Improve.skill (Skills.weaponSkill (SimpleWeapon, Ranged)) Trained
                 Improve.skill (Skills.weaponSkill (Unarmed, Melee)) Trained
                 Improve.skill Skills.alchemicalBombs Trained
-                Improve.skill (Skills.armorSkill Light) Trained
+                Improve.skill (Skills.armorSkill LightArmor) Trained
                 Improve.skill (Skills.armorSkill Unarmored) Trained
                 Improve.skill (Skills.classSkill (Alchemist, Intelligence)) Trained
                 Feats.forceAdd Feats.alchemicalCrafting
@@ -52,4 +52,12 @@ module Classes =
 
     // -- BARBARIAN --
 
+    // -- EVERYTHING --
+    let classes = {
+        Prompt = "Class"
+        Choices = [
+            "Alchemist", (fun c -> Option.isNone c.Class), alchemist
+        ]
+        Count = 1
+    }
 

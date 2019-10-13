@@ -11,6 +11,8 @@ module Skills =
     let reflexSave = { Name = "Reflex"; Type = SavingThrow; KeyAbility = Dexterity }
     let willSave = { Name = "Will"; Type = SavingThrow; KeyAbility = Wisdom }
 
+    let saves = [ fortitudeSave; reflexSave; willSave ]
+
     // Things listed as "proper skills"
     let regularSkill name ka = { Name = name; Type = RegularSkill; KeyAbility = ka }
     let acrobatics = regularSkill "Acrobatics" Dexterity

@@ -73,6 +73,7 @@ type Builder (interact: IInteraction) =
         }, [
             Ancestry.ancestries
             Background.backgrounds
+            Classes.classes
         ])
         >>= id
 
