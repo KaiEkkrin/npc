@@ -53,17 +53,16 @@ type ArmorCategory = LightArmor | MediumArmor | HeavyArmor | Unarmored
 
 // This defines a skill.  As well as things officially called "skills", we also
 // include some other things that work the same way here:
-type SkillType = RegularSkill | ArmorProficiency | WeaponProficiency | Perception | SavingThrow | ClassSkill
 type Skill = { Name: string; KeyAbility: Ability }
 
-// This defines a feat -- which any given character may or may not
-// qualify for, and which may result in further improvements to
-// the character.
-// (I'm going to classify special class features as feats too, they
-// just won't be in easily acquirable lists.)
+// Feats include a page number to help look them up because otherwise it would
+// be very annoying!
+// The feat list also includes things like class features, that aren't strictly
+// feats but do go in the list of Named Things a Character Has.
+type Feat = { Name: string; Page: int }
+
+// We enumerate the classes, they're a fixed set.
 type Class = Alchemist | Barbarian | Bard | Champion | Cleric | Druid | Fighter | Monk | Ranger | Rogue | Sorcerer | Wizard
-type FeatCategory = AncestryFeat | ClassFeat of Class | GeneralFeat | SkillFeat | SpecialFeat
-type Feat = { Name: string; Category: FeatCategory }
 
 // Here's a whole character.  (Various things need to be optional,
 // so that we can build them incrementally.)

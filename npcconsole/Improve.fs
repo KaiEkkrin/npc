@@ -38,8 +38,11 @@ module Improve =
     // How to require a bunch of things
     let require reqs c = reqs |> List.fold (fun ok r -> ok && (r c)) true
 
-    // How to require a particular character level (and no more)
+    // How to require a particular character level
     let hasLevel n c = c.Level >= (n * 1<Level>)
+
+    // How to require an ability score value or higher
+    let hasAbilityScore ab n c = match Map.tryFind ab c.Abilities with | Some score when score >= n -> true | _ -> false
 
     // Adds one or more ability boosts out of the list.
     let ability choices count =
@@ -61,8 +64,11 @@ module Improve =
     // Adds an ability flaw (always just the one)
     let abilityFlaw ab = single (sprintf "%A flaw" ab) (fun c -> { c with Abilities = Map.add ab ((Map.find ab c.Abilities) - 2<Score>) c.Abilities }, [])
 
-    // True if a character already has a given feat, else false.
-    let hasFeat f c = List.contains f c.Feats
+    // True if a character already has a feat with the given name, else false.
+    let hasFeat name c = match c.Feats |> List.tryFind (fun f -> f.Name = name) with | Some _ -> true | None -> false
+
+    // The other way around :)
+    let doesNotHaveFeat name c = match c.Feats |> List.tryFind (fun f -> f.Name = name) with | Some _ -> false | None -> true
 
     // Adds a feat.  If the character already has it, does nothing.
     // (Use for special feats e.g. darkvision granted by ancestries.)
@@ -94,10 +100,18 @@ module Improve =
     // else false.
     let hasSkill sk prof c =
         if prof = Untrained then true
-        else
-            match Map.tryFind sk c.Skills with
-            | Some p when p >= prof -> true
-            | _ -> false
+        else match Map.tryFind sk c.Skills with | Some p when p >= prof -> true | _ -> false
+
+    let doesNotHaveSkill sk prof c = not (hasSkill sk prof c)
+
+    let hasAnySkill sks prof c =
+        if prof = Untrained then true
+        else c.Skills |> Map.tryPick (fun sk v -> if (List.contains sk sks) && v >= prof then Some sk else None) |> Option.isSome
+
+    // True if a character already has *any* Lore skill at a particular proficiency, else false.
+    let hasLore prof c =
+        if prof = Untrained then true
+        else c.Skills |> Map.tryPick (fun sk v -> if sk.Name.Contains "Lore" && v >= prof then Some sk else None) |> Option.isSome
 
     // Adds one or more skills from the list at a particular proficiency.
     // TODO How to allow input of a custom lore skill?  (Maybe that's just a UI twiddle
