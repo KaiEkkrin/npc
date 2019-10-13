@@ -22,6 +22,16 @@ type ConsoleInteract () =
         let bonus = Derive.bonus sk c
         print (sk.Name, sprintf "%+3d %15s (%15s)" bonus rank (sk.KeyAbility.ToString ()))
 
+    let printDC c sk =
+        let rank = (Derive.rank sk c).ToString ()
+        let dc = Derive.bonus sk c |> Derive.dc
+        print ((sprintf "%s DC" sk.Name), sprintf "%3d %15s (%15s)" dc rank (sk.KeyAbility.ToString ()))
+
+    let printClassDC c =
+        match Map.tryPick (fun sk _ -> if sk.Type = ClassSkill then Some sk else None) c.Skills with
+        | Some sk -> printDC c sk
+        | None -> ()
+
     interface IInteraction with
         member this.Prompt (prompt, choices) =
             printfn "Choose %s:" prompt
@@ -41,20 +51,23 @@ type ConsoleInteract () =
             print ("Name", c.Name)
             printTitle c
             if Option.isSome c.Background then print ("Background", c.Background.Value)
-            if Option.isSome c.Class then print ("Class", c.Class.Value.ToString ())
             print ("Hit Points", c.HitPoints.ToString ())
-            if Option.isSome c.Size then print ("Size", c.Size.ToString ())
+            if Option.isSome c.Size then print ("Size", c.Size.Value.ToString ())
             print ("Speed", c.Speed.ToString ())
             printfn "Abilities:"
             Builder.AbilityOrder |> List.iter (fun ab ->
                 let score = Map.find ab c.Abilities
                 print (ab.ToString (), sprintf "%4d (%+2d)" score (Derive.modifier score))
             )
+            printfn "Difficulty Classes:"
+            // TODO armor class here
+            printClassDC c
             printfn "Saves:"
             Skills.saves |> List.iter (printSkill c)
             // TODO Armor, saving throws, weapon skills and that kind of thing
             // Regular skills, in alphabetical order
             printfn "Skills:"
+            printSkill c Skills.perception
             Skills.regularSkillsForCharacter c |> List.iter (printSkill c)
             // All feats, in alphabetical order
             // TODO separate class features and that kind of thing?  Show in order

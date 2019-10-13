@@ -40,9 +40,13 @@ type Builder (interact: IInteraction) =
 
             let chosenFunc = applicable |> List.pick (fun (n, _, fn) -> if n = chosenName then Some fn else None)
 
-            // Apply that improvement, and then continue to prompt for the rest:
+            // Apply that improvement, and then continue to prompt for the rest.
+            // As we go, we'll edit the prompts of sub-improvements so that the user
+            // can see the breadcrumb trail.  (TODO make this a list for formatting elsewhere?)
             let remaining = imp.Choices |> List.filter (fun (n, _, _) -> n <> chosenName )
-            (chosenFunc c) >>= (prompt { imp with Choices = remaining; Count = imp.Count - 1 })
+            (chosenFunc c)
+            |> (fun (c2, i2s) -> c2, i2s |> List.map (fun i2 -> { i2 with Prompt = sprintf "%s -> %s" imp.Prompt i2.Prompt }))
+            >>= (prompt { imp with Choices = remaining; Count = imp.Count - 1 })
 
     // Character-improvement bind.
     and (>>=) (c, i) f =

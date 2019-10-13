@@ -92,7 +92,7 @@ module Skills =
     let armorSkill category = {
         Name = match category with | Unarmored -> "Unarmored" | c -> sprintf "%A armor" c
         Type = ArmorProficiency
-        KeyAbility = Dexterity // TODO cap
+        KeyAbility = Dexterity // TODO cap (although that is based on the armor itself)
     }
 
     let classSkill (cl, ab) = {

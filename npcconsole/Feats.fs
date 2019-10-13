@@ -29,6 +29,13 @@ module Feats =
         req,
         imps
 
+    // Defines a skill feat in terms of the skill and proficiency it requires,
+    // and its level prereq.
+    let skillFeat level sk prof name =
+        { Name = name; Category = SkillFeat },
+        (fun c -> Improve.hasLevel level c && Improve.hasSkill sk prof c),
+        []
+
     // Adds a feat to a character even if they don't meet the prereqs.
     let forceAdd (feat, _, imps) = Improve.addFeat (feat, imps)
 
@@ -45,14 +52,17 @@ module Feats =
 
     // TODO list general feats here
     let generalFeats = [
+        alchemicalCrafting
         ride
     ]
 
     // -- SKILL FEATS --
     // TODO fill these in with the necessaries
+    // TODO *2 (oh dear) Many feats can have multiple categories, need to include
+    // them as a list rather than as a single field :/
 
-    let assurance (sk: Skill) = feat SkillFeat (fun _ -> true) (sprintf "Assurance (%s)" sk.Name) []
-    let bargainHunter = feat SkillFeat (fun _ -> true) "Bargain Hunter" []
+    let assurance (sk: Skill) = skillFeat 1 sk Trained (sprintf "Assurance (%s)" sk.Name)
+    let bargainHunter = skillFeat 1 Skills.diplomacy Trained "Bargain Hunter"
     let battleMedic = feat SkillFeat (fun _ -> true) "Battle Medic" []
     let catFall = feat SkillFeat (fun _ -> true) "Cat Fall" []
     let charmingLiar = feat SkillFeat (fun _ -> true) "Charming Liar" []
