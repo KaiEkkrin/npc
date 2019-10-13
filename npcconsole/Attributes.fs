@@ -54,7 +54,7 @@ type ArmorCategory = LightArmor | MediumArmor | HeavyArmor | Unarmored
 // This defines a skill.  As well as things officially called "skills", we also
 // include some other things that work the same way here:
 type SkillType = RegularSkill | ArmorProficiency | WeaponProficiency | Perception | SavingThrow | ClassSkill
-type Skill = { Name: string; Type: SkillType; KeyAbility: Ability }
+type Skill = { Name: string; KeyAbility: Ability }
 
 // This defines a feat -- which any given character may or may not
 // qualify for, and which may result in further improvements to

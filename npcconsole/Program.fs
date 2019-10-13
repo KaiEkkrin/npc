@@ -28,7 +28,7 @@ type ConsoleInteract () =
         print ((sprintf "%s DC" sk.Name), sprintf "%3d %15s (%15s)" dc rank (sk.KeyAbility.ToString ()))
 
     let printClassDC c =
-        match Map.tryPick (fun sk _ -> if sk.Type = ClassSkill then Some sk else None) c.Skills with
+        match Map.tryPick (fun (sk: Skill) _ -> if sk.Name.Contains ("Class") then Some sk else None) c.Skills with
         | Some sk -> printDC c sk
         | None -> ()
 
