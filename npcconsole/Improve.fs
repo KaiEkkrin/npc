@@ -75,7 +75,7 @@ module Improve =
     // Feats are supplied as a tuple (feat, further improvements) because
     // some of them apply further improvements!
     let addFeat (f: Feat, imps) = single f.Name (fun c ->
-        if hasFeat f c then c, imps
+        if hasFeat f.Name c then c, imps
         else { c with Feats = f::c.Feats }, imps)
 
     // Adds one or more of the list of (feat, further improvements), assuming
@@ -85,7 +85,7 @@ module Improve =
         Prompt = "Feat"
         Choices = l |> List.map (fun (f: Feat, req, imps) ->
             f.Name,
-            (fun c -> (hasFeat f >> not) c && req c),
+            (fun c -> (doesNotHaveFeat f.Name c) && req c),
             fun c -> { c with Feats = f::c.Feats }, imps)
         Count = count
     }
