@@ -148,3 +148,6 @@ module Improve =
         Choices = hs
         Count = 1
     }
+
+    // True if a character has an ancestry with a particular name, else false.
+    let hasAncestry a c = c.Ancestry = Some a

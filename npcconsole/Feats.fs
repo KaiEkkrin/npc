@@ -181,40 +181,124 @@ module Feats =
     let unifiedTheory = skillFeat 15 Skills.arcana Legendary "Unified Theory" 268 []
     let unmistakableLore = feat 2 [Improve.hasLore Expert] "Unmistakable Lore" 268 []
     let untrainedImprovisation = feat 3 [] "Untrained Improvisation" 268 [] // TODO implement this bonus
+    let virtuoisticPerformer specialty = skillFeat 1 Skills.performance Trained (sprintf "Virtuoistic Performer (%s)" specialty) 268 []
+    let wallJump = skillFeat 7 Skills.athletics Master "Wall Jump" 269 []
+    let wardMedic = skillFeat 2 Skills.medicine Expert "Ward Medic" 269 []
+    let waryDisarmament = skillFeat 2 Skills.thievery Expert "Wary Disarmament" 269 []
+    // TODO weapon proficiency on page 269 (difficult, since it optionally requires a parameter)
 
-    // TODO list general feats here
-    let generalFeats = [
-        alchemicalCrafting
-        ride
-    ]
-
-    // TODO list skill feats here
-    // TODO *2 include choice feats e.g. Assurance
+    // We list skill feats here.
+    // TODO include choice feats e.g. Assurance
     let skillFeats = [
+        alchemicalCrafting
+        arcaneSense
         bargainHunter
+        battleCry
         battleMedic
+        bizarreMagic
+        bondedAnimal
         catFall
         charmingLiar
+        cloudJump
+        combatClimber
+        confabulator
+        connections
+        continualRecovery
         courtlyGraces
+        craftAnything
+        divineGuidance
         dubiousKnowledge
+        experiencedProfessional
         experiencedSmuggler
         experiencedTracker
         fascinatingPerformance
+        foilSenses
         forager
+        gladHand
+        groupCoercion
         groupImpression
+        heftyHauler
         hobnobber
+        impeccableCrafting
         impressivePerformance
+        intimidatingGlare
+        intimidatingProwess
+        inventor
+        kipUp
+        lastingCoercion
+        legendaryCodebreaker
+        legendaryLinguist
+        legendaryMedic
+        legendaryNegotiation
+        legendaryPerformer
+        legendarySneak
+        legendarySurvivalist
+        legendaryThief
+        lengthyDiversion
         lieToMe
+        magicalCrafting
+        magicalShorthand
         multilingual
         naturalMedicine
+        nimbleCrawl
         oddityIdentification
         pickpocket
+        planarSurvival
+        powerfulLeap
+        quickClimb
         quickCoercion
-        specialtyCrafting
+        quickDisguise
+        quickIdentification
+        quickJump
+        quickRecognition
+        quickRepair
+        quickSqueeze
+        quickSwim
+        quickUnlock
+        quietAllies
+        rapidMantel
+        readLips
+        recognizeSpell
+        robustRecovery
+        scareToDeath
+        shamelessRequest
+        signLanguage
+        slipperySecrets
+        snareCrafting
         steadyBalance
         streetwise
         studentOfTheCanon
+        subtleTheft
         surveyWildlife
+        swiftSneak
+        terrifiedRetreat
+        titanWrestler
         trainAnimal
+        trickMagicItem
         underwaterMarauder
+        unifiedTheory
+        unmistakableLore
+        wallJump
+        wardMedic
+        waryDisarmament
     ]
+
+    // We list general feats here (that aren't skill feats; we pull in that list too.)
+    // TODO Include the ones that have parameters.  (I haven't yet decided how to implement that.)
+    let generalFeats = List.concat [skillFeats; [
+        armorProficiencyLight
+        armorProficiencyMedium
+        armorProficiencyHeavy
+        breathControl
+        diehard
+        expeditiousSearch
+        fastRecovery
+        featherStep
+        fleet
+        incredibleInitiative
+        incredibleInvestiture
+        ride
+        shieldBlock
+        toughness
+        untrainedImprovisation
+    ]]

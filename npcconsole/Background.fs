@@ -18,10 +18,11 @@ module Background =
     let backgrounds = {
         Prompt = "Background"
         Choices = [
+            // TODO Fix the choices that rely on a parameterised feat.
             background ("Acolyte", [Intelligence; Wisdom], Skills.religion, "Scribing", Feats.studentOfTheCanon)
             background ("Acrobat", [Strength; Dexterity], Skills.acrobatics, "Circus", Feats.steadyBalance)
             background ("Animal Whisperer", [Wisdom; Charisma], Skills.nature, "Plains", Feats.trainAnimal)
-            background ("Artist", [Strength; Intelligence], Skills.crafting, "Guild", Feats.specialtyCrafting)
+            //background ("Artist", [Strength; Intelligence], Skills.crafting, "Guild", Feats.specialtyCrafting)
             background ("Barkeep", [Constitution; Charisma], Skills.diplomacy, "Alcohol", Feats.hobnobber)
             background ("Barrister", [Intelligence; Charisma], Skills.diplomacy, "Legal", Feats.groupImpression)
             background ("Bounty Hunter", [Strength; Wisdom], Skills.survival, "Legal", Feats.experiencedTracker)
@@ -39,7 +40,7 @@ module Background =
             background ("Herbalist", [Constitution; Wisdom], Skills.nature, "Herbalism", Feats.naturalMedicine)
             background ("Hermit", [Constitution; Intelligence], Skills.nature, "Cave", Feats.dubiousKnowledge) // TODO or occultism not nature
             background ("Hunter", [Dexterity; Wisdom], Skills.survival, "Tanning", Feats.surveyWildlife)
-            background ("Laborer", [Strength; Constitution], Skills.athletics, "Labor", Feats.heftyHauler Skills.athletics)
+            background ("Laborer", [Strength; Constitution], Skills.athletics, "Labor", Feats.heftyHauler)
             background ("Martial Disciple", [Strength; Dexterity], Skills.acrobatics, "Warfare", Feats.catFall) // TODO or athetics and Quick Jump feat
             background ("Merchant", [Intelligence; Charisma], Skills.diplomacy, "Mercantile", Feats.bargainHunter)
             background ("Miner", [Strength; Wisdom], Skills.survival, "Mining", Feats.terrainExpertise "Underground")
@@ -50,7 +51,7 @@ module Background =
             background ("Scholar", [Intelligence; Wisdom], Skills.arcana, "Academia", Feats.assurance Skills.arcana) // TODO or religion, nature or occultism and the matching Assurance
             background ("Scout", [Dexterity; Wisdom], Skills.survival, "Forest", Feats.forager)
             background ("Street Urchin", [Dexterity; Constitution], Skills.thievery, "City", Feats.pickpocket)
-            background ("Tinker", [Dexterity; Intelligence], Skills.crafting, "Engineering", Feats.specialtyCrafting)
+            //background ("Tinker", [Dexterity; Intelligence], Skills.crafting, "Engineering", Feats.specialtyCrafting)
             background ("Warrior", [Strength; Constitution], Skills.intimidation, "Warfare", Feats.intimidatingGlare)
         ]
         Count = 1

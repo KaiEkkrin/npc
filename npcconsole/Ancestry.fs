@@ -6,13 +6,24 @@ module Ancestry =
     let ancestry = "Ancestry"
     let dwarf = "Dwarf"
     let elf = "Elf"
+    let gnome = "Gnome"
+    let goblin = "Goblin"
+    let halfling = "Halfling"
+    let human = "Human"
+    let halfElf = "Half-elf"
+    let halfOrc = "Half-orc"
 
     let hasNone c = Option.isNone c.Ancestry
     let hasHeritage h c = match c.Heritage with | Some h2 when h2 = h -> true | _ -> false
 
     let noHeritage = "None", (fun _ -> true), fun c -> c, []
     let heritage name imps = name, (fun c -> Option.isNone c.Heritage), fun c -> { c with Heritage = Some name }, imps
-    let ancestryFeat = Feats.feat AncestryFeat
+    let ancestryFeat ancestry level reqs name page (imps: Improvement list) =
+        let allReqs = [
+            yield Improve.hasAncestry ancestry
+            yield! reqs
+        ]
+        Feats.feat level reqs name page imps
 
     let dwarfHeritages = [
         heritage "Ancient-Blooded" []
@@ -23,21 +34,24 @@ module Ancestry =
     ]
 
     let dwarfAncestryFeats = [
-        ancestryFeat (Improve.hasLevel 1) "Dwarven Lore" [
+        ancestryFeat dwarf 1 [] "Dwarven Lore" 36 [
             Improve.skillOr Skills.crafting Skills.regularSkills Trained
             Improve.skillOr Skills.religion Skills.regularSkills Trained
             Improve.skill (Skills.lore "Dwarven") Trained
         ]
-        ancestryFeat (Improve.hasLevel 1) "Dwarven Weapon Familiarity" [] // TODO encode weapon proficiencies
-        ancestryFeat (Improve.hasLevel 1) "Rock Runner" []
-        ancestryFeat (Improve.hasLevel 1) "Stonecunning" []
-        ancestryFeat (Improve.hasLevel 1) "Unburdened Iron" [] // TODO reduce speed reduction from armor
-        ancestryFeat (Improve.hasLevel 1) "Vengeful Hatred" []
-        ancestryFeat (Feats.req 5 ["Rock Runner"]) "Boulder Roll" []
-        ancestryFeat (Feats.req 5 ["Dwarven Weapon Familiarity"]) "Dwarven Weapon Cunning" []
-        ancestryFeat (Improve.hasLevel 9) "Mountain's Stoutness" []
-        ancestryFeat (Improve.hasLevel 9) "Stonewalker" []
-        ancestryFeat (Feats.req 13 ["Dwarven Weapon Familiarity"]) "Dwarven Weapon Expertise" []
+        ancestryFeat dwarf 1 [] "Dwarven Weapon Familiarity" 36 [] // TODO encode weapon proficiencies
+        ancestryFeat dwarf 1 [] "Rock Runner" 36 []
+        ancestryFeat dwarf 1 [] "Stonecunning" 36 []
+        ancestryFeat dwarf 1 [] "Unburdened Iron" 36 [] // TODO reduce speed reduction from armor
+        ancestryFeat dwarf 1 [] "Vengeful Hatred" 36 []
+        ancestryFeat dwarf 5 [Improve.hasFeat "Rock Runner"] "Boulder Roll" 36 []
+        ancestryFeat dwarf 5 [Improve.hasFeat "Dwarven Weapon Familiarity"] "Dwarven Weapon Cunning" 37 []
+        ancestryFeat dwarf 9 [] "Mountain's Stoutness" 37 [
+            // TODO as the Toughness feat, have this further increase by level
+            Improve.single "Mountain's Stoutness Hit Points" (fun c -> { c with HitPoints = c.HitPoints + c.Level / 1<Level> }, [])
+        ]
+        ancestryFeat dwarf 9 [] "Stonewalker" 37 []
+        ancestryFeat dwarf 13 [Improve.hasFeat "Dwarven Weapon Familiarity"] "Dwarven Weapon Expertise" 37 []
     ]
 
     let elfHeritages = [
@@ -51,25 +65,25 @@ module Ancestry =
     ]
 
     let elfAncestryFeats = [
-        ancestryFeat (Improve.hasLevel 1) "Ancestral Longevity" []
-        ancestryFeat (Improve.hasLevel 1) "Elven Lore" [
+        ancestryFeat elf 1 [] "Ancestral Longevity" 40 []
+        ancestryFeat elf 1 [] "Elven Lore" 40 [
             Improve.skillOr Skills.arcana Skills.regularSkills Trained
             Improve.skillOr Skills.arcana Skills.regularSkills Trained
             Improve.skill (Skills.lore "Elven") Trained
         ]
-        ancestryFeat (Improve.hasLevel 1) "Elven Weapon Familiarity" [] // TODO encode weapon proficiencies
-        ancestryFeat (Improve.hasLevel 1) "Forlorn" []
-        ancestryFeat (Improve.hasLevel 1) "Nimble Elf" [
+        ancestryFeat elf 1 [] "Elven Weapon Familiarity" 40 [] // TODO encode weapon proficiencies
+        ancestryFeat elf 1 [] "Forlorn" 40 []
+        ancestryFeat elf 1 [] "Nimble Elf" 40 [
             Improve.speed 5<Feet>
         ]
-        ancestryFeat (Improve.hasLevel 1) "Otherworldly Magic" []
-        ancestryFeat (Improve.hasLevel 1) "Unwavering Mien" []
-        ancestryFeat (Improve.hasLevel 5) "Ageless Patience" []
-        ancestryFeat (Feats.req 5 ["Elven Weapon Familiarity"]) "Elven Weapon Elegance" []
-        ancestryFeat (Improve.hasLevel 9) "Elf Step" []
-        ancestryFeat (Feats.req 9 ["Ancestral Longevity"]) "Expert Longevity" []
-        ancestryFeat (Feats.req 13 ["Expert Longevity"]) "Universal Longevity" []
-        ancestryFeat (Feats.req 13 ["Elven Weapon Familiarity"]) "Elven Weapon Expertise" []
+        ancestryFeat elf 1 [] "Otherworldly Magic" 40 []
+        ancestryFeat elf 1 [] "Unwavering Mien" 40 []
+        ancestryFeat elf 5 [] "Ageless Patience" 40 []
+        ancestryFeat elf 5 [Improve.hasFeat "Elven Weapon Familiarity"] "Elven Weapon Elegance" 41 []
+        ancestryFeat elf 9 [] "Elf Step" 41 []
+        ancestryFeat elf 9 [Improve.hasFeat "Ancestral Longevity"] "Expert Longevity" 41 []
+        ancestryFeat elf 13 [Improve.hasFeat "Expert Longevity"] "Universal Longevity" 41 []
+        ancestryFeat elf 13 [Improve.hasFeat "Elven Weapon Familiarity"] "Elven Weapon Expertise" 41 []
     ]
 
     let gnomeHeritages = [
@@ -83,19 +97,19 @@ module Ancestry =
     ]
 
     let gnomeAncestryFeats = [
-        ancestryFeat (Improve.hasLevel 1) "Animal Accomplice" []
-        ancestryFeat (Improve.hasLevel 1) "Burrow Elocutionist" []
-        ancestryFeat (Improve.hasLevel 1) "Fey Fellowship" []
-        ancestryFeat (Improve.hasLevel 1) "First World Magic" []
-        ancestryFeat (Improve.hasLevel 1) "Gnome Obsession" [] // TODO encode choosing a lore skill
-        ancestryFeat (Improve.hasLevel 1) "Gnome Weapon Familiarity" [] // TODO encode weapon proficiencies
-        ancestryFeat (Improve.hasLevel 1) "Illusion Sense" []
-        ancestryFeat (Feats.req 5 ["Burrow Elocutionist"]) "Animal Elocutionist" []
-        ancestryFeat (Improve.hasLevel 5) "Energized Font" [] // TODO encode one of several feats
-        ancestryFeat (Feats.req 5 ["Gnome Weapon Familiarity"]) "Gnome Weapon Innovator" []
-        ancestryFeat (Improve.hasLevel 9) "First World Adept" [] // TODO funny requirement again
-        ancestryFeat (Improve.hasLevel 9) "Vivacious Conduit" []
-        ancestryFeat (Feats.req 13 ["Gnome Weapon Familiarity"]) "Gnome Weapon Expertise" []
+        ancestryFeat gnome 1 [] "Animal Accomplice" 44 []
+        ancestryFeat gnome 1 [] "Burrow Elocutionist" 44 []
+        ancestryFeat gnome 1 [] "Fey Fellowship" 44 []
+        ancestryFeat gnome 1 [] "First World Magic" 44 []
+        ancestryFeat gnome 1 [] "Gnome Obsession" 44 [] // TODO encode choosing a lore skill
+        ancestryFeat gnome 1 [] "Gnome Weapon Familiarity" 44 [] // TODO encode weapon proficiencies
+        ancestryFeat gnome 1 [] "Illusion Sense" 44 []
+        ancestryFeat gnome 5 [Improve.hasFeat "Burrow Elocutionist"] "Animal Elocutionist" 45 []
+        ancestryFeat gnome 5 [] "Energized Font" 45 [] // TODO encode one of several feats
+        ancestryFeat gnome 5 [Improve.hasFeat "Gnome Weapon Familiarity"] "Gnome Weapon Innovator" 45 []
+        ancestryFeat gnome 9 [] "First World Adept" 45 [] // TODO funny requirement again
+        ancestryFeat gnome 9 [] "Vivacious Conduit" 45 []
+        ancestryFeat gnome 13 [Improve.hasFeat "Gnome Weapon Familiarity"] "Gnome Weapon Expertise" 45 []
     ]
 
     let goblinHeritages = [
@@ -109,26 +123,26 @@ module Ancestry =
     ]
 
     let goblinAncestryFeats = [
-        ancestryFeat (Improve.hasLevel 1) "Burn It!" []
-        ancestryFeat (Improve.hasLevel 1) "City Scavenger" []
-        ancestryFeat (Improve.hasLevel 1) "Goblin Lore" [
+        ancestryFeat goblin 1 [] "Burn It!" 48 []
+        ancestryFeat goblin 1 [] "City Scavenger" 48 []
+        ancestryFeat goblin 1 [] "Goblin Lore" 48 [
             Improve.skillOr Skills.nature Skills.regularSkills Trained
             Improve.skillOr Skills.stealth Skills.regularSkills Trained
             Improve.skill (Skills.lore "Goblin") Trained
         ]
-        ancestryFeat (Improve.hasLevel 1) "Goblin Scuttle" []
-        ancestryFeat (Improve.hasLevel 1) "Goblin Song" []
-        ancestryFeat (Improve.hasLevel 1) "Goblin Weapon Familiarity" [] // TODO weapon skills
-        ancestryFeat (Improve.hasLevel 1) "Junk Tinker" []
-        ancestryFeat (Improve.hasLevel 1) "Rough Rider" [
+        ancestryFeat goblin 1 [] "Goblin Scuttle" 48 []
+        ancestryFeat goblin 1 [] "Goblin Song" 48 []
+        ancestryFeat goblin 1 [] "Goblin Weapon Familiarity" 48 [] // TODO weapon skills
+        ancestryFeat goblin 1 [] "Junk Tinker" 48 []
+        ancestryFeat goblin 1 [] "Rough Rider" 48 [
             Feats.forceAdd Feats.ride
         ]
-        ancestryFeat (Improve.hasLevel 1) "Very Sneaky" []
-        ancestryFeat (Feats.req 5 ["Goblin Weapon Familiarity"]) "Goblin Weapon Frenzy" []
-        ancestryFeat (Improve.hasLevel 9) "Cave Climber" []
-        ancestryFeat (Feats.req 9 ["Goblin Scuttle"]) "Skittering Scuttle" []
-        ancestryFeat (Feats.req 13 ["Goblin Weapon Familiarity"]) "Goblin Weapon Expertise" []
-        ancestryFeat (Feats.req 13 ["Very Sneaky"]) "Very, Very Sneaky" []
+        ancestryFeat goblin 1 [] "Very Sneaky" 49 []
+        ancestryFeat goblin 5 [Improve.hasFeat "Goblin Weapon Familiarity"] "Goblin Weapon Frenzy" 49 []
+        ancestryFeat goblin 9 [] "Cave Climber" 49 []
+        ancestryFeat goblin 9 [Improve.hasFeat "Goblin Scuttle"] "Skittering Scuttle" 49 []
+        ancestryFeat goblin 13 [Improve.hasFeat "Goblin Weapon Familiarity"] "Goblin Weapon Expertise" 49 []
+        ancestryFeat goblin 13 [Improve.hasFeat "Very Sneaky"] "Very, Very Sneaky" 49 []
     ]
 
     let halflingHeritages = [
@@ -142,74 +156,74 @@ module Ancestry =
     ]
 
     let halflingAncestryFeats = [
-        ancestryFeat (Improve.hasLevel 1) "Distracting Shadows" []
-        ancestryFeat (Improve.hasLevel 1) "Halfling Lore" [
+        ancestryFeat halfling 1 [] "Distracting Shadows" 52 []
+        ancestryFeat halfling 1 [] "Halfling Lore" 52 [
             Improve.skillOr Skills.acrobatics Skills.regularSkills Trained
             Improve.skillOr Skills.stealth Skills.regularSkills Trained
             Improve.skill (Skills.lore "Halfling") Trained
         ]
-        ancestryFeat (Improve.hasLevel 1) "Halfling Luck" []
-        ancestryFeat (Improve.hasLevel 1) "Halfling Weapon Familiarity" [] // TODO weapon skills
-        ancestryFeat (Improve.hasLevel 1) "Sure Feet" []
-        ancestryFeat (Improve.hasLevel 1) "Titan Slinger" []
-        ancestryFeat (Improve.hasLevel 1) "Unfettered Halfling" []
-        ancestryFeat (Improve.hasLevel 1) "Watchful Halfling" []
-        ancestryFeat (Improve.hasLevel 5) "Cultural Adaptability" []
-        ancestryFeat (Feats.req 5 ["Halfling Weapon Familiarity"]) "Halfling Weapon Trickster" []
-        ancestryFeat (Feats.req 9 ["Halfling Luck"]) "Guiding Luck" []
-        ancestryFeat (Improve.hasLevel 9) "Irrepressible" []
-        ancestryFeat (Feats.req 13 ["Distracting Shadows"]) "Ceaseless Shadows" []
-        ancestryFeat (Feats.req 13 ["Halfling Weapon Familiarity"]) "Halfling Weapon Expertise" []
+        ancestryFeat halfling 1 [] "Halfling Luck" 52 []
+        ancestryFeat halfling 1 [] "Halfling Weapon Familiarity" 52 [] // TODO weapon skills
+        ancestryFeat halfling 1 [] "Sure Feet" 52 []
+        ancestryFeat halfling 1 [] "Titan Slinger" 52 []
+        ancestryFeat halfling 1 [] "Unfettered Halfling" 52 []
+        ancestryFeat halfling 1 [] "Watchful Halfling" 52 []
+        ancestryFeat halfling 5 [] "Cultural Adaptability" 53 []
+        ancestryFeat halfling 5 [Improve.hasFeat "Halfling Weapon Familiarity"] "Halfling Weapon Trickster" 53 []
+        ancestryFeat halfling 9 [Improve.hasFeat "Halfling Luck"] "Guiding Luck" 53 []
+        ancestryFeat halfling 9 [] "Irrepressible" 53 []
+        ancestryFeat halfling 13 [Improve.hasFeat "Distracting Shadows"] "Ceaseless Shadows" 53 []
+        ancestryFeat halfling 13 [Improve.hasFeat "Halfling Weapon Familiarity"] "Halfling Weapon Expertise" 53 []
     ]
 
     let humanHeritages = [
         noHeritage
-        heritage "Half-elf" []
-        heritage "Half-orc" []
+        heritage halfElf []
+        heritage halfOrc []
     ]
 
     let humanAncestryFeats = [
-        ancestryFeat (Improve.hasLevel 1) "Adapted Cantrip" [] // TODO require spellcasting
-        ancestryFeat (Improve.hasLevel 1) "Cooperative Nature" []
-        ancestryFeat (Improve.hasLevel 1) "General Training" [
+        ancestryFeat human 1 [] "Adapted Cantrip" 57 [] // TODO require spellcasting
+        ancestryFeat human 1 [] "Cooperative Nature" 57 []
+        ancestryFeat human 1 [] "General Training" 57 [
             Improve.addFeats Feats.generalFeats 1 // TODO Defer choice; select multiple times
         ]
-        ancestryFeat (Improve.hasLevel 1) "Haughty Obstinacy" []
-        ancestryFeat (Improve.hasLevel 1) "Natural Ambition" [] // TODO deferred choice of class feat
-        ancestryFeat (Improve.hasLevel 1) "Natural Skill" [
+        ancestryFeat human 1 [] "Haughty Obstinacy" 57 []
+        ancestryFeat human 1 [] "Natural Ambition" 57 [] // TODO deferred choice of class feat
+        ancestryFeat human 1 [] "Natural Skill" 57 [
             Improve.skills Skills.regularSkills Trained 2
         ]
-        ancestryFeat (Improve.hasLevel 1) "Unconventional Weaponry" [] // TODO weapon skills
-        ancestryFeat (Feats.req 5 ["Adapted Cantrip"]) "Adaptive Adept" [] // TODO require 3rd level spells
-        ancestryFeat (Improve.hasLevel 5) "Clever Improviser" []
-        ancestryFeat (Feats.req 9 ["Cooperative Nature"]) "Cooperative Soul" []
-        ancestryFeat (Feats.req 9 ["Clever Improviser"]) "Incredible Improvisation" []
-        ancestryFeat (Improve.hasLevel 9) "Multitalented" [] // TODO multiclass feats
-        ancestryFeat (Feats.req 13 ["Unconventional Weaponry"]) "Unconventional Expertise" []
+        ancestryFeat human 1 [] "Unconventional Weaponry" 57 [] // TODO weapon skills
+        ancestryFeat human 5 [Improve.hasFeat "Adapted Cantrip"] "Adaptive Adept" 57 [] // TODO require 3rd level spells
+        ancestryFeat human 5 [] "Clever Improviser" 57 []
+        ancestryFeat human 9 [Improve.hasFeat "Cooperative Nature"] "Cooperative Soul" 57 []
+        ancestryFeat human 9 [Improve.hasFeat "Clever Improviser"] "Incredible Improvisation" 57 []
+        ancestryFeat human 9 [] "Multitalented" 58 [] // TODO multiclass feats
+        ancestryFeat human 13 [Improve.hasFeat "Unconventional Weaponry"] "Unconventional Expertise" 58 []
 
         // Half-elf ancestry feats
-        ancestryFeat (Improve.require [hasHeritage "Half-elf"; fun c -> c.Level = 1<Level>]) "Elf Atavism" []
-        ancestryFeat (Improve.require [hasHeritage "Half-elf"; Improve.hasLevel 5]) "Inspire Imitation" []
-        ancestryFeat (Improve.require [hasHeritage "Half-elf"; Improve.hasLevel 5]) "Supernatural Charm" []
+        ancestryFeat human 1 [hasHeritage halfElf; fun c -> c.Level = 1<Level>] "Elf Atavism" 58 []
+        ancestryFeat human 5 [hasHeritage halfElf; Improve.hasLevel 5] "Inspire Imitation" 58 []
+        ancestryFeat human 5 [hasHeritage halfElf; Improve.hasLevel 5] "Supernatural Charm" 58 []
 
         // Half-orc ancestry feats
-        ancestryFeat (hasHeritage "Half-orc") "Monstrous Peacemaker" []
-        ancestryFeat (hasHeritage "Half-orc") "Orc Ferocity" []
-        ancestryFeat (Improve.require [hasHeritage "Half-orc"; Feats.req 1 ["Low-light vision"]]) "Orc Sight" []
-        ancestryFeat (hasHeritage "Half-orc") "Orc Superstition" []
-        ancestryFeat (hasHeritage "Half-orc") "Orc Weapon Familiarity" [] // TODO weapon proficiencies
-        ancestryFeat (Improve.require [hasHeritage "Half-orc"; Feats.req 5 ["Orc Weapon Proficiency"]]) "Orc Weapon Carnage" []
-        ancestryFeat (Improve.require [hasHeritage "Half-orc"; Improve.hasLevel 5]) "Victorious Vigor" []
-        ancestryFeat (Improve.require [hasHeritage "Half-orc"; Feats.req 9 ["Orc Superstition"]]) "Pervasive Superstition" []
-        ancestryFeat (Improve.require [hasHeritage "Half-orc"; Feats.req 13 ["Orc Ferocity"]]) "Incredible Ferocity" []
-        ancestryFeat (Improve.require [hasHeritage "Half-orc"; Feats.req 13 ["Orc Weapon Familiarity"]]) "Orc Weapon Expertise" []
+        ancestryFeat human 1 [hasHeritage halfOrc] "Monstrous Peacemaker" 59 []
+        ancestryFeat human 1 [hasHeritage "Half-orc"] "Orc Ferocity" 59 []
+        ancestryFeat human 1 [hasHeritage "Half-orc"; Improve.hasFeat "Low-light vision"] "Orc Sight" 59 []
+        ancestryFeat human 1 [hasHeritage "Half-orc"] "Orc Superstition" 59 []
+        ancestryFeat human 1 [hasHeritage "Half-orc"] "Orc Weapon Familiarity" 59 [] // TODO weapon proficiencies
+        ancestryFeat human 5 [hasHeritage "Half-orc"; Improve.hasFeat "Orc Weapon Proficiency"] "Orc Weapon Carnage" 59 []
+        ancestryFeat human 5 [hasHeritage "Half-orc"] "Victorious Vigor" 59 []
+        ancestryFeat human 9 [hasHeritage "Half-orc"; Improve.hasFeat "Orc Superstition"] "Pervasive Superstition" 59 []
+        ancestryFeat human 13 [hasHeritage "Half-orc"; Improve.hasFeat "Orc Ferocity"] "Incredible Ferocity" 59 []
+        ancestryFeat human 13 [hasHeritage "Half-orc"; Improve.hasFeat "Orc Weapon Familiarity"] "Orc Weapon Expertise" 59 []
     ]
 
     // TODO add heritage, and all manner of other things :)
     let ancestries = {
         Prompt = "Ancestry"
         Choices = [
-            "Dwarf", hasNone, (fun c -> { c with Ancestry = Some "Dwarf" }, [
+            dwarf, hasNone, (fun c -> { c with Ancestry = Some dwarf }, [
                 Improve.hitPoints 10
                 Improve.size Medium
                 Improve.speed 20<Feet>
@@ -221,7 +235,7 @@ module Ancestry =
                 Improve.heritage dwarfHeritages
                 Improve.addFeats dwarfAncestryFeats 1
             ])
-            "Elf", hasNone, (fun c -> { c with Ancestry = Some "Elf" }, [
+            elf, hasNone, (fun c -> { c with Ancestry = Some elf }, [
                 Improve.hitPoints 6
                 Improve.size Medium
                 Improve.speed 30<Feet>
@@ -233,7 +247,7 @@ module Ancestry =
                 Improve.heritage elfHeritages
                 Improve.addFeats elfAncestryFeats 1
             ])
-            "Gnome", hasNone, (fun c -> { c with Ancestry = Some "Gnome" }, [
+            gnome, hasNone, (fun c -> { c with Ancestry = Some gnome }, [
                 Improve.hitPoints 8
                 Improve.size Small
                 Improve.speed 25<Feet>
@@ -245,7 +259,7 @@ module Ancestry =
                 Improve.heritage gnomeHeritages
                 Improve.addFeats gnomeAncestryFeats 1
             ])
-            "Goblin", hasNone, (fun c -> { c with Ancestry = Some "Goblin" }, [
+            goblin, hasNone, (fun c -> { c with Ancestry = Some goblin }, [
                 Improve.hitPoints 6
                 Improve.size Small
                 Improve.speed 25<Feet>
@@ -257,7 +271,7 @@ module Ancestry =
                 Improve.heritage goblinHeritages
                 Improve.addFeats goblinAncestryFeats 1
             ])
-            "Halfling", hasNone, (fun c -> { c with Ancestry = Some "Halfling" }, [
+            halfling, hasNone, (fun c -> { c with Ancestry = Some halfling }, [
                 Improve.hitPoints 6
                 Improve.size Small
                 Improve.speed 25<Feet>
@@ -269,7 +283,7 @@ module Ancestry =
                 Improve.heritage halflingHeritages
                 Improve.addFeats halflingAncestryFeats 1
             ])
-            "Human", hasNone, (fun c -> { c with Ancestry = Some "Human" }, [
+            human, hasNone, (fun c -> { c with Ancestry = Some human }, [
                 Improve.hitPoints 8
                 Improve.size Medium
                 Improve.speed 25<Feet>
