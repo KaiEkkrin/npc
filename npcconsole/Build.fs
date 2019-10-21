@@ -68,7 +68,7 @@ type Builder (interact: IInteraction) =
             Background = None
             Class = None
             Level = 1<Level>
-            HitPoints = 0
+            HitPoints = { Flat = 0; PerLevel = 0 }
             Size = None
             Speed = 0<Feet>
             Abilities = Builder.AbilityOrder |> List.map (fun a -> a, 10<Score>) |> Map.ofList

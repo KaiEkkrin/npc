@@ -8,7 +8,6 @@ module Classes =
         |> Derive.modifier
         |> (fun m -> m / 1<Modifier>)
 
-    let hitPoints n c = Improve.hitPoints (n + modValue Constitution c)
     let classFeat cl level reqs name page (imps: Improvement list) =
         let allReqs = [
             yield Improve.hasClass cl
@@ -29,7 +28,7 @@ module Classes =
         match c.Level with 
         | 1<Level> ->
             { c with Class = Some Alchemist }, [
-                hitPoints 8 c
+                Improve.hitPointsPerLevel 8
                 Improve.skill Skills.perception Trained
                 Improve.skill Skills.fortitudeSave Expert
                 Improve.skill Skills.reflexSave Expert

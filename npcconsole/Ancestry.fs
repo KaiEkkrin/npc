@@ -47,8 +47,7 @@ module Ancestry =
         ancestryFeat dwarf 5 [Improve.hasFeat "Rock Runner"] "Boulder Roll" 36 []
         ancestryFeat dwarf 5 [Improve.hasFeat "Dwarven Weapon Familiarity"] "Dwarven Weapon Cunning" 37 []
         ancestryFeat dwarf 9 [] "Mountain's Stoutness" 37 [
-            // TODO as the Toughness feat, have this further increase by level
-            Improve.single "Mountain's Stoutness Hit Points" (fun c -> { c with HitPoints = c.HitPoints + c.Level / 1<Level> }, [])
+            Improve.hitPointsPerLevel 1
         ]
         ancestryFeat dwarf 9 [] "Stonewalker" 37 []
         ancestryFeat dwarf 13 [Improve.hasFeat "Dwarven Weapon Familiarity"] "Dwarven Weapon Expertise" 37 []
@@ -118,7 +117,7 @@ module Ancestry =
         heritage "Razortooth" []
         heritage "Snow" [] // TODO resistances
         heritage "Unbreakable" [
-            Improve.hitPoints 4
+            Improve.hitPointsFlat 4
         ]
     ]
 
@@ -224,7 +223,7 @@ module Ancestry =
         Prompt = "Ancestry"
         Choices = [
             dwarf, hasNone, (fun c -> { c with Ancestry = Some dwarf }, [
-                Improve.hitPoints 10
+                Improve.hitPointsFlat 10
                 Improve.size Medium
                 Improve.speed 20<Feet>
                 Improve.abilityFlaw Charisma
@@ -236,7 +235,7 @@ module Ancestry =
                 Improve.addFeats dwarfAncestryFeats 1
             ])
             elf, hasNone, (fun c -> { c with Ancestry = Some elf }, [
-                Improve.hitPoints 6
+                Improve.hitPointsFlat 6
                 Improve.size Medium
                 Improve.speed 30<Feet>
                 Improve.abilityFlaw Constitution
@@ -248,7 +247,7 @@ module Ancestry =
                 Improve.addFeats elfAncestryFeats 1
             ])
             gnome, hasNone, (fun c -> { c with Ancestry = Some gnome }, [
-                Improve.hitPoints 8
+                Improve.hitPointsFlat 8
                 Improve.size Small
                 Improve.speed 25<Feet>
                 Improve.abilityFlaw Strength
@@ -260,7 +259,7 @@ module Ancestry =
                 Improve.addFeats gnomeAncestryFeats 1
             ])
             goblin, hasNone, (fun c -> { c with Ancestry = Some goblin }, [
-                Improve.hitPoints 6
+                Improve.hitPointsFlat 6
                 Improve.size Small
                 Improve.speed 25<Feet>
                 Improve.abilityFlaw Wisdom
@@ -272,7 +271,7 @@ module Ancestry =
                 Improve.addFeats goblinAncestryFeats 1
             ])
             halfling, hasNone, (fun c -> { c with Ancestry = Some halfling }, [
-                Improve.hitPoints 6
+                Improve.hitPointsFlat 6
                 Improve.size Small
                 Improve.speed 25<Feet>
                 Improve.abilityFlaw Strength
@@ -284,7 +283,7 @@ module Ancestry =
                 Improve.addFeats halflingAncestryFeats 1
             ])
             human, hasNone, (fun c -> { c with Ancestry = Some human }, [
-                Improve.hitPoints 8
+                Improve.hitPointsFlat 8
                 Improve.size Medium
                 Improve.speed 25<Feet>
                 Improve.anyAbility 2

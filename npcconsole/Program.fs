@@ -51,7 +51,7 @@ type ConsoleInteract () =
             print ("Name", c.Name)
             printTitle c
             if Option.isSome c.Background then print ("Background", c.Background.Value)
-            print ("Hit Points", c.HitPoints.ToString ())
+            print ("Hit Points", sprintf "%d" (Derive.hitPoints c))
             if Option.isSome c.Size then print ("Size", c.Size.Value.ToString ())
             print ("Speed", c.Speed.ToString ())
             printfn "Abilities:"

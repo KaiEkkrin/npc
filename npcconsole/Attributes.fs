@@ -25,6 +25,9 @@ type Feet
 // These are the different abilities
 type Ability = Strength | Dexterity | Constitution | Intelligence | Wisdom | Charisma
 
+// We build character hit points out of a flat bonus and a per-level bonus
+type HitPointValue = { Flat: int; PerLevel: int }
+
 // Proficiency ranks are enumerated thus
 type ProficiencyRank = Untrained | Trained | Expert | Master | Legendary
 
@@ -59,6 +62,7 @@ type Skill = { Name: string; KeyAbility: Ability }
 // be very annoying!
 // The feat list also includes things like class features, that aren't strictly
 // feats but do go in the list of Named Things a Character Has.
+// TODO Also include the source of feats?  (Makes it easier to understand the character build...)
 type Feat = { Name: string; Page: int }
 
 // We enumerate the classes, they're a fixed set.
@@ -73,7 +77,7 @@ type Character = {
     Background: string option
     Class: Class option
     Level: int<Level>
-    HitPoints: int
+    HitPoints: HitPointValue
     Size: Size option
     Speed: int<Feet>
     Abilities: Map<Ability, int<Score>>
@@ -119,3 +123,8 @@ module Derive =
         let r = rank sk c
         let m = Map.find sk.KeyAbility c.Abilities |> modifier
         (proficiency r c.Level) + m
+
+    // Calculates a character's hit points
+    let hitPoints c =
+        let conModifier = Map.find Constitution c.Abilities |> modifier
+        c.HitPoints.Flat + (c.HitPoints.PerLevel + conModifier / 1<Modifier>) * c.Level / 1<Level>

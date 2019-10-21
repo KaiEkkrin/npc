@@ -6,25 +6,7 @@ module Feats =
 
     // -- HELPERS --
 
-    // Defines a feat requirement in terms of (level, names of other feats.)
-    let req level others c =
-        let hasOthers = others |> List.fold (fun ok o ->
-            match List.tryFind (fun (f: Feat) -> f.Name = o) c.Feats with
-            | Some _ -> ok
-            | None -> false) true
-        hasOthers && Improve.hasLevel level c
-
-    // Similarly, but defines a feat requirement in terms of level and a list of
-    // feats that a character must have one of, not all of.
-    let reqOne level others c =
-        let hasOne = others |> List.fold (fun ok o ->
-            match List.tryFind (fun (f: Feat) -> f.Name = o) c.Feats with
-            | Some _ -> true
-            | None -> ok) false
-        hasOne && Improve.hasLevel level c
-
     // Define a feat in terms of its (requirements, consequent improvements).
-    // TODO replace 0 with pages here
     let feat level reqs name page (imps: Improvement list) =
         // A feat also requires that it isn't taken already (TODO apart from take-multiple-times feats; deal with separately e.g. name differently each time)
         // and that the character meets the level:
@@ -172,8 +154,7 @@ module Feats =
     let terrifiedRetreat = skillFeat 7 Skills.intimidation Master "Terrified Retreat" 268 []
     let titanWrestler = skillFeat 1 Skills.athletics Trained "Titan Wrestler" 268 []
     let toughness = feat 1 [] "Toughness" 268 [
-        // TODO when leveling up, apply the subsequent extra hit points from having this.  Or do this in a different way?
-        Improve.single "Toughness Hit Points" (fun c -> { c with HitPoints = c.HitPoints + c.Level / 1<Level> }, [])
+        Improve.hitPointsPerLevel 1
     ]
     let trainAnimal = skillFeat 1 Skills.nature Trained "Train Animal" 268 []
     let trickMagicItem = feat 1 [Improve.hasAnySkill [Skills.arcana; Skills.nature; Skills.occultism; Skills.religion] Trained] "Trick Magic Item" 268 []

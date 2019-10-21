@@ -31,7 +31,8 @@ module Improve =
         Count = 1
     }
 
-    let hitPoints n = single "Hit Points" (fun c -> { c with HitPoints = c.HitPoints + n }, [])
+    let hitPointsFlat n = single "Hit Points" (fun c -> { c with HitPoints = { c.HitPoints with Flat = c.HitPoints.Flat + n } }, [])
+    let hitPointsPerLevel n = single "Hit Points per Level" (fun c -> { c with HitPoints = { c.HitPoints with PerLevel = c.HitPoints.PerLevel + n } }, [])
     let size sz = single "Size" (fun c -> { c with Size = Some sz }, [])
     let speed n = single "Speed" (fun c -> { c with Speed = c.Speed + n }, [])
 
