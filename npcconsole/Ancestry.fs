@@ -23,7 +23,7 @@ module Ancestry =
             yield Improve.hasAncestry ancestry
             yield! reqs
         ]
-        Feats.feat level reqs name page imps
+        Feats.feat level allReqs name page imps
 
     let dwarfHeritages = [
         heritage "Ancient-Blooded" []

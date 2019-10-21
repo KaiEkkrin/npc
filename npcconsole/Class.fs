@@ -9,20 +9,20 @@ module Classes =
         |> (fun m -> m / 1<Modifier>)
 
     let hitPoints n c = Improve.hitPoints (n + modValue Constitution c)
-    let req level cl c = (Improve.hasLevel level c && c.Class = Some cl)
+    let classFeat cl level reqs name page (imps: Improvement list) =
+        let allReqs = [
+            yield Improve.hasClass cl
+            yield! reqs
+        ]
+        Feats.feat level allReqs name page imps
 
     // -- ALCHEMIST --
 
-    let alchemicalFamiliar = Feats.feat (ClassFeat Alchemist) (req 1 Alchemist) "Alchemical Familiar" []
-    let alchemicalSavant = Feats.feat (ClassFeat Alchemist) (req 1 Alchemist) "Alchemical Savant" []
-    let farLobber = Feats.feat (ClassFeat Alchemist) (req 1 Alchemist) "Far Lobber" []
-    let quickBomber = Feats.feat (ClassFeat Alchemist) (req 1 Alchemist) "Quick Bomber" []
-
     let alchemistFeats = [
-        alchemicalFamiliar
-        alchemicalSavant
-        farLobber
-        quickBomber
+        classFeat Alchemist 1 [] "Alchemical Familiar" 76 []
+        classFeat Alchemist 1 [] "Alchemical Savant" 76 []
+        classFeat Alchemist 1 [] "Far Lobber" 76 []
+        classFeat Alchemist 1 [] "Quick Bomber" 76 []
     ]
 
     let alchemist c =

@@ -75,7 +75,7 @@ type ConsoleInteract () =
             // would be really useful for checking what they all mean!)
             printfn "Feats:"
             c.Feats |> List.sortBy (fun f -> f.Name) |> List.iter (fun f ->
-                print (f.Name, f.Category.ToString ())
+                print (f.Name, sprintf "page %3d" f.Page)
             )
 
 // Arguments

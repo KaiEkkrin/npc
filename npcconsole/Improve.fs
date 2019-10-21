@@ -151,3 +151,6 @@ module Improve =
 
     // True if a character has an ancestry with a particular name, else false.
     let hasAncestry a c = c.Ancestry = Some a
+
+    // True if a character is of the given class, else false.
+    let hasClass cl c = c.Class = Some cl
