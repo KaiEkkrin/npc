@@ -22,6 +22,10 @@ type DC
 [<Measure>]
 type Feet
 
+// Our measure of time
+[<Measure>]
+type Actions
+
 // These are the different abilities
 type Ability = Strength | Dexterity | Constitution | Intelligence | Wisdom | Charisma
 
@@ -37,18 +41,53 @@ type Size = Tiny | Small | Medium | Large | Huge | Gargantuan
 // Various things have rarity
 type Rarity = Common | Uncommon
 
+// And bulk
+type Bulk = Insignificant | Light | Heavy of int
+
+// Weapon damage dice are thus
+type DieSize = D1 | D4 | D6 | D8 | D10 | D12 | D20
+
+[<StructuredFormatDisplay("AsString")>]
+type DamageDice = Dice of Map<DieSize, int> | Varies
+with
+    member this.AsString = this.ToString ()
+    override this.ToString () =
+        match this with
+        | Dice dice ->
+            let separate = dice |> Map.toSeq |> Seq.map (fun (sz, count) -> (sprintf "%d%A" count sz).ToLower ())
+            String.Join ("+", separate)
+        | Varies -> "Varies"
+
+    static member Of (sz, count) = Dice (Map.empty |> Map.add sz count)
+    static member One sz = DamageDice.Of (sz, 1)
+    static member Add (sz, count) d =
+        match d with
+        | Dice dice ->
+            match Map.tryFind sz dice with
+            | Some c2 -> Dice (dice |> Map.add sz (count + c2))
+            | None -> Dice (dice |> Map.add sz count)
+        | Varies -> Varies
+
 // These are weapons
 // "Group" and "Traits" should have matching strings, but I won't enforce this
 type WeaponCategory = Unarmed | SimpleWeapon | MartialWeapon | AdvancedWeapon
 type WeaponType = Melee | Ranged
+type DamageType = Bludgeoning | Piercing | Slashing // TODO augment with electrical, use for resistances too?
+type Handedness = OneHanded | TwoHanded
+type WeaponTrait = Trait of string | DamageTrait of string * DamageDice | RangeTrait of string * int<Feet> | Versatile of DamageType
 type Weapon = {
     Name: string
     Type: WeaponType
     Category: WeaponCategory
     Rarity: Rarity
-    Damage: string // XdY
+    Damage: DamageDice
+    DamageType: DamageType
+    Range: int<Feet> option
+    Reload: int<Actions>
+    Bulk: Bulk
+    Handedness: Handedness
     Group: string
-    Traits: string list
+    Traits: WeaponTrait list
 }
 
 // These are armors:
@@ -87,7 +126,7 @@ type Character = {
     // TODO Include the weapons as they apply to this character.  Different
     // characters can "see" different weapons in different categories!
     
-    // TODO Gear.
+    // TODO Gear and encumbrance.
 }
 
 // A helper for deriving stats:
