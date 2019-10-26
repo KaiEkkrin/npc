@@ -167,3 +167,9 @@ module Improve =
             )
         Count = 1
     }
+
+    // Re-categorises this character's weapons; weapons that match the
+    // predicate are re-categorised as `cat`.
+    let recategorise pred cat = single "Recategorise" (fun c ->
+        let rcw = c.Weapons |> List.map (fun w -> if (pred w) then { w with Category = cat } else w)
+        { c with Weapons = rcw }, [])

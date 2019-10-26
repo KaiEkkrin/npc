@@ -133,8 +133,9 @@ type Character = {
     Skills: Map<Skill, ProficiencyRank>
     Feats: Feat list
 
-    // TODO Include the weapons as they apply to this character.  Different
-    // characters can "see" different weapons in different categories!
+    // Different characters can "see" different weapons in different categories!
+    // This weapon list is edited to have categories corrected for this character.
+    Weapons: Weapon list
     
     // TODO Gear and encumbrance.
     Armor: Armor option

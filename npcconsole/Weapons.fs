@@ -2,7 +2,7 @@ namespace NpcConsole
 
 open NpcConsole.Attributes
 
-module Weapons =
+module groups =
     // -- WEAPON GROUPS --
     let axe = "Axe"
     let bomb = "Bomb"
@@ -20,6 +20,7 @@ module Weapons =
     let spear = "Spear"
     let sword = "Sword"
 
+module Weapons =
     // -- WEAPON TRAITS --
     let agile = Trait "Agile"
     let attached = Trait "Attached to shield"
@@ -69,24 +70,24 @@ module Weapons =
     }
 
     let simpleMeleeWeapons = [
-        simpleMelee ("Club", D6, Bludgeoning, Heavy 1, OneHanded, club, [thrown 10<Feet>])
-        simpleMelee ("Dagger", D4, Piercing, Light, OneHanded, knife, [agile; finesse; thrown 10<Feet>; Versatile Slashing])
-        simpleMelee ("Gauntlet", D4, Bludgeoning, Light, OneHanded, brawling, [agile; freeHand])
-        simpleMelee ("Light mace", D4, Bludgeoning, Light, OneHanded, club, [agile; finesse; shove])
-        simpleMelee ("Longspear", D8, Piercing, Heavy 2, TwoHanded, spear, [reach])
-        simpleMelee ("Mace", D6, Bludgeoning, Heavy 1, OneHanded, club, [shove])
-        simpleMelee ("Morningstar", D6, Bludgeoning, Heavy 1, OneHanded, club, [Versatile Piercing])
-        simpleMelee ("Sickle", D4, Slashing, Light, OneHanded, knife, [agile; finesse; trip])
-        simpleMelee ("Spear", D6, Piercing, Heavy 1, OneHanded, spear, [thrown 20<Feet>])
-        simpleMelee ("Spiked gauntlet", D4, Piercing, Light, OneHanded, brawling, [agile; freeHand])
-        simpleMelee ("Staff", D4, Bludgeoning, Heavy 1, OneHanded, club, [twoHand D8])
+        simpleMelee ("Club", D6, Bludgeoning, Heavy 1, OneHanded, groups.club, [thrown 10<Feet>])
+        simpleMelee ("Dagger", D4, Piercing, Light, OneHanded, groups.knife, [agile; finesse; thrown 10<Feet>; Versatile Slashing])
+        simpleMelee ("Gauntlet", D4, Bludgeoning, Light, OneHanded, groups.brawling, [agile; freeHand])
+        simpleMelee ("Light mace", D4, Bludgeoning, Light, OneHanded, groups.club, [agile; finesse; shove])
+        simpleMelee ("Longspear", D8, Piercing, Heavy 2, TwoHanded, groups.spear, [reach])
+        simpleMelee ("Mace", D6, Bludgeoning, Heavy 1, OneHanded, groups.club, [shove])
+        simpleMelee ("Morningstar", D6, Bludgeoning, Heavy 1, OneHanded, groups.club, [Versatile Piercing])
+        simpleMelee ("Sickle", D4, Slashing, Light, OneHanded, groups.knife, [agile; finesse; trip])
+        simpleMelee ("Spear", D6, Piercing, Heavy 1, OneHanded, groups.spear, [thrown 20<Feet>])
+        simpleMelee ("Spiked gauntlet", D4, Piercing, Light, OneHanded, groups.brawling, [agile; freeHand])
+        simpleMelee ("Staff", D4, Bludgeoning, Heavy 1, OneHanded, groups.club, [twoHand D8])
     ]
 
     let uncommonSimpleMelee x = { (simpleMelee x) with Rarity = Uncommon }
 
     let uncommonSimpleMeleeWeapons = [
-        uncommonSimpleMelee ("Clan dagger", D4, Piercing, Light, OneHanded, knife, [agile; dwarf; parry; Versatile Bludgeoning])
-        uncommonSimpleMelee ("Katar", D4, Piercing, Light, OneHanded, knife, [agile; deadly D6])
+        uncommonSimpleMelee ("Clan dagger", D4, Piercing, Light, OneHanded, groups.knife, [agile; dwarf; parry; Versatile Bludgeoning])
+        uncommonSimpleMelee ("Katar", D4, Piercing, Light, OneHanded, groups.knife, [agile; deadly D6])
     ]
 
     let simpleRanged (name, die, damTy, range, reload, bulk, hands, group, traits) = {
@@ -104,78 +105,92 @@ module Weapons =
         Traits = traits
     }
 
+    let sling = simpleRanged ("Sling", D6, Bludgeoning, 50, 1, Light, OneHanded, groups.sling, [propulsive])
+
     let simpleRangedWeapons = [
-        simpleRanged ("Blowgun", D1, Piercing, 20, 1, Light, OneHanded, dart, [agile; nonlethal])
-        simpleRanged ("Crossbow", D8, Piercing, 120, 1, Heavy 1, TwoHanded, bow, [])
-        simpleRanged ("Dart", D4, Piercing, 20, 0, Light, OneHanded, dart, [agile; thrown 20<Feet>])
-        simpleRanged ("Hand crossbow", D6, Piercing, 60, 1, Light, OneHanded, bow, [])
-        simpleRanged ("Heavy crossbow", D10, Piercing, 120, 2, Heavy 2, TwoHanded, bow, [])
-        simpleRanged ("Javelin", D6, Piercing, 30, 0, Light, OneHanded, dart, [thrown 30<Feet>])
-        simpleRanged ("Sling", D6, Bludgeoning, 50, 1, Light, OneHanded, sling, [propulsive])
+        simpleRanged ("Blowgun", D1, Piercing, 20, 1, Light, OneHanded, groups.dart, [agile; nonlethal])
+        simpleRanged ("Crossbow", D8, Piercing, 120, 1, Heavy 1, TwoHanded, groups.bow, [])
+        simpleRanged ("Dart", D4, Piercing, 20, 0, Light, OneHanded, groups.dart, [agile; thrown 20<Feet>])
+        simpleRanged ("Hand crossbow", D6, Piercing, 60, 1, Light, OneHanded, groups.bow, [])
+        simpleRanged ("Heavy crossbow", D10, Piercing, 120, 2, Heavy 2, TwoHanded, groups.bow, [])
+        simpleRanged ("Javelin", D6, Piercing, 30, 0, Light, OneHanded, groups.dart, [thrown 30<Feet>])
+        sling
     ]
 
     // -- MARTIAL WEAPONS --
     let martialMelee x = { (simpleMelee x) with Category = MartialWeapon }
 
+    let battleAxe = martialMelee ("Battle axe", D8, Slashing, Heavy 1, OneHanded, groups.axe, [sweep])
+    let glaive = martialMelee ("Glaive", D8, Slashing, Heavy 2, TwoHanded, groups.polearm, [deadly D8; forceful; reach])
+    let longsword = martialMelee ("Longsword", D8, Slashing, Heavy 1, OneHanded, groups.sword, [Versatile Piercing])
+    let pick = martialMelee ("Pick", D6, Piercing, Heavy 1, OneHanded, groups.pick, [fatal D10])
+    let rapier = martialMelee ("Rapier", D6, Piercing, Heavy 1, OneHanded, groups.sword, [deadly D8; disarm; finesse])
+    let shortsword = martialMelee ("Shortsword", D6, Piercing, Light, OneHanded, groups.sword, [agile; finesse; Versatile Slashing])
+    let warhammer = martialMelee ("Warhammer", D8, Bludgeoning, Heavy 1, OneHanded, groups.hammer, [shove])
+
     let martialMeleeWeapons = [
-        martialMelee ("Bastard sword", D8, Slashing, Heavy 1, OneHanded, sword, [twoHand D12])
-        martialMelee ("Battle axe", D8, Slashing, Heavy 1, OneHanded, axe, [sweep])
-        martialMelee ("Bo staff", D8, Bludgeoning, Heavy 2, TwoHanded, club, [monk; parry; reach; trip])
-        martialMelee ("Falchion", D10, Slashing, Heavy 2, TwoHanded, sword, [forceful; sweep])
-        martialMelee ("Flail", D6, Bludgeoning, Heavy 1, OneHanded, flail, [disarm; sweep; trip])
-        martialMelee ("Glaive", D8, Slashing, Heavy 2, TwoHanded, polearm, [deadly D8; forceful; reach])
-        martialMelee ("Greataxe", D12, Slashing, Heavy 2, TwoHanded, axe, [sweep])
-        martialMelee ("Greatclub", D10, Bludgeoning, Heavy 2, TwoHanded, club, [backswing; shove])
-        martialMelee ("Greatpick", D10, Piercing, Heavy 2, TwoHanded, pick, [fatal D12])
-        martialMelee ("Greatsword", D12, Slashing, Heavy 2, TwoHanded, sword, [Versatile Piercing])
-        martialMelee ("Guisarme", D10, Slashing, Heavy 2, TwoHanded, polearm, [reach; trip])
-        martialMelee ("Halberd", D10, Slashing, Heavy 2, TwoHanded, polearm, [reach; Versatile Slashing])
-        martialMelee ("Hatchet", D6, Slashing, Light, OneHanded, axe, [agile; sweep; thrown 10<Feet>])
-        martialMelee ("Lance", D8, Piercing, Heavy 2, TwoHanded, spear, [deadly D8; jousting D6; reach])
-        martialMelee ("Light hammer", D6, Bludgeoning, Light, OneHanded, hammer, [agile; thrown 20<Feet>])
-        martialMelee ("Light pick", D4, Piercing, Light, OneHanded, pick, [agile; fatal D8])
-        martialMelee ("Longsword", D8, Slashing, Heavy 1, OneHanded, sword, [Versatile Piercing])
-        martialMelee ("Main-gauche", D4, Piercing, Light, OneHanded, knife, [agile; disarm; finesse; parry; Versatile Slashing])
-        martialMelee ("Maul", D12, Bludgeoning, Heavy 2, TwoHanded, hammer, [shove])
-        martialMelee ("Pick", D6, Piercing, Heavy 1, OneHanded, pick, [fatal D10])
-        martialMelee ("Ranseur", D10, Piercing, Heavy 2, TwoHanded, polearm, [disarm; reach])
-        martialMelee ("Rapier", D6, Piercing, Heavy 1, OneHanded, sword, [deadly D8; disarm; finesse])
-        martialMelee ("Sap", D6, Bludgeoning, Light, OneHanded, club, [agile; nonlethal])
-        martialMelee ("Scimitar", D6, Slashing, Heavy 1, OneHanded, sword, [forceful; sweep])
-        martialMelee ("Scythe", D10, Slashing, Heavy 2, TwoHanded, polearm, [deadly D10; trip])
+        martialMelee ("Bastard sword", D8, Slashing, Heavy 1, OneHanded, groups.sword, [twoHand D12])
+        battleAxe
+        martialMelee ("Bo staff", D8, Bludgeoning, Heavy 2, TwoHanded, groups.club, [monk; parry; reach; trip])
+        martialMelee ("Falchion", D10, Slashing, Heavy 2, TwoHanded, groups.sword, [forceful; sweep])
+        martialMelee ("Flail", D6, Bludgeoning, Heavy 1, OneHanded, groups.flail, [disarm; sweep; trip])
+        glaive
+        martialMelee ("Greataxe", D12, Slashing, Heavy 2, TwoHanded, groups.axe, [sweep])
+        martialMelee ("Greatclub", D10, Bludgeoning, Heavy 2, TwoHanded, groups.club, [backswing; shove])
+        martialMelee ("Greatpick", D10, Piercing, Heavy 2, TwoHanded, groups.pick, [fatal D12])
+        martialMelee ("Greatsword", D12, Slashing, Heavy 2, TwoHanded, groups.sword, [Versatile Piercing])
+        martialMelee ("Guisarme", D10, Slashing, Heavy 2, TwoHanded, groups.polearm, [reach; trip])
+        martialMelee ("Halberd", D10, Slashing, Heavy 2, TwoHanded, groups.polearm, [reach; Versatile Slashing])
+        martialMelee ("Hatchet", D6, Slashing, Light, OneHanded, groups.axe, [agile; sweep; thrown 10<Feet>])
+        martialMelee ("Lance", D8, Piercing, Heavy 2, TwoHanded, groups.spear, [deadly D8; jousting D6; reach])
+        martialMelee ("Light hammer", D6, Bludgeoning, Light, OneHanded, groups.hammer, [agile; thrown 20<Feet>])
+        martialMelee ("Light pick", D4, Piercing, Light, OneHanded, groups.pick, [agile; fatal D8])
+        longsword
+        martialMelee ("Main-gauche", D4, Piercing, Light, OneHanded, groups.knife, [agile; disarm; finesse; parry; Versatile Slashing])
+        martialMelee ("Maul", D12, Bludgeoning, Heavy 2, TwoHanded, groups.hammer, [shove])
+        pick
+        martialMelee ("Ranseur", D10, Piercing, Heavy 2, TwoHanded, groups.polearm, [disarm; reach])
+        rapier
+        martialMelee ("Sap", D6, Bludgeoning, Light, OneHanded, groups.club, [agile; nonlethal])
+        martialMelee ("Scimitar", D6, Slashing, Heavy 1, OneHanded, groups.sword, [forceful; sweep])
+        martialMelee ("Scythe", D10, Slashing, Heavy 2, TwoHanded, groups.polearm, [deadly D10; trip])
         // TODO Shield abilities only shown when a shield is equipped
-        martialMelee ("Shield bash", D4, Bludgeoning, Insignificant, OneHanded, shield, [])
-        martialMelee ("Shield boss", D6, Bludgeoning, Insignificant, OneHanded, shield, [attached])
-        martialMelee ("Shield spikes", D6, Slashing, Insignificant, OneHanded, shield, [attached])
-        martialMelee ("Shortsword", D6, Piercing, Light, OneHanded, sword, [agile; finesse; Versatile Slashing])
-        martialMelee ("Starknife", D4, Piercing, Light, OneHanded, knife, [agile; deadly D6; finesse; thrown 20<Feet>; Versatile Slashing])
-        martialMelee ("Trident", D8, Piercing, Heavy 1, OneHanded, spear, [thrown 20<Feet>])
-        martialMelee ("War flail", D10, Bludgeoning, Heavy 2, TwoHanded, flail, [disarm; sweep; trip])
-        martialMelee ("Warhammer", D8, Bludgeoning, Heavy 1, OneHanded, hammer, [shove])
-        martialMelee ("Whip", D4, Slashing, Heavy 1, OneHanded, flail, [disarm; finesse; nonlethal; reach; trip])
+        martialMelee ("Shield bash", D4, Bludgeoning, Insignificant, OneHanded, groups.shield, [])
+        martialMelee ("Shield boss", D6, Bludgeoning, Insignificant, OneHanded, groups.shield, [attached])
+        martialMelee ("Shield spikes", D6, Slashing, Insignificant, OneHanded, groups.shield, [attached])
+        shortsword
+        martialMelee ("Starknife", D4, Piercing, Light, OneHanded, groups.knife, [agile; deadly D6; finesse; thrown 20<Feet>; Versatile Slashing])
+        martialMelee ("Trident", D8, Piercing, Heavy 1, OneHanded, groups.spear, [thrown 20<Feet>])
+        martialMelee ("War flail", D10, Bludgeoning, Heavy 2, TwoHanded, groups.flail, [disarm; sweep; trip])
+        warhammer
+        martialMelee ("Whip", D4, Slashing, Heavy 1, OneHanded, groups.flail, [disarm; finesse; nonlethal; reach; trip])
     ]
 
     let uncommonMartialMelee x = { (martialMelee x) with Rarity = Uncommon }
 
+    let dogslicer = uncommonMartialMelee ("Dogslicer", D6, Slashing, Light, OneHanded, groups.sword, [agile; backstabber; finesse; goblin])
+    let horsechopper = uncommonMartialMelee ("Horsechopper", D8, Slashing, Heavy 2, TwoHanded, groups.polearm, [goblin; reach; trip; Versatile Piercing])
+    let kukri = uncommonMartialMelee ("Kukri", D6, Slashing, Light, OneHanded, groups.knife, [agile; finesse; trip])
+
     let uncommonMartialMeleeWeapons = [
-        uncommonMartialMelee ("Dogslicer", D6, Slashing, Light, OneHanded, sword, [agile; backstabber; finesse; goblin])
-        uncommonMartialMelee ("Elven curve blade", D8, Slashing, Heavy 2, TwoHanded, sword, [elf; finesse; forceful])
-        uncommonMartialMelee ("Filcher's fork", D4, Piercing, Light, OneHanded, spear, [agile; backstabber; deadly D6; finesse; halfling; thrown 20<Feet>])
-        uncommonMartialMelee ("Gnome hooked hammer", D6, Bludgeoning, Heavy 1, OneHanded, hammer, [gnome; trip; twoHand D10; Versatile Piercing])
-        uncommonMartialMelee ("Horsechopper", D8, Slashing, Heavy 2, TwoHanded, polearm, [goblin; reach; trip; Versatile Piercing])
-        uncommonMartialMelee ("Kama", D6, Slashing, Light, OneHanded, knife, [agile; monk; trip])
-        uncommonMartialMelee ("Katana", D6, Slashing, Heavy 1, OneHanded, sword, [deadly D8; twoHand D10; Versatile Piercing])
-        uncommonMartialMelee ("Kukri", D6, Slashing, Light, OneHanded, knife, [agile; finesse; trip])
-        uncommonMartialMelee ("Nunchaku", D6, Bludgeoning, Light, OneHanded, club, [backswing; disarm; finesse; monk])
-        uncommonMartialMelee ("Orc knuckle dagger", D6, Piercing, Light, OneHanded, knife, [agile; disarm; orc])
-        uncommonMartialMelee ("Sai", D4, Piercing, Light, OneHanded, knife, [agile; disarm; finesse; monk; Versatile Bludgeoning])
-        uncommonMartialMelee ("Spiked chain", D8, Slashing, Heavy 1, TwoHanded, flail, [disarm; finesse; trip])
-        uncommonMartialMelee ("Temple sword", D8, Slashing, Heavy 1, OneHanded, sword, [monk; trip])
+        dogslicer
+        uncommonMartialMelee ("Elven curve blade", D8, Slashing, Heavy 2, TwoHanded, groups.sword, [elf; finesse; forceful])
+        uncommonMartialMelee ("Filcher's fork", D4, Piercing, Light, OneHanded, groups.spear, [agile; backstabber; deadly D6; finesse; halfling; thrown 20<Feet>])
+        uncommonMartialMelee ("Gnome hooked hammer", D6, Bludgeoning, Heavy 1, OneHanded, groups.hammer, [gnome; trip; twoHand D10; Versatile Piercing])
+        horsechopper
+        uncommonMartialMelee ("Kama", D6, Slashing, Light, OneHanded, groups.knife, [agile; monk; trip])
+        uncommonMartialMelee ("Katana", D6, Slashing, Heavy 1, OneHanded, groups.sword, [deadly D8; twoHand D10; Versatile Piercing])
+        kukri
+        uncommonMartialMelee ("Nunchaku", D6, Bludgeoning, Light, OneHanded, groups.club, [backswing; disarm; finesse; monk])
+        uncommonMartialMelee ("Orc knuckle dagger", D6, Piercing, Light, OneHanded, groups.knife, [agile; disarm; orc])
+        uncommonMartialMelee ("Sai", D4, Piercing, Light, OneHanded, groups.knife, [agile; disarm; finesse; monk; Versatile Bludgeoning])
+        uncommonMartialMelee ("Spiked chain", D8, Slashing, Heavy 1, TwoHanded, groups.flail, [disarm; finesse; trip])
+        uncommonMartialMelee ("Temple sword", D8, Slashing, Heavy 1, OneHanded, groups.sword, [monk; trip])
     ]
 
     let martialRanged x = { (simpleRanged x) with Category = MartialWeapon }
 
-    let martialRangedWeapons = [
+    let alchemicalBomb = 
         {
             Name = "Alchemical bomb"
             Type = Ranged
@@ -187,30 +202,39 @@ module Weapons =
             Reload = 0<Actions>
             Bulk = Light
             Handedness = OneHanded
-            Group = bomb
+            Group = groups.bomb
             Traits = []
         }
-        martialRanged ("Composite longbow", D8, Piercing, 100, 0, Heavy 2, TwoHanded, bow, [deadly D10; propulsive; volley 30<Feet>])
-        martialRanged ("Composite shortbow", D6, Piercing, 60, 0, Heavy 1, TwoHanded, bow, [deadly D10; propulsive])
-        martialRanged ("Longbow", D8, Piercing, 100, 0, Heavy 2, TwoHanded, bow, [deadly D10; volley 30<Feet>])
-        martialRanged ("Shortbow", D6, Piercing, 60, 0, Heavy 1, TwoHanded, bow, [deadly D10])
+    let compositeLongbow = martialRanged ("Composite longbow", D8, Piercing, 100, 0, Heavy 2, TwoHanded, groups.bow, [deadly D10; propulsive; volley 30<Feet>])
+    let compositeShortbow = martialRanged ("Composite shortbow", D6, Piercing, 60, 0, Heavy 1, TwoHanded, groups.bow, [deadly D10; propulsive])
+    let longbow = martialRanged ("Longbow", D8, Piercing, 100, 0, Heavy 2, TwoHanded, groups.bow, [deadly D10; volley 30<Feet>])
+    let shortbow = martialRanged ("Shortbow", D6, Piercing, 60, 0, Heavy 1, TwoHanded, groups.bow, [deadly D10])
+
+    let martialRangedWeapons = [
+        alchemicalBomb
+        compositeLongbow
+        compositeShortbow
+        longbow
+        shortbow
     ]
 
     let uncommonMartialRanged x = { (martialRanged x) with Rarity = Uncommon }
 
+    let halflingSlingStaff = uncommonMartialRanged ("Halfling sling staff", D10, Bludgeoning, 80, 1, Heavy 1, TwoHanded, groups.sling, [halfling; propulsive])
+
     let uncommonMartialRangedWeapons = [
-        uncommonMartialRanged ("Halfling sling staff", D10, Bludgeoning, 80, 1, Heavy 1, TwoHanded, sling, [halfling; propulsive])
-        uncommonMartialRanged ("Shuriken", D4, Piercing, 20, 0, Insignificant, OneHanded, dart, [agile; monk; thrown 20<Feet>])
+        halflingSlingStaff
+        uncommonMartialRanged ("Shuriken", D4, Piercing, 20, 0, Insignificant, OneHanded, groups.dart, [agile; monk; thrown 20<Feet>])
     ]
 
     // -- ADVANCED WEAPONS --
     let advancedMelee x = { (martialMelee x) with Category = AdvancedWeapon }
 
     let advancedMeleeWeapons = [
-        advancedMelee ("Dwarven waraxe", D8, Slashing, Heavy 2, OneHanded, axe, [dwarf; sweep; twoHand D12])
-        advancedMelee ("Gnome flickmace", D8, Bludgeoning, Heavy 2, OneHanded, flail, [gnome; reach])
-        advancedMelee ("Orc necksplitter", D8, Slashing, Heavy 1, OneHanded, axe, [forceful; orc; sweep])
-        advancedMelee ("Sawtooth saber", D6, Slashing, Light, OneHanded, sword, [agile; finesse; twin])
+        advancedMelee ("Dwarven waraxe", D8, Slashing, Heavy 2, OneHanded, groups.axe, [dwarf; sweep; twoHand D12])
+        advancedMelee ("Gnome flickmace", D8, Bludgeoning, Heavy 2, OneHanded, groups.flail, [gnome; reach])
+        advancedMelee ("Orc necksplitter", D8, Slashing, Heavy 1, OneHanded, groups.axe, [forceful; orc; sweep])
+        advancedMelee ("Sawtooth saber", D6, Slashing, Light, OneHanded, groups.sword, [agile; finesse; twin])
     ]
 
     // -- LISTS --
@@ -227,7 +251,7 @@ module Weapons =
             Reload = 0<Actions>
             Bulk = Insignificant
             Handedness = OneHanded
-            Group = brawling
+            Group = groups.brawling
             Traits = [agile; finesse; nonlethal; unarmed]
         }
 
@@ -240,3 +264,9 @@ module Weapons =
         yield! martialRangedWeapons
         yield! uncommonMartialRangedWeapons
     ]
+
+    // Improves the skill of a whole category of weapons (as perceived by this character).
+    improveSkill (cat, ty) prof = {
+        Prompt = "Improve weapon skill"
+        
+    }

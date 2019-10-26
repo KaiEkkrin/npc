@@ -16,6 +16,10 @@ module Ancestry =
     let hasNone c = Option.isNone c.Ancestry
     let hasHeritage h c = match c.Heritage with | Some h2 when h2 = h -> true | _ -> false
 
+    // Helps us recategorise weapons in the usual pattern
+    let recategorise (cat, tr) =
+        Improve.recategorise (fun w -> w.Category = cat && List.contains tr w.Traits)
+
     let noHeritage = "None", (fun _ -> true), fun c -> c, []
     let heritage name imps = name, (fun c -> Option.isNone c.Heritage), fun c -> { c with Heritage = Some name }, imps
     let ancestryFeat ancestry level reqs name page (imps: Improvement list) =
@@ -39,7 +43,13 @@ module Ancestry =
             Improve.skillOr Skills.religion Skills.regularSkills Trained
             Improve.skill (Skills.lore "Dwarven") Trained
         ]
-        ancestryFeat dwarf 1 [] "Dwarven Weapon Familiarity" 36 [] // TODO encode weapon proficiencies
+        ancestryFeat dwarf 1 [] "Dwarven Weapon Familiarity" 36 [
+            Improve.skill (Skills.weaponSkill Weapons.battleAxe) Trained
+            Improve.skill (Skills.weaponSkill Weapons.warhammer) Trained
+            // TODO gain access to uncommon dwarf weapons (?)
+            recategorise (MartialWeapon, Weapons.dwarf) SimpleWeapon
+            recategorise (AdvancedWeapon, Weapons.dwarf) MartialWeapon
+        ]
         ancestryFeat dwarf 1 [] "Rock Runner" 36 []
         ancestryFeat dwarf 1 [] "Stonecunning" 36 []
         ancestryFeat dwarf 1 [] "Unburdened Iron" 36 [] // TODO reduce speed reduction from armor
@@ -50,7 +60,9 @@ module Ancestry =
             Improve.hitPointsPerLevel 1
         ]
         ancestryFeat dwarf 9 [] "Stonewalker" 37 []
-        ancestryFeat dwarf 13 [Improve.hasFeat "Dwarven Weapon Familiarity"] "Dwarven Weapon Expertise" 37 []
+        ancestryFeat dwarf 13 [Improve.hasFeat "Dwarven Weapon Familiarity"] "Dwarven Weapon Expertise" 37 [
+            // TODO gain expert in dwarven weapons when gaining expert in another type
+        ]
     ]
 
     let elfHeritages = [
@@ -70,7 +82,17 @@ module Ancestry =
             Improve.skillOr Skills.arcana Skills.regularSkills Trained
             Improve.skill (Skills.lore "Elven") Trained
         ]
-        ancestryFeat elf 1 [] "Elven Weapon Familiarity" 40 [] // TODO encode weapon proficiencies
+        ancestryFeat elf 1 [] "Elven Weapon Familiarity" 40 [
+            Improve.skill (Skills.weaponSkill Weapons.compositeLongbow) Trained
+            Improve.skill (Skills.weaponSkill Weapons.compositeShortbow) Trained
+            Improve.skill (Skills.weaponSkill Weapons.longbow) Trained
+            Improve.skill (Skills.weaponSkill Weapons.longsword) Trained
+            Improve.skill (Skills.weaponSkill Weapons.rapier) Trained
+            Improve.skill (Skills.weaponSkill Weapons.shortbow) Trained
+            // TODO gain access to uncommon elf weapons (?)
+            recategorise (MartialWeapon, Weapons.elf) SimpleWeapon
+            recategorise (AdvancedWeapon, Weapons.elf) MartialWeapon
+        ]
         ancestryFeat elf 1 [] "Forlorn" 40 []
         ancestryFeat elf 1 [] "Nimble Elf" 40 [
             Improve.speed 5<Feet>
@@ -82,7 +104,7 @@ module Ancestry =
         ancestryFeat elf 9 [] "Elf Step" 41 []
         ancestryFeat elf 9 [Improve.hasFeat "Ancestral Longevity"] "Expert Longevity" 41 []
         ancestryFeat elf 13 [Improve.hasFeat "Expert Longevity"] "Universal Longevity" 41 []
-        ancestryFeat elf 13 [Improve.hasFeat "Elven Weapon Familiarity"] "Elven Weapon Expertise" 41 []
+        ancestryFeat elf 13 [Improve.hasFeat "Elven Weapon Familiarity"] "Elven Weapon Expertise" 41 [] // TODO fix this
     ]
 
     let gnomeHeritages = [
@@ -101,14 +123,20 @@ module Ancestry =
         ancestryFeat gnome 1 [] "Fey Fellowship" 44 []
         ancestryFeat gnome 1 [] "First World Magic" 44 []
         ancestryFeat gnome 1 [] "Gnome Obsession" 44 [] // TODO encode choosing a lore skill
-        ancestryFeat gnome 1 [] "Gnome Weapon Familiarity" 44 [] // TODO encode weapon proficiencies
+        ancestryFeat gnome 1 [] "Gnome Weapon Familiarity" 44 [
+            Improve.skill (Skills.weaponSkill Weapons.glaive) Trained
+            Improve.skill (Skills.weaponSkill Weapons.kukri) Trained
+            // TODO access to uncommon weapons
+            recategorise (MartialWeapon, Weapons.gnome) SimpleWeapon
+            recategorise (AdvancedWeapon, Weapons.gnome) MartialWeapon
+        ]
         ancestryFeat gnome 1 [] "Illusion Sense" 44 []
         ancestryFeat gnome 5 [Improve.hasFeat "Burrow Elocutionist"] "Animal Elocutionist" 45 []
         ancestryFeat gnome 5 [] "Energized Font" 45 [] // TODO encode one of several feats
         ancestryFeat gnome 5 [Improve.hasFeat "Gnome Weapon Familiarity"] "Gnome Weapon Innovator" 45 []
         ancestryFeat gnome 9 [] "First World Adept" 45 [] // TODO funny requirement again
         ancestryFeat gnome 9 [] "Vivacious Conduit" 45 []
-        ancestryFeat gnome 13 [Improve.hasFeat "Gnome Weapon Familiarity"] "Gnome Weapon Expertise" 45 []
+        ancestryFeat gnome 13 [Improve.hasFeat "Gnome Weapon Familiarity"] "Gnome Weapon Expertise" 45 [] // TODO this
     ]
 
     let goblinHeritages = [
@@ -131,7 +159,13 @@ module Ancestry =
         ]
         ancestryFeat goblin 1 [] "Goblin Scuttle" 48 []
         ancestryFeat goblin 1 [] "Goblin Song" 48 []
-        ancestryFeat goblin 1 [] "Goblin Weapon Familiarity" 48 [] // TODO weapon skills
+        ancestryFeat goblin 1 [] "Goblin Weapon Familiarity" 48 [
+            Improve.skill (Skills.weaponSkill Weapons.dogslicer) Trained
+            Improve.skill (Skills.weaponSkill Weapons.horsechopper) Trained
+            // TODO uncommon
+            recategorise (MartialWeapon, Weapons.goblin) SimpleWeapon
+            recategorise (AdvancedWeapon, Weapons.goblin) MartialWeapon
+        ]
         ancestryFeat goblin 1 [] "Junk Tinker" 48 []
         ancestryFeat goblin 1 [] "Rough Rider" 48 [
             Feats.forceAdd Feats.ride
@@ -140,7 +174,7 @@ module Ancestry =
         ancestryFeat goblin 5 [Improve.hasFeat "Goblin Weapon Familiarity"] "Goblin Weapon Frenzy" 49 []
         ancestryFeat goblin 9 [] "Cave Climber" 49 []
         ancestryFeat goblin 9 [Improve.hasFeat "Goblin Scuttle"] "Skittering Scuttle" 49 []
-        ancestryFeat goblin 13 [Improve.hasFeat "Goblin Weapon Familiarity"] "Goblin Weapon Expertise" 49 []
+        ancestryFeat goblin 13 [Improve.hasFeat "Goblin Weapon Familiarity"] "Goblin Weapon Expertise" 49 [] // TODO this
         ancestryFeat goblin 13 [Improve.hasFeat "Very Sneaky"] "Very, Very Sneaky" 49 []
     ]
 
@@ -162,7 +196,14 @@ module Ancestry =
             Improve.skill (Skills.lore "Halfling") Trained
         ]
         ancestryFeat halfling 1 [] "Halfling Luck" 52 []
-        ancestryFeat halfling 1 [] "Halfling Weapon Familiarity" 52 [] // TODO weapon skills
+        ancestryFeat halfling 1 [] "Halfling Weapon Familiarity" 52 [
+            Improve.skill (Skills.weaponSkill Weapons.halflingSlingStaff) Trained
+            Improve.skill (Skills.weaponSkill Weapons.shortsword) Trained
+            Improve.skill (Skills.weaponSkill Weapons.sling) Trained
+            // TODO uncommon weapons
+            recategorise (MartialWeapon, Weapons.halfling) SimpleWeapon
+            recategorise (AdvancedWeapon, Weapons.halfling) MartialWeapon
+        ]
         ancestryFeat halfling 1 [] "Sure Feet" 52 []
         ancestryFeat halfling 1 [] "Titan Slinger" 52 []
         ancestryFeat halfling 1 [] "Unfettered Halfling" 52 []
@@ -172,7 +213,7 @@ module Ancestry =
         ancestryFeat halfling 9 [Improve.hasFeat "Halfling Luck"] "Guiding Luck" 53 []
         ancestryFeat halfling 9 [] "Irrepressible" 53 []
         ancestryFeat halfling 13 [Improve.hasFeat "Distracting Shadows"] "Ceaseless Shadows" 53 []
-        ancestryFeat halfling 13 [Improve.hasFeat "Halfling Weapon Familiarity"] "Halfling Weapon Expertise" 53 []
+        ancestryFeat halfling 13 [Improve.hasFeat "Halfling Weapon Familiarity"] "Halfling Weapon Expertise" 53 [] // TODO this
     ]
 
     let humanHeritages = [

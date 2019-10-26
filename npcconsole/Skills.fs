@@ -70,21 +70,9 @@ module Skills =
         |> Set.toList
         |> List.sortBy (fun sk -> sk.Name)
 
-    let weaponSkill (category, ty) =
-        let catName =
-            match category with
-            | Unarmed -> "Unarmed"
-            | SimpleWeapon -> "Simple weapons"
-            | MartialWeapon -> "Martial weapons"
-            | AdvancedWeapon -> "Advanced weapons"
-        {
-            Name = sprintf "%s (%A)" catName ty
-            KeyAbility = match ty with | Melee -> Strength | Ranged -> Dexterity // TODO admit finesse weapons
-        }
-
-    let alchemicalBombs = {
-        Name = "Alchemical Bombs"
-        KeyAbility = Dexterity
+    let weaponSkill (w: Weapon) = {
+        Name = sprintf "%s (%A)" w.Name w.Category
+        KeyAbility = match w.Type with | Melee -> Strength | Ranged -> Dexterity // TODO admit finesse weapons
     }
 
     let armorSkill category = {
