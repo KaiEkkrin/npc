@@ -6,8 +6,9 @@
   <ItemGroup>
     <Compile Include="Attributes.fs" />
     <Compile Include="Improve.fs" />
-    <Compile Include="Gear.fs" />
     <Compile Include="Skills.fs" />
+    <Compile Include="Weapons.fs" />
+    <Compile Include="Armors.fs" />
     <Compile Include="Feats.fs" />
     <Compile Include="Ancestry.fs" />
     <Compile Include="Background.fs" />

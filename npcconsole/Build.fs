@@ -74,10 +74,12 @@ type Builder (interact: IInteraction) =
             Abilities = Builder.AbilityOrder |> List.map (fun a -> a, 10<Score>) |> Map.ofList
             Skills = Map.empty
             Feats = []
+            Armor = None
         }, [
             Ancestry.ancestries
             Background.backgrounds
             Classes.classes
+            Improve.addArmor Armors.allArmors
         ])
         >>= id
 

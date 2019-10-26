@@ -27,6 +27,16 @@ type ConsoleInteract () =
         let dc = Derive.bonus sk c |> Derive.dc
         print ((sprintf "%s DC" sk.Name), sprintf "%3d %15s (%15s)" dc rank (sk.KeyAbility.ToString ()))
 
+    let printArmorClass c =
+        match c.Armor with
+        | Some a ->
+            let rank = (Derive.rank a.Skill c).ToString ()
+            let ac = Derive.armorClass c
+            print ("Armor Class", sprintf "%3d %15s" ac rank)
+            print ("Armor Type", a.Name)
+            print ("Armor Traits", String.Join (", ", a.Traits |> List.map (fun t -> sprintf "%A" t)))
+        | None -> ()
+
     let printClassDC c =
         match Map.tryPick (fun (sk: Skill) _ -> if sk.Name.Contains ("Class") then Some sk else None) c.Skills with
         | Some sk -> printDC c sk
@@ -53,14 +63,15 @@ type ConsoleInteract () =
             if Option.isSome c.Background then print ("Background", c.Background.Value)
             print ("Hit Points", sprintf "%d" (Derive.hitPoints c))
             if Option.isSome c.Size then print ("Size", c.Size.Value.ToString ())
-            print ("Speed", c.Speed.ToString ())
+            print ("Speed", (Derive.speed c).ToString ())
             printfn "Abilities:"
             Builder.AbilityOrder |> List.iter (fun ab ->
                 let score = Map.find ab c.Abilities
                 print (ab.ToString (), sprintf "%4d (%+2d)" score (Derive.modifier score))
             )
+            printfn "Armor:"
+            printArmorClass c
             printfn "Difficulty Classes:"
-            // TODO armor class here
             printClassDC c
             printfn "Saves:"
             Skills.saves |> List.iter (printSkill c)

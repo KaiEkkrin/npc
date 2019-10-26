@@ -68,6 +68,10 @@ with
             | None -> Dice (dice |> Map.add sz count)
         | Varies -> Varies
 
+// This defines a skill.  As well as things officially called "skills", we also
+// include some other things that work the same way here:
+type Skill = { Name: string; KeyAbility: Ability }
+
 // These are weapons
 // "Group" and "Traits" should have matching strings, but I won't enforce this
 type WeaponCategory = Unarmed | SimpleWeapon | MartialWeapon | AdvancedWeapon
@@ -92,10 +96,16 @@ type Weapon = {
 
 // These are armors:
 type ArmorCategory = LightArmor | MediumArmor | HeavyArmor | Unarmored
-
-// This defines a skill.  As well as things officially called "skills", we also
-// include some other things that work the same way here:
-type Skill = { Name: string; KeyAbility: Ability }
+type Armor = {
+    Name: string
+    Skill: Skill
+    Bonus: int<Modifier>
+    DexCap: int<Modifier> option
+    SpeedPenalty: int<Feet>
+    Strength: int<Score>
+    Group: string option
+    Traits: string list
+}
 
 // Feats include a page number to help look them up because otherwise it would
 // be very annoying!
@@ -127,6 +137,7 @@ type Character = {
     // characters can "see" different weapons in different categories!
     
     // TODO Gear and encumbrance.
+    Armor: Armor option
 }
 
 // A helper for deriving stats:
@@ -167,3 +178,21 @@ module Derive =
     let hitPoints c =
         let conModifier = Map.find Constitution c.Abilities |> modifier
         c.HitPoints.Flat + (c.HitPoints.PerLevel + conModifier / 1<Modifier>) * c.Level / 1<Level>
+
+    // Calculates a character's armor class
+    let armorClass c =
+        match c.Armor with
+        | None -> 10<Modifier> // expect an armor to be chosen, even if it's "No armor" :)
+        | Some a ->
+            // Calculate the character's AC bonus, capping Dexterity
+            // if required
+            let r = rank a.Skill c
+            let rawModifier = Map.find a.Skill.KeyAbility c.Abilities |> modifier
+            let modifier = match a.DexCap with | Some dc -> min dc rawModifier | None -> rawModifier
+            10<Modifier> + a.Bonus + (proficiency r c.Level) + modifier
+
+    // Calculates a character's speed, taking into account any armor penalty
+    let speed c =
+        match c.Armor with
+        | Some a -> c.Speed - a.SpeedPenalty
+        | None -> c.Speed

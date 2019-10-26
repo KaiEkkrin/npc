@@ -155,3 +155,15 @@ module Improve =
 
     // True if a character is of the given class, else false.
     let hasClass cl c = c.Class = Some cl
+
+    // Adds an armor to the character.
+    let addArmor (armors: List<Armor>) = {
+        Prompt = "Armor"
+        Choices =
+            armors |> List.map (fun a ->
+                a.Name,
+                (fun c -> hasAbilityScore Strength a.Strength c && hasSkill a.Skill Trained c),
+                (fun c -> { c with Armor = Some a }, [])
+            )
+        Count = 1
+    }
