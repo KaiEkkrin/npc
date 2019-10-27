@@ -36,6 +36,25 @@ type ConsoleInteract () =
             print ("Armor Type", a.Name)
             print ("Armor Traits", String.Join (", ", a.Traits |> List.map (fun t -> sprintf "%A" t)))
         | None -> ()
+    
+    let printWeaponStats (weapon, c) =
+        match weapon with
+        | Some w ->
+            // TODO Dexterity bonus on melee weapon attack, sometimes
+            let sk = Skills.weaponSkill w
+            printSkill c sk
+            // TODO When do ranged weapons gain a damage bonus?  From what?  I forget...
+            let damageModifier =
+                match w.Type with
+                | Melee -> Map.find Strength c.Abilities |> Derive.modifier
+                | Ranged -> 0<Modifier>
+            print (sprintf "%s damage" w.Name, sprintf "%A %+2d (%A)" w.Damage damageModifier w.DamageType)
+            match w.Range with
+            | Some r -> print (sprintf "%s Range" w.Name, sprintf "%3d" r)
+            | None -> ()
+            if w.Reload > 0<Actions> then print (sprintf "%s Reload" w.Name, sprintf "%3d" w.Reload) else ()
+            print (sprintf "%s traits" w.Name, String.Join (", ", w.Traits |> List.map (fun t -> sprintf "%A" t)))
+        | None -> ()
 
     let printClassDC c =
         match Map.tryPick (fun (sk: Skill) _ -> if sk.Name.Contains ("Class") then Some sk else None) c.Skills with
@@ -71,6 +90,10 @@ type ConsoleInteract () =
             )
             printfn "Armor:"
             printArmorClass c
+            printfn "Melee weapon:"
+            printWeaponStats (c.MeleeWeapon, c)
+            printfn "Ranged weapon:"
+            printWeaponStats (c.RangedWeapon, c)
             printfn "Difficulty Classes:"
             printClassDC c
             printfn "Saves:"

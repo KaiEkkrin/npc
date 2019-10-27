@@ -75,12 +75,16 @@ type Builder (interact: IInteraction) =
             Skills = Map.empty
             Feats = []
             Weapons = Weapons.all
+            MeleeWeapon = None
+            RangedWeapon = None
             Armor = None
         }, [
             Ancestry.ancestries
             Background.backgrounds
             Classes.classes
             Improve.addArmor Armors.allArmors
+            Weapons.addMeleeWeapon
+            Weapons.addRangedWeapon
         ])
         >>= id
 

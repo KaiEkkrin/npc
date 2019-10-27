@@ -53,10 +53,10 @@ module Classes =
                 Improve.skill Skills.willSave Trained
                 Improve.skill Skills.crafting Trained
                 Improve.skills Skills.regularSkills Trained ((modValue Intelligence c) + 3)
-                Improve.skill (Skills.weaponSkill (SimpleWeapon, Melee)) Trained
-                Improve.skill (Skills.weaponSkill (SimpleWeapon, Ranged)) Trained
-                Improve.skill (Skills.weaponSkill (Unarmed, Melee)) Trained
-                Improve.skill Skills.alchemicalBombs Trained
+                Weapons.improveSkill (SimpleWeapon, Melee) Trained
+                Weapons.improveSkill (SimpleWeapon, Ranged) Trained
+                Weapons.improveSkill (Unarmed, Melee) Trained
+                Improve.skill (Skills.weaponSkill Weapons.alchemicalBomb) Trained
                 Improve.skill (Skills.armorSkill LightArmor) Trained
                 Improve.skill (Skills.armorSkill Unarmored) Trained
                 Feats.forceAdd Feats.alchemicalCrafting
@@ -108,10 +108,14 @@ module Classes =
                 Improve.skill Skills.occultism Trained
                 Improve.skill Skills.performance Trained
                 Improve.skills Skills.regularSkills Trained ((modValue Intelligence c) + 4)
-                Improve.skill (Skills.weaponSkill (SimpleWeapon, Melee)) Trained
-                Improve.skill (Skills.weaponSkill (SimpleWeapon, Ranged)) Trained
-                Improve.skill (Skills.weaponSkill (Unarmed, Melee)) Trained
-                // TODO specific weapons (longsword, ...)
+                Weapons.improveSkill (SimpleWeapon, Melee) Trained
+                Weapons.improveSkill (SimpleWeapon, Ranged) Trained
+                Weapons.improveSkill (Unarmed, Melee) Trained
+                Improve.skill (Skills.weaponSkill Weapons.longsword) Trained
+                Improve.skill (Skills.weaponSkill Weapons.rapier) Trained
+                Improve.skill (Skills.weaponSkill Weapons.sap) Trained
+                Improve.skill (Skills.weaponSkill Weapons.shortbow) Trained
+                Improve.skill (Skills.weaponSkill Weapons.whip) Trained
                 Improve.skill (Skills.armorSkill LightArmor) Trained
                 Improve.skill (Skills.armorSkill Unarmored) Trained
                 Improve.addFeats bardMuses 1
@@ -169,9 +173,9 @@ module Classes =
                 Improve.skill Skills.willSave Expert
                 Improve.skill Skills.nature Trained
                 Improve.skills Skills.regularSkills Trained ((modValue Intelligence c) + 2)
-                Improve.skill (Skills.weaponSkill (SimpleWeapon, Melee)) Trained
-                Improve.skill (Skills.weaponSkill (SimpleWeapon, Ranged)) Trained
-                Improve.skill (Skills.weaponSkill (Unarmed, Melee)) Trained
+                Weapons.improveSkill (SimpleWeapon, Melee) Trained
+                Weapons.improveSkill (SimpleWeapon, Ranged) Trained
+                Weapons.improveSkill (Unarmed, Melee) Trained
                 Improve.skill (Skills.armorSkill LightArmor) Trained
                 Improve.skill (Skills.armorSkill MediumArmor) Trained
                 Improve.skill (Skills.armorSkill Unarmored) Trained
@@ -210,11 +214,11 @@ module Classes =
                 Improve.skill Skills.nature Trained
                 Improve.skill Skills.survival Trained
                 Improve.skills Skills.regularSkills Trained ((modValue Intelligence c) + 4)
-                Improve.skill (Skills.weaponSkill (SimpleWeapon, Melee)) Trained
-                Improve.skill (Skills.weaponSkill (SimpleWeapon, Ranged)) Trained
-                Improve.skill (Skills.weaponSkill (MartialWeapon, Melee)) Trained
-                Improve.skill (Skills.weaponSkill (MartialWeapon, Ranged)) Trained
-                Improve.skill (Skills.weaponSkill (Unarmed, Melee)) Trained
+                Weapons.improveSkill (SimpleWeapon, Melee) Trained
+                Weapons.improveSkill (SimpleWeapon, Ranged) Trained
+                Weapons.improveSkill (MartialWeapon, Melee) Trained
+                Weapons.improveSkill (MartialWeapon, Ranged) Trained
+                Weapons.improveSkill (Unarmed, Melee) Trained
                 Improve.skill (Skills.armorSkill LightArmor) Trained
                 Improve.skill (Skills.armorSkill MediumArmor) Trained
                 Improve.skill (Skills.armorSkill Unarmored) Trained
@@ -270,10 +274,13 @@ module Classes =
                 Improve.skill Skills.reflexSave Expert
                 Improve.skill Skills.willSave Expert
                 Improve.skill Skills.stealth Trained
-                Improve.skill (Skills.weaponSkill (SimpleWeapon, Melee)) Trained
-                Improve.skill (Skills.weaponSkill (SimpleWeapon, Ranged)) Trained
-                // TODO rapier, sap, shortbow, shortsword
-                Improve.skill (Skills.weaponSkill (Unarmed, Melee)) Trained
+                Weapons.improveSkill (SimpleWeapon, Melee) Trained
+                Weapons.improveSkill (SimpleWeapon, Ranged) Trained
+                Weapons.improveSkill (Unarmed, Melee) Trained
+                Improve.skill (Skills.weaponSkill Weapons.rapier) Trained
+                Improve.skill (Skills.weaponSkill Weapons.sap) Trained
+                Improve.skill (Skills.weaponSkill Weapons.shortbow) Trained
+                Improve.skill (Skills.weaponSkill Weapons.shortsword) Trained
                 Improve.skill (Skills.armorSkill LightArmor) Trained
                 Improve.skill (Skills.armorSkill Unarmored) Trained
                 Improve.addFeats rogueRackets 1

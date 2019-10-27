@@ -47,7 +47,7 @@ type Bulk = Insignificant | Light | Heavy of int
 // Weapon damage dice are thus
 type DieSize = D1 | D4 | D6 | D8 | D10 | D12 | D20
 
-[<StructuredFormatDisplay("AsString")>]
+[<StructuredFormatDisplay("{AsString}")>]
 type DamageDice = Dice of Map<DieSize, int> | Varies
 with
     member this.AsString = this.ToString ()
@@ -78,7 +78,18 @@ type WeaponCategory = Unarmed | SimpleWeapon | MartialWeapon | AdvancedWeapon
 type WeaponType = Melee | Ranged
 type DamageType = Bludgeoning | Piercing | Slashing // TODO augment with electrical, use for resistances too?
 type Handedness = OneHanded | TwoHanded
+
+[<StructuredFormatDisplay("{AsString}")>]
 type WeaponTrait = Trait of string | DamageTrait of string * DamageDice | RangeTrait of string * int<Feet> | Versatile of DamageType
+with
+    member this.AsString = this.ToString ()
+    override this.ToString () =
+        match this with
+        | Trait s -> s
+        | DamageTrait (s, d) -> sprintf "%s %A" s d
+        | RangeTrait (s, r) -> sprintf "%s %d" s r
+        | Versatile d -> sprintf "Versatile %A" d
+
 type Weapon = {
     Name: string
     Type: WeaponType
@@ -117,11 +128,10 @@ type Feat = { Name: string; Page: int }
 // We enumerate the classes, they're a fixed set.
 type Class = Alchemist | Barbarian | Bard | Champion | Cleric | Druid | Fighter | Monk | Ranger | Rogue | Sorcerer | Wizard
 
-// Here's a whole character.  (Various things need to be optional,
-// so that we can build them incrementally.)
+// Here's a whole character, built by incremental improvement.
 type Character = {
     Name: string
-    Ancestry: string option // TODO heritage as an ancestry choice
+    Ancestry: string option
     Heritage: string option
     Background: string option
     Class: Class option
@@ -136,9 +146,17 @@ type Character = {
     // Different characters can "see" different weapons in different categories!
     // This weapon list is edited to have categories corrected for this character.
     Weapons: Weapon list
+
+    // For now, I'm going to permit only one ranged and one melee weapon.
+    // Dual wield is exciting and all that, but done with specific feats.
+    MeleeWeapon: Weapon option
+    RangedWeapon: Weapon option
     
-    // TODO Gear and encumbrance.
     Armor: Armor option
+
+    // TODO Support choosing a shield, if the character has hands free.
+
+    // TODO Other gear and encumbrance?
 }
 
 // A helper for deriving stats:

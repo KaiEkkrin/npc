@@ -125,8 +125,10 @@ module Weapons =
     let longsword = martialMelee ("Longsword", D8, Slashing, Heavy 1, OneHanded, groups.sword, [Versatile Piercing])
     let pick = martialMelee ("Pick", D6, Piercing, Heavy 1, OneHanded, groups.pick, [fatal D10])
     let rapier = martialMelee ("Rapier", D6, Piercing, Heavy 1, OneHanded, groups.sword, [deadly D8; disarm; finesse])
+    let sap = martialMelee ("Sap", D6, Bludgeoning, Light, OneHanded, groups.club, [agile; nonlethal])
     let shortsword = martialMelee ("Shortsword", D6, Piercing, Light, OneHanded, groups.sword, [agile; finesse; Versatile Slashing])
     let warhammer = martialMelee ("Warhammer", D8, Bludgeoning, Heavy 1, OneHanded, groups.hammer, [shove])
+    let whip = martialMelee ("Whip", D4, Slashing, Heavy 1, OneHanded, groups.flail, [disarm; finesse; nonlethal; reach; trip])
 
     let martialMeleeWeapons = [
         martialMelee ("Bastard sword", D8, Slashing, Heavy 1, OneHanded, groups.sword, [twoHand D12])
@@ -151,7 +153,7 @@ module Weapons =
         pick
         martialMelee ("Ranseur", D10, Piercing, Heavy 2, TwoHanded, groups.polearm, [disarm; reach])
         rapier
-        martialMelee ("Sap", D6, Bludgeoning, Light, OneHanded, groups.club, [agile; nonlethal])
+        sap
         martialMelee ("Scimitar", D6, Slashing, Heavy 1, OneHanded, groups.sword, [forceful; sweep])
         martialMelee ("Scythe", D10, Slashing, Heavy 2, TwoHanded, groups.polearm, [deadly D10; trip])
         // TODO Shield abilities only shown when a shield is equipped
@@ -163,7 +165,7 @@ module Weapons =
         martialMelee ("Trident", D8, Piercing, Heavy 1, OneHanded, groups.spear, [thrown 20<Feet>])
         martialMelee ("War flail", D10, Bludgeoning, Heavy 2, TwoHanded, groups.flail, [disarm; sweep; trip])
         warhammer
-        martialMelee ("Whip", D4, Slashing, Heavy 1, OneHanded, groups.flail, [disarm; finesse; nonlethal; reach; trip])
+        whip
     ]
 
     let uncommonMartialMelee x = { (martialMelee x) with Rarity = Uncommon }
@@ -266,7 +268,60 @@ module Weapons =
     ]
 
     // Improves the skill of a whole category of weapons (as perceived by this character).
-    improveSkill (cat, ty) prof = {
-        Prompt = "Improve weapon skill"
-        
-    }
+    // We need to do this by analysing the character and stacking up another improvement
+    // because we don't know before time how many skills need improving
+    let improveSkill (cat, ty) prof =
+        let improveWeapons c =
+            let improvements =
+                c.Weapons
+                |> List.filter (fun w ->
+                    let hasSkill = Improve.hasSkill (Skills.weaponSkill w) prof c
+                    w.Category = cat && w.Type = ty && not hasSkill)
+                |> List.map (fun w -> Improve.skill (Skills.weaponSkill w) prof)
+            c, improvements
+        {
+            Prompt = sprintf "%A in %A %A weapons" prof cat ty
+            Choices = ["All", (fun _ -> true), improveWeapons]
+            Count = 1
+        }
+
+    // Filters trained weapon skills from a character.
+    let filter c ty cat =
+        c.Weapons
+        |> List.filter (fun w -> w.Category = cat && w.Type = ty && Improve.hasSkill (Skills.weaponSkill w) Trained c)
+
+    // Adds a melee weapon to the character.  (Excluding shields; we'll
+    // do those in their own way.)
+    // We'll do this with a proxy improvement to analyse the character and
+    // pick out the most skilful weapons they have access to.
+    // For now, we'll assume Trained is good enough and not try to filter for
+    // Expert or higher in particular weapons; reasonable if we choose a weapon
+    // at character level 1.
+    let addMeleeWeapon =
+        let improve c =
+            let ofCat = filter c Melee
+            let bestWeapons = // TODO take rarity into account; for now allowing all
+                if not (List.isEmpty <| ofCat AdvancedWeapon) then ofCat AdvancedWeapon
+                elif not (List.isEmpty <| ofCat MartialWeapon) then ofCat MartialWeapon
+                else ofCat SimpleWeapon
+            c, [{
+                Prompt = "Melee weapon"
+                Choices = bestWeapons |> List.map (fun w -> w.Name, (fun _ -> true), fun c -> { c with MeleeWeapon = Some w }, [])
+                Count = 1
+            }]
+        Improve.single "Melee weapon" improve
+
+    // Similarly :)
+    let addRangedWeapon =
+        let improve c =
+            let ofCat = filter c Ranged
+            let bestWeapons = // TODO take rarity into account; for now allowing all
+                if not (List.isEmpty <| ofCat AdvancedWeapon) then ofCat AdvancedWeapon
+                elif not (List.isEmpty <| ofCat MartialWeapon) then ofCat MartialWeapon
+                else ofCat SimpleWeapon
+            c, [{
+                Prompt = "Ranged weapon"
+                Choices = bestWeapons |> List.map (fun w -> w.Name, (fun _ -> true), fun c -> { c with RangedWeapon = Some w }, [])
+                Count = 1
+            }]
+        Improve.single "Ranged weapon" improve
