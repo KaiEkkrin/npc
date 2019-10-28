@@ -14,6 +14,7 @@
     <Compile Include="Background.fs" />
     <Compile Include="Class.fs" />
     <Compile Include="Build.fs" />
+    <Compile Include="CharacterSheet.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 </Project>
