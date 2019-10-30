@@ -26,6 +26,21 @@ module Classes =
             Improve.skill (Skills.classSkill (cl, a)) Trained
         ])
 
+    // Increases the character's class skill, whatever it is (there should only be the one) --
+    // only for Expert and higher
+    let classSkill cl prof =
+        let choices =
+            [Strength; Dexterity; Constitution; Intelligence; Wisdom; Charisma]
+            |> List.map (fun ab ->
+                let boostName = classAbilityBoostName cl ab
+                let sk = Skills.classSkill (cl, ab)
+                (boostName, (fun c -> Map.containsKey sk c.Skills), fun c -> { c with Skills = Map.add sk prof c.Skills }, []))
+        {
+            Prompt = "Class skill increase"
+            Choices = choices
+            Count = 1
+        }
+
     // -- ALCHEMIST --
 
     let alchemistResearchFields = [
@@ -33,6 +48,25 @@ module Classes =
         classFeat Alchemist 1 [] "Chirurgeon" 73 []
         classFeat Alchemist 1 [] "Mutagenist" 73 []
     ]
+
+    let alchemicalAlacrity = classFeat Alchemist 15 [] "Alchemical Alacrity" 75 []
+    let alchemicalExpertise = classFeat Alchemist 9 [] "Alchemical Expertise" 75 [
+        classSkill Alchemist Expert
+    ]
+    let alchemicalMastery = classFeat Alchemist 17 [] "Alchemical Mastery" 76 [
+        classSkill Alchemist Master
+    ]
+    let alchemicalWeaponExpertise = classFeat Alchemist 7 [] "Alchemical Weapon Expertise" 74 [
+        Weapons.improveSkill (SimpleWeapon, Melee) Expert
+        Weapons.improveSkill (SimpleWeapon, Ranged) Expert
+        Improve.skill (Skills.weaponSkill Weapons.alchemicalBomb) Expert
+    ]
+    let doubleBrew = classFeat Alchemist 9 [] "Double Brew" 75 []
+    let fieldDiscovery = classFeat Alchemist 5 [] "Field Discovery" 74 []
+    let greaterFieldDiscovery = classFeat Alchemist 13 [] "Greater Field Discovery" 75 []
+    let perpetualInfusions = classFeat Alchemist 7 [] "Perpetual Infusions" 74 []
+    let perpetualPerfection = classFeat Alchemist 17 [] "Perpetual Perfection" 76 []
+    let perpetualPotency = classFeat Alchemist 11 [] "Perpetual Potency" 75 []
 
     let alchemistFeats = [
         classFeat Alchemist 1 [] "Alchemical Familiar" 76 []
@@ -59,9 +93,126 @@ module Classes =
                 Improve.skill (Skills.weaponSkill Weapons.alchemicalBomb) Trained
                 Improve.skill (Skills.armorSkill LightArmor) Trained
                 Improve.skill (Skills.armorSkill Unarmored) Trained
+                Improve.pool ("Formulas", 6)
                 Feats.forceAdd Feats.alchemicalCrafting
                 Improve.addFeats alchemistResearchFields 1
                 Improve.addFeats alchemistFeats 1
+            ]
+        | 2<Level> -> c, [
+            Improve.pool ("Formulas", 2)
+            Improve.addFeats alchemistFeats 1
+            Improve.addFeats Feats.skillFeats 1
+            ]
+        | 3<Level> -> c, [
+            Improve.pool ("Formulas", 2)
+            Improve.addFeats Feats.generalFeats 1
+            Skills.increase 1
+            ]
+        | 4<Level> -> c, [
+            Improve.pool ("Formulas", 2)
+            Improve.addFeats alchemistFeats 1
+            Improve.addFeats Feats.skillFeats 1
+            ]
+        | 5<Level> -> c, [
+            Improve.pool ("Formulas", 2)
+            Improve.anyAbility 4
+            Improve.addFeats Ancestry.ancestryFeats 1
+            Feats.forceAdd fieldDiscovery
+            Skills.increase 1
+            ]
+        | 6<Level> -> c, [
+            Improve.pool ("Formulas", 2)
+            Improve.addFeats alchemistFeats 1
+            Improve.addFeats Feats.skillFeats 1
+            ]
+        | 7<Level> -> c, [
+            Improve.pool ("Formulas", 2)
+            Feats.forceAdd alchemicalWeaponExpertise
+            Improve.addFeats Feats.generalFeats 1
+            Feats.forceAdd Feats.ironWill
+            Feats.forceAdd perpetualInfusions
+            Skills.increase 1
+            ]
+        | 8<Level> -> c, [
+            Improve.pool ("Formulas", 2)
+            Improve.addFeats alchemistFeats 1
+            Improve.addFeats Feats.skillFeats 1
+            ]
+        | 9<Level> -> c, [
+            Improve.pool ("Formulas", 2)
+            Feats.forceAdd alchemicalExpertise
+            Feats.forceAdd Feats.alertness
+            Improve.addFeats Ancestry.ancestryFeats 1
+            Feats.forceAdd doubleBrew
+            Skills.increase 1
+            ]
+        | 10<Level> -> c, [
+            Improve.pool ("Formulas", 2)
+            Improve.anyAbility 4
+            Improve.addFeats alchemistFeats 1
+            Improve.addFeats Feats.skillFeats 1
+            ]
+        | 11<Level> -> c, [
+            Improve.pool ("Formulas", 2)
+            Improve.addFeats Feats.generalFeats 1
+            Feats.forceAdd Feats.juggernaut
+            Feats.forceAdd perpetualPotency
+            Skills.increase 1
+            ]
+        | 12<Level> -> c, [
+            Improve.pool ("Formulas", 2)
+            Improve.addFeats alchemistFeats 1
+            Improve.addFeats Feats.skillFeats 1
+            ]
+        | 13<Level> -> c, [
+            Improve.pool ("Formulas", 2)
+            Improve.addFeats Ancestry.ancestryFeats 1
+            Feats.forceAdd greaterFieldDiscovery
+            Feats.forceAdd Feats.lightArmorExpertise
+            Skills.increase 1
+            Feats.forceAdd Feats.weaponSpecialization
+            ]
+        | 14<Level> -> c, [
+            Improve.pool ("Formulas", 2)
+            Improve.addFeats alchemistFeats 1
+            Improve.addFeats Feats.skillFeats 1
+            ]
+        | 15<Level> -> c, [
+            Improve.pool ("Formulas", 2)
+            Improve.anyAbility 4
+            Feats.forceAdd alchemicalAlacrity
+            Feats.forceAdd Feats.evasion
+            Improve.addFeats Feats.generalFeats 1
+            Skills.increase 1
+            ]
+        | 16<Level> -> c, [
+            Improve.pool ("Formulas", 2)
+            Improve.addFeats alchemistFeats 1
+            Improve.addFeats Feats.skillFeats 1
+            ]
+        | 17<Level> -> c, [
+            Improve.pool ("Formulas", 2)
+            Feats.forceAdd alchemicalMastery
+            Improve.addFeats Ancestry.ancestryFeats 1
+            Feats.forceAdd perpetualPerfection
+            Skills.increase 1
+            ]
+        | 18<Level> -> c, [
+            Improve.pool ("Formulas", 2)
+            Improve.addFeats alchemistFeats 1
+            Improve.addFeats Feats.skillFeats 1
+            ]
+        | 19<Level> -> c, [
+            Improve.pool ("Formulas", 2)
+            Improve.addFeats Feats.generalFeats 1
+            Feats.forceAdd Feats.lightArmorMastery
+            Skills.increase 1
+            ]
+        | 20<Level> -> c, [
+            Improve.pool ("Formulas", 2)
+            Improve.anyAbility 4
+            Improve.addFeats alchemistFeats 1
+            Improve.addFeats Feats.skillFeats 1
             ]
         | _ -> failwithf "Bad level: %d" c.Level
 
@@ -118,6 +269,9 @@ module Classes =
                 Improve.skill (Skills.weaponSkill Weapons.whip) Trained
                 Improve.skill (Skills.armorSkill LightArmor) Trained
                 Improve.skill (Skills.armorSkill Unarmored) Trained
+                Improve.spellSkill (Skills.spellSkill (Occult, Charisma))
+                Improve.spell (0, 5)
+                Improve.spell (1, 2)
                 Improve.addFeats bardMuses 1
             ]
         | _ -> failwithf "Bad level: %d" c.Level
@@ -179,6 +333,9 @@ module Classes =
                 Improve.skill (Skills.armorSkill LightArmor) Trained
                 Improve.skill (Skills.armorSkill MediumArmor) Trained
                 Improve.skill (Skills.armorSkill Unarmored) Trained
+                Improve.spellSkill (Skills.spellSkill (Primal, Wisdom))
+                Improve.spell (0, 4)
+                Improve.spell (1, 2)
                 Improve.addFeats druidOrders 1
                 Feats.forceAdd Feats.shieldBlock
                 Feats.forceAdd wildEmpathy
@@ -296,6 +453,8 @@ module Classes =
 
     // -- EVERYTHING --
     let hasNoClass c = Option.isNone c.Class
+    let hasClass cl c = match c.Class with | Some cl2 when cl2 = cl -> true | _ -> false
+    
     let classes = {
         Prompt = "Class"
         Choices = [
@@ -308,3 +467,14 @@ module Classes =
         Count = 1
     }
 
+    let levelUp = {
+        Prompt = "Level up"
+        Choices = [
+            "Alchemist", hasClass Alchemist, alchemist
+            "Bard", hasClass Bard, bard
+            "Druid", hasClass Druid, druid
+            "Ranger", hasClass Ranger, ranger
+            "Rogue", hasClass Rogue, rogue
+        ]
+        Count = 1
+    }

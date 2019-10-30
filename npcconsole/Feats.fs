@@ -28,9 +28,30 @@ module Feats =
 
     // -- SPECIAL FEATS -- Usually applied straight up
 
+    let alertness = feat 9 [] "Alertness" 0 [
+        Improve.skill Skills.perception Expert
+    ]
     let darkvision = feat 1 [] "Darkvision" 0 []
+    let evasion = feat 15 [] "Evasion" 0 [
+        Improve.skill Skills.reflexSave Master
+    ]
+    let ironWill = feat 7 [] "Iron Will" 0 [
+        Improve.skill Skills.willSave Expert
+    ]
+    let juggernaut = feat 11 [] "Juggernaut" 0 [
+        Improve.skill Skills.fortitudeSave Master
+    ]
     let keenEyes = feat 1 [] "Keen Eyes" 0 []
+    let lightArmorExpertise = feat 13 [] "Light Armor Expertise" 0 [
+        Improve.skill (Skills.armorSkill Unarmored) Expert
+        Improve.skill (Skills.armorSkill LightArmor) Expert
+    ]
+    let lightArmorMastery = feat 19 [] "Light Armor Mastery" 0 [
+        Improve.skill (Skills.armorSkill Unarmored) Master
+        Improve.skill (Skills.armorSkill LightArmor) Master
+    ]
     let lowLightVision = feat 1 [] "Low-light vision" 0 []
+    let weaponSpecialization = feat 13 [] "Weapon Specialization" 0 [] // The bonus is implemented in the character sheet
 
     // -- BIG LIST OF OTHER FEATS -- (The feats chapter in the book)
 

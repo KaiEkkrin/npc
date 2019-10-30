@@ -334,3 +334,7 @@ module Ancestry =
         ]
         Count = 1
     }
+
+    // The ancestry feats all have their matching ancestries as prerequisites, so this whole list
+    // can be applied to characters leveling up and gaining extra ones
+    let ancestryFeats = List.concat [dwarfAncestryFeats; elfAncestryFeats; gnomeAncestryFeats; goblinAncestryFeats; halflingAncestryFeats; humanAncestryFeats]

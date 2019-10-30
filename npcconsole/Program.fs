@@ -38,6 +38,7 @@ type ConsoleInteract () =
 // Arguments
 type Args = {
     Name: string option
+    Level: int
 }
 
 type ArgParseResult = | Parsed of Args | Failed of string
@@ -48,13 +49,19 @@ module Program =
             match argv with
             | [] -> Parsed args
             | "--name"::name::argvs -> { args with Args.Name = Some name } |> parse argvs
-            | arg::argvs -> Failed arg
-        parse (List.ofArray argv) { Name = None }
+            | "--level"::l::argvs -> // TODO custom pattern thingy?
+                match Int32.TryParse l with
+                | true, level -> { args with Args.Level = level } |> parse argvs
+                | _ -> Failed "--level"
+            | arg::_ -> Failed arg
+        parse (List.ofArray argv) { Name = None; Level = 1 }
 
     let usage () =
         printfn "Usage:"
         printfn "--name <name>"
         printfn "    Specify a character name."
+        printfn "--level <level>"
+        printfn "    Specify a character level (default 1)."
         0
 
     [<EntryPoint>]
@@ -72,6 +79,6 @@ module Program =
                 // offer them options, thus
                 let interact = ConsoleInteract () :> IInteraction
                 let build = Builder interact
-                let c = build.Start args.Name.Value
+                let c = build.Build (args.Name.Value, args.Level)
                 interact.Show c
                 0

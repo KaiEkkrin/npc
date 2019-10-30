@@ -42,6 +42,13 @@ module Improve =
     // How to require a particular character level
     let hasLevel n c = c.Level >= (n * 1<Level>)
 
+    // Level up by one
+    let levelUp = {
+        Prompt = "Level up"
+        Choices = ["Level up", (fun c -> c.Level < 20<Level>), (fun c -> { c with Level = c.Level + 1<Level> }, [])]
+        Count = 1
+    }
+
     // How to require an ability score value or higher
     let hasAbilityScore ab n c = match Map.tryFind ab c.Abilities with | Some score when score >= n -> true | _ -> false
 
@@ -173,3 +180,25 @@ module Improve =
     let recategorise pred cat = single "Recategorise" (fun c ->
         let rcw = c.Weapons |> List.map (fun w -> if (pred w) then { w with Category = cat } else w)
         { c with Weapons = rcw }, [])
+
+    // Adding a spell skill automatically makes the character Trained in that skill
+    let spellSkill sk = single "Spell skill" (fun c -> { c with SpellSkill = Some sk }, [
+        skill sk Trained
+    ])
+
+    let spell (level, count) = single "Spell level" (fun c ->
+        let lv = level * 1<Level>
+        let newCount =
+            match Map.tryFind lv c.Spells with
+            | Some already -> already + count
+            | None -> count
+        { c with Spells = Map.add lv newCount c.Spells }, [])
+
+    let pool (name, count) = single "Pool" (fun c ->
+        let newCount =
+            match Map.tryFind name c.Pools with
+            | Some already -> already + count
+            | None -> count
+        { c with Pools = Map.add name newCount c.Pools }, [])
+
+    

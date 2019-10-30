@@ -56,7 +56,13 @@ module CharacterSheet =
                 match w.Type with
                 | Melee -> Map.find Strength c.Abilities |> Derive.modifier
                 | Ranged -> 0<Modifier>
-            yield one (sprintf "%s damage" w.Name, sprintf "%A %+2d (%A)" w.Damage damageModifier w.DamageType)
+            let damageSpecializationBonus =
+                match (c.Feats |> List.tryFind (fun f -> f.Name = "Weapon Specialization"), Map.tryFind sk c.Skills) with
+                | Some _, Some Legendary -> 4<Modifier>
+                | Some _, Some Master -> 3<Modifier>
+                | Some _, Some Expert -> 2<Modifier>
+                | _, _ -> 0<Modifier>
+            yield one (sprintf "%s damage" w.Name, sprintf "%A %+2d (%A)" w.Damage (damageModifier + damageSpecializationBonus) w.DamageType)
             match w.Range with
             | Some r -> yield one (sprintf "%s Range" w.Name, sprintf "%3d" r)
             | None -> ()
@@ -69,6 +75,21 @@ module CharacterSheet =
         match Map.tryPick (fun (sk: Skill) _ -> if sk.Name.Contains ("Class") then Some sk else None) c.Skills with
         | Some sk -> yield printDC c sk
         | None -> ()
+    ]
+
+    let printSpells (c, sk) = [
+        yield printSkill c sk
+        yield printDC c sk
+        let spells = c.Spells |> Map.filter (fun _ v -> v > 0) |> Map.toSeq
+        for (level, count) in spells do
+            let lvstr =
+                match level with
+                | 0<Level> -> "Cantrip"
+                | 1<Level> -> "1st"
+                | 2<Level> -> "2nd"
+                | 3<Level> -> "3rd"
+                | l -> sprintf "%dth" l
+            yield (lvstr, sprintf "%d" count)
     ]
 
     let buildBasics c = {
@@ -125,6 +146,30 @@ module CharacterSheet =
         ]
     }
 
+    let buildSpells c = [
+        match c.SpellSkill with
+        | Some sk ->
+            yield {
+                Title = Some sk.Name
+                Items = printSpells (c, sk)
+            }
+        | None -> ()
+    ]
+
+    let buildPools c = [
+        let entries =
+            c.Pools
+            |> Map.filter (fun _ v -> v > 0)
+            |> Map.toList
+            |> List.map (fun (p, v) -> (p, sprintf "%d" v))
+        if not (List.isEmpty entries)
+        then
+            yield {
+                Title = Some "Pools"
+                Items = entries
+            }
+    ]
+
     let buildFeats c = {
         Title = Some "Feats"
         Items = c.Feats |> List.sortBy (fun f -> f.Name) |> List.map (fun f ->
@@ -140,5 +185,7 @@ module CharacterSheet =
         yield buildDifficultyClasses c
         yield buildSaves c
         yield buildSkills c
+        yield! buildSpells c
+        yield! buildPools c
         yield buildFeats c
     ]

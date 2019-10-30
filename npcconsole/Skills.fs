@@ -84,3 +84,33 @@ module Skills =
         Name = sprintf "%A Class" cl
         KeyAbility = ab
     }
+
+    let spellSkill (tradition, ab) = {
+        Name = sprintf "%A Spell" tradition
+        KeyAbility = ab
+    }
+
+    // Increases a skill.  How high depends on level:
+    let increase count =
+        let canIncrease sk c =
+            match Map.tryFind sk c.Skills with
+            | None -> true
+            | Some Untrained -> true
+            | Some Trained -> c.Level >= 3<Level>
+            | Some Expert -> c.Level >= 7<Level>
+            | Some Master -> c.Level >= 15<Level>
+            | Some Legendary -> false
+
+        let increase sk c =
+            match Map.tryFind sk c.Skills with
+            | Some Legendary -> failwith "Cannot increase a legendary skill"
+            | Some Master -> Improve.addSkill sk Legendary c
+            | Some Expert -> Improve.addSkill sk Master c
+            | Some Trained -> Improve.addSkill sk Expert c
+            | _ -> Improve.addSkill sk Trained c
+
+        {
+            Prompt = "Skill increase"
+            Choices = regularSkills |> List.map (fun sk -> sk.Name, canIncrease sk, increase sk)
+            Count = count
+        }

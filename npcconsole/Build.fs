@@ -56,11 +56,18 @@ type Builder (interact: IInteraction) =
             // Prompt for this improvement, then apply the others:
             (prompt imp c, imps) >>= f
 
+    // Levels up a character:
+    let rec doLevelUp level c =
+        if c.Level = level then c
+        else (c, [Improve.levelUp; Classes.levelUp]) >>= (doLevelUp level)
+
     // The canonical ability order (useful for display)
     static member AbilityOrder = [Strength; Dexterity; Constitution; Intelligence; Wisdom; Charisma]
 
-    // Creates a starting-level character.
-    member this.Start name =
+    // Creates a character.
+    // TODO : Change the character build process to choose gear at the end rather than in the
+    // first level -- so that we choose the gear that is most relevant to the character :)
+    member this.Build (name, level) =
         ({
             Name = name
             Ancestry = None
@@ -78,6 +85,9 @@ type Builder (interact: IInteraction) =
             MeleeWeapon = None
             RangedWeapon = None
             Armor = None
+            SpellSkill = None
+            Spells = Map.empty
+            Pools = Map.empty
         }, [
             Ancestry.ancestries
             Background.backgrounds
@@ -86,7 +96,4 @@ type Builder (interact: IInteraction) =
             Weapons.addMeleeWeapon
             Weapons.addRangedWeapon
         ])
-        >>= id
-
-    // TODO level-up a character, etc.
-
+        >>= doLevelUp (level * 1<Level>)

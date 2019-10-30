@@ -118,6 +118,9 @@ type Armor = {
     Traits: string list
 }
 
+// The spellcasting traditions also have skills associated with them
+type Tradition = Arcane | Divine | Occult | Primal
+
 // Feats include a page number to help look them up because otherwise it would
 // be very annoying!
 // The feat list also includes things like class features, that aren't strictly
@@ -153,6 +156,16 @@ type Character = {
     RangedWeapon: Weapon option
     
     Armor: Armor option
+
+    // If this character can cast spells, here is the skill for it
+    SpellSkill: Skill option
+
+    // Maps spellcasting level to the number of spells per day that the
+    // character can cast.  (No entry implies none.)
+    Spells: Map<int<Level>, int>
+
+    // Simple numbered counts of things (e.g. focus points) go here.
+    Pools: Map<string, int>
 
     // TODO Support choosing a shield, if the character has hands free.
 
