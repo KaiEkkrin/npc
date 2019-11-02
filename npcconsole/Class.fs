@@ -73,6 +73,40 @@ module Classes =
         classFeat Alchemist 1 [] "Alchemical Savant" 76 []
         classFeat Alchemist 1 [] "Far Lobber" 76 []
         classFeat Alchemist 1 [] "Quick Bomber" 76 []
+        classFeat Alchemist 2 [] "Poison Resistance" 77 [] // TODO resistances
+        classFeat Alchemist 2 [] "Revivifying Mutagen" 77 []
+        classFeat Alchemist 2 [] "Smoke Bomb" 77 []
+        classFeat Alchemist 4 [] "Calculated Splash" 77 []
+        classFeat Alchemist 4 [] "Efficient Alchemy" 77 []
+        classFeat Alchemist 4 [] "Enduring Alchemy" 78 []
+        classFeat Alchemist 6 [] "Combine Elixirs" 78 []
+        classFeat Alchemist 6 [] "Debilitating Bomb" 78 []
+        classFeat Alchemist 6 [] "Directional Bombs" 78 []
+        classFeat Alchemist 8 [] "Feral Mutagen" 79 []
+        classFeat Alchemist 8 [] "Powerful Alchemy" 79 []
+        classFeat Alchemist 8 [] "Sticky Bomb" 79 []
+        classFeat Alchemist 10 [] "Elastic Mutagen" 79 []
+        classFeat Alchemist 10 [Improve.hasFeat "Calculated Splash"] "Expanded Splash" 79 []
+        classFeat Alchemist 10 [Improve.hasFeat "Debilitating Bomb"] "Greater Debilitating Bomb" 79 []
+        classFeat Alchemist 10 [] "Merciful Elixir" 79 []
+        classFeat Alchemist 10 [Improve.hasFeat "Powerful Alchemy"] "Potent Poisoner" 79 []
+        classFeat Alchemist 12 [] "Extend Elixir" 79 []
+        classFeat Alchemist 12 [] "Invincible Mutagen" 79 []
+        classFeat Alchemist 12 [Improve.hasFeat "Far Lobber"] "Uncanny Bombs" 79 []
+        classFeat Alchemist 14 [] "Glib Mutagen" 80 []
+        classFeat Alchemist 14 [Improve.hasFeat "Merciful Elixir"] "Greater Merciful Elixir" 80 []
+        classFeat Alchemist 14 [Improve.hasFeat "Greater Debilitating Bomb"] "True Debilitating Bomb" 80 []
+        classFeat Alchemist 16 [Improve.hasFeat "Extend Elixir"] "Eternal Elixir" 80 []
+        classFeat Alchemist 16 [] "Exploitive Bomb" 80 []
+        classFeat Alchemist 16 [] "Genius Mutagen" 81 []
+        classFeat Alchemist 16 [Improve.hasFeat "Extend Elixir"] "Persistent Mutagen" 81 []
+        classFeat Alchemist 18 [] "Improbable Elixirs" 81 []
+        classFeat Alchemist 18 [] "Mindblank Mutagen" 81 []
+        classFeat Alchemist 18 [] "Miracle Worker" 81 []
+        classFeat Alchemist 18 [] "Perfect Debilitation" 81 []
+        classFeat Alchemist 20 [] "Craft Philosopher's Stone" 81 []
+        classFeat Alchemist 20 [Improve.hasFeat "Expanded Splash"] "Mega Bomb" 81 []
+        classFeat Alchemist 20 [] "Perfect Mutagen" 81 []
     ]
 
     let alchemist c =
@@ -224,7 +258,11 @@ module Classes =
     let bardicLore = classFeat Bard 1 [Improve.hasFeat "Enigma"] "Bardic Lore" 99 [
         Improve.skill bardicLoreSkill Trained // TODO make it expert upon Legendary proficiency in Occultism
     ]
+    let expertSpellcaster = classFeat Bard 7 [] "Expert Spellcaster" 98 [
+        classSkill Bard Expert
+    ]
     let lingeringComposition = classFeat Bard 1 [Improve.hasFeat "Maestro"] "Lingering Composition" 99 []
+    let signatureSpells = classFeat Bard 1 [] "Signature Spells" 98 []
     let versatilePerformance = classFeat Bard 1 [Improve.hasFeat "Polymath"] "Versatile Performance" 100 []
 
     let bardFeats = [
@@ -232,6 +270,7 @@ module Classes =
         lingeringComposition
         classFeat Bard 1 [] "Reach Spell" 99 []
         versatilePerformance
+        classFeat Bard 2 [] "Cantrip Expansion" 100 []
     ]
 
     let bardMuses = [
@@ -273,6 +312,58 @@ module Classes =
                 Improve.spell (0, 5)
                 Improve.spell (1, 2)
                 Improve.addFeats bardMuses 1
+            ]
+        | 2<Level> -> c, [
+            Improve.addFeats bardFeats 1
+            Improve.addFeats Feats.skillFeats 1
+            Improve.spell (1, 1)
+            ]
+        | 3<Level> -> c, [
+            Improve.addFeats Feats.generalFeats 1
+            Feats.forceAdd Feats.lightningReflexes
+            Feats.forceAdd signatureSpells
+            Skills.increase 1
+            Improve.spell (2, 2)
+            ]
+        | 4<Level> -> c, [
+            Improve.addFeats bardFeats 1
+            Improve.addFeats Feats.skillFeats 1
+            Improve.spell (2, 1)
+            ]
+        | 5<Level> -> c, [
+            Improve.anyAbility 4
+            Improve.addFeats Ancestry.ancestryFeats 1
+            Skills.increase 1
+            Improve.spell (3, 2)
+            ]
+        | 6<Level> -> c, [
+            Improve.addFeats bardFeats 1
+            Improve.addFeats Feats.skillFeats 1
+            Improve.spell (3, 1)
+            ]
+        | 7<Level> -> c, [
+            Feats.forceAdd expertSpellcaster
+            Improve.addFeats Feats.generalFeats 1
+            Skills.increase 1
+            Improve.spell (4, 2)
+            ]
+        | 8<Level> -> c, [
+            Improve.addFeats bardFeats 1
+            Improve.addFeats Feats.skillFeats 1
+            Improve.spell (4, 1)
+            ]
+        | 9<Level> -> c, [
+            Improve.addFeats Ancestry.ancestryFeats 1
+            Feats.forceAdd Feats.greatFortitude
+            Feats.forceAdd Feats.resolve
+            Skills.increase 1
+            Improve.spell (5, 2)
+            ]
+        | 10<Level> -> c, [
+            Improve.anyAbility 4
+            Improve.addFeats bardFeats 1
+            Improve.addFeats Feats.skillFeats 1
+            Improve.spell (5, 1)
             ]
         | _ -> failwithf "Bad level: %d" c.Level
 

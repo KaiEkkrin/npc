@@ -35,6 +35,9 @@ module Feats =
     let evasion = feat 15 [] "Evasion" 0 [
         Improve.skill Skills.reflexSave Master
     ]
+    let greatFortitude = feat 9 [] "Great Fortitude" 0 [
+        Improve.skill Skills.fortitudeSave Expert
+    ]
     let ironWill = feat 7 [] "Iron Will" 0 [
         Improve.skill Skills.willSave Expert
     ]
@@ -50,7 +53,13 @@ module Feats =
         Improve.skill (Skills.armorSkill Unarmored) Master
         Improve.skill (Skills.armorSkill LightArmor) Master
     ]
+    let lightningReflexes = feat 3 [] "Lighting Reflexes" 0 [
+        Improve.skill Skills.reflexSave Expert
+    ]
     let lowLightVision = feat 1 [] "Low-light vision" 0 []
+    let resolve = feat 9 [] "Resolve" 0 [
+        Improve.skill Skills.willSave Master
+    ]
     let weaponSpecialization = feat 13 [] "Weapon Specialization" 0 [] // The bonus is implemented in the character sheet
 
     // -- BIG LIST OF OTHER FEATS -- (The feats chapter in the book)
