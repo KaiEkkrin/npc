@@ -59,7 +59,7 @@ type Builder (interact: IInteraction) =
     // Levels up a character:
     let rec doLevelUp level c =
         if c.Level = level then c
-        else (c, [Improve.levelUp; Classes.levelUp]) >>= (doLevelUp level)
+        else (c, [Improve.levelUp; Classes.All.levelUp]) >>= (doLevelUp level)
 
     // The canonical ability order (useful for display)
     static member AbilityOrder = [Strength; Dexterity; Constitution; Intelligence; Wisdom; Charisma]
@@ -91,7 +91,7 @@ type Builder (interact: IInteraction) =
         }, [
             Ancestry.ancestries
             Background.backgrounds
-            Classes.classes
+            Classes.All.classes
             Improve.addArmor Armors.allArmors
             Weapons.addMeleeWeapon
             Weapons.addRangedWeapon

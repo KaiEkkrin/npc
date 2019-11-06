@@ -200,5 +200,3 @@ module Improve =
             | Some already -> already + count
             | None -> count
         { c with Pools = Map.add name newCount c.Pools }, [])
-
-    
