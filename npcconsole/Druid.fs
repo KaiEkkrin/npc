@@ -25,6 +25,31 @@ module Druid =
         stormBorn
         classFeat Druid 1 [] "Widen Spell" 134 []
         wildShape
+        classFeat Druid 2 [] "Call of the Wild" 134 []
+        classFeat Druid 2 [] "Enhanced Familiar" 134 [] // TODO requires a familiar
+        classFeat Druid 2 [] "Order Explorer" 134 [] // TODO how to add an order feat without adding the order itself
+        classFeat Druid 2 [] "Poison Resistance" 135 [] // TODO resistances
+        classFeat Druid 4 [Improve.hasAbilityScore Strength 14<Score>; Improve.hasFeat "Wild Shape"] "Form Control" 135 []
+        classFeat Druid 4 [Improve.hasFeat "Animal Companion"] "Mature Animal Companion" 135 []
+        classFeat Druid 4 [Improve.hasFeat "Order Explorer"] "Order Magic" 135 [] // TODO multiple times, etc
+        classFeat Druid 4 [Improve.hasFeat "Wild Shape"] "Thousand Faces" 135 []
+        classFeat Druid 4 [Improve.hasFeat "Leaf"] "Woodland Stride" 135 []
+        classFeat Druid 6 [Improve.hasFeat "Leaf"] "Green Empathy" 136 []
+        classFeat Druid 6 [Improve.hasFeat "Wild Shape"] "Insect Shape" 136 []
+        classFeat Druid 6 [] "Steady Spellcasting" 136 []
+        classFeat Druid 6 [Improve.hasFeat "Storm"] "Storm Retribution" 136 [] // TODO has tempest surge spell
+        classFeat Druid 8 [Improve.hasFeat "Wild Shape"] "Ferocious Shape" 136 []
+        classFeat Druid 8 [] "Fey Caller" 136 []
+        classFeat Druid 8 [Improve.hasFeat "Mature Animal Companion"] "Incredible Companion" 137 []
+        classFeat Druid 8 [Improve.hasFeat "Wild Shape"] "Soaring Shape" 137 []
+        classFeat Druid 8 [Improve.hasFeat "Storm"] "Wind Caller" 137 [
+            Improve.pool ("Focus", 1)
+        ]
+        classFeat Druid 10 [Improve.hasFeat "Wild Shape"] "Elemental Shape" 137 []
+        classFeat Druid 10 [] "Healing Transformation" 137 []
+        classFeat Druid 10 [] "Overwhelming Energy" 137 []
+        classFeat Druid 10 [Improve.hasOneFeatOf ["Leaf"; "Wild Shape"]] "Plant Shape" 138 []
+        classFeat Druid 10 [Improve.hasFeat "Animal Companion"] "Side by Side" 138 []
     ]
 
     let druidOrders = [

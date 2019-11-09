@@ -75,6 +75,13 @@ module Improve =
     // True if a character already has a feat with the given name, else false.
     let hasFeat name c = match c.Feats |> List.tryFind (fun f -> f.Name = name) with | Some _ -> true | None -> false
 
+    // True if a character has one of the feats with these names, else false.
+    let hasOneFeatOf names c =
+        let existingFeats = c.Feats |> List.map (fun f -> f.Name) |> Set.ofList
+        let requiredFeats = names |> Set.ofList
+        let intersection = Set.intersect existingFeats requiredFeats
+        (Set.count intersection) > 0
+
     // The other way around :)
     let doesNotHaveFeat name c = match c.Feats |> List.tryFind (fun f -> f.Name = name) with | Some _ -> false | None -> true
 
