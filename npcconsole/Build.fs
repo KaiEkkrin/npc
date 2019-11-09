@@ -1,5 +1,6 @@
 namespace NpcConsole
 
+open System.IO
 open NpcConsole.Attributes
 
 // Describes the interactive UI with the player.
@@ -11,7 +12,7 @@ type IInteraction =
     abstract member Prompt : string * string list -> string
 
     // Shows the final character to the player.
-    abstract member Show : Character -> unit
+    abstract member Show : TextWriter * Character -> unit
 
     end
 
@@ -59,7 +60,9 @@ type Builder (interact: IInteraction) =
     // Levels up a character:
     let rec doLevelUp level c =
         if c.Level = level then c
-        else (c, [Improve.levelUp; Classes.All.levelUp]) >>= (doLevelUp level)
+        else
+            let newLevel = c.Level + 1<Level>
+            (c, [Improve.levelUpTo newLevel; Classes.All.levelUpTo newLevel]) >>= (doLevelUp level)
 
     // The canonical ability order (useful for display)
     static member AbilityOrder = [Strength; Dexterity; Constitution; Intelligence; Wisdom; Charisma]

@@ -42,10 +42,10 @@ module Improve =
     // How to require a particular character level
     let hasLevel n c = c.Level >= (n * 1<Level>)
 
-    // Level up by one
-    let levelUp = {
-        Prompt = "Level up"
-        Choices = ["Level up", (fun c -> c.Level < 20<Level>), (fun c -> { c with Level = c.Level + 1<Level> }, [])]
+    // Level up
+    let levelUpTo n = {
+        Prompt = sprintf "Level up to %d" n
+        Choices = [sprintf "Level up to %d" n, (fun c -> c.Level = n - 1<Level>), (fun c -> { c with Level = n }, [])]
         Count = 1
     }
 

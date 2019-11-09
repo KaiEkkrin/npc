@@ -3,7 +3,7 @@
 namespace NpcConsole
 
 open System
-open NpcConsole.Attributes
+open System.IO
 
 // A console interaction.
 type ConsoleInteract () = 
@@ -21,7 +21,7 @@ type ConsoleInteract () =
             |> Seq.choose (fun l -> match Int32.TryParse l with | true, n -> Some n | _ -> None)
             |> Seq.pick (fun n -> List.tryPick (fun (n2, ch) -> if n2 = n then Some ch else None) numberedChoices)
 
-        member this.Show c =
+        member this.Show (f, c) =
             let sheet = CharacterSheet.create c
 
             // I'll right justify the names and left justify the values:
@@ -31,14 +31,15 @@ type ConsoleInteract () =
                 |> List.fold (fun acc (n, _) -> max acc n.Length) 0
 
             for s in sheet do
-                match s.Title with | Some t -> printfn "%s" t | None -> ()
+                match s.Title with | Some t -> fprintfn f "%s" t | None -> ()
                 for (n, v) in s.Items do
-                    printfn "%s : %s" (n.PadLeft maxNameLength) v
+                    fprintfn f "%s : %s" (n.PadLeft maxNameLength) v
 
 // Arguments
 type Args = {
     Name: string option
     Level: int
+    Output: string option
 }
 
 type ArgParseResult = | Parsed of Args | Failed of string
@@ -53,8 +54,9 @@ module Program =
                 match Int32.TryParse l with
                 | true, level -> { args with Args.Level = level } |> parse argvs
                 | _ -> Failed "--level"
+            | "--out"::o::argvs -> { args with Args.Output = Some o } |> parse argvs
             | arg::_ -> Failed arg
-        parse (List.ofArray argv) { Name = None; Level = 1 }
+        parse (List.ofArray argv) { Name = None; Level = 1; Output = None }
 
     let usage () =
         printfn "Usage:"
@@ -62,6 +64,8 @@ module Program =
         printfn "    Specify a character name."
         printfn "--level <level>"
         printfn "    Specify a character level (default 1)."
+        printfn "--out <filename>"
+        printfn "    Specify an output file (default none)."
         0
 
     [<EntryPoint>]
@@ -80,5 +84,10 @@ module Program =
                 let interact = ConsoleInteract () :> IInteraction
                 let build = Builder interact
                 let c = build.Build (args.Name.Value, args.Level)
-                interact.Show c
+                match args.Output with
+                | Some o ->
+                    use f = new StreamWriter (o)
+                    interact.Show (f :> TextWriter, c)
+                | None ->
+                    interact.Show (Console.Out, c)
                 0

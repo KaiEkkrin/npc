@@ -40,8 +40,8 @@ module All =
         Count = 1
     }
 
-    let levelUp = {
-        Prompt = "Level up"
+    let levelUpTo (n: int<Level>) = {
+        Prompt = sprintf "Level up to %d" n
         Choices = [
             "Alchemist", hasClass Alchemist, Alchemist.alchemist
             "Bard", hasClass Bard, Bard.bard
