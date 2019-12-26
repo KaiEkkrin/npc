@@ -4,6 +4,7 @@ namespace NpcConsole
 
 open System
 open System.IO
+open Npc
 
 // A console interaction.
 type ConsoleInteract () = 

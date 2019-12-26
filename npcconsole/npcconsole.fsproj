@@ -4,23 +4,9 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Attributes.fs" />
-    <Compile Include="Improve.fs" />
-    <Compile Include="Skills.fs" />
-    <Compile Include="Weapons.fs" />
-    <Compile Include="Armors.fs" />
-    <Compile Include="Feats.fs" />
-    <Compile Include="Ancestry.fs" />
-    <Compile Include="Background.fs" />
-    <Compile Include="ClassBasics.fs" />
-    <Compile Include="Alchemist.fs" />
-    <Compile Include="Bard.fs" />
-    <Compile Include="Druid.fs" />
-    <Compile Include="Ranger.fs" />
-    <Compile Include="Rogue.fs" />
-    <Compile Include="Class.fs" />
-    <Compile Include="Build.fs" />
-    <Compile Include="CharacterSheet.fs" />
     <Compile Include="Program.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\npc\npc.fsproj" />
   </ItemGroup>
 </Project>

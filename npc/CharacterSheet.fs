@@ -1,7 +1,7 @@
-namespace NpcConsole
+namespace Npc
 
 open System
-open NpcConsole.Attributes
+open Npc.Attributes
 
 // A character sheet is a baking-down of a character into a printable list of
 // items under sub-headings.

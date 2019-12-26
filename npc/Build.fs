@@ -1,7 +1,7 @@
-namespace NpcConsole
+namespace Npc
 
 open System.IO
-open NpcConsole.Attributes
+open Npc.Attributes
 
 // Describes the interactive UI with the player.
 type IInteraction =

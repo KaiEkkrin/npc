@@ -1,8 +1,8 @@
-namespace NpcConsole.Classes
+namespace Npc.Classes
 
-open NpcConsole
-open NpcConsole.Attributes
-open NpcConsole.Classes.ClassBasics
+open Npc
+open Npc.Attributes
+open Npc.Classes.ClassBasics
 
 module Ranger =
 

@@ -1,7 +1,7 @@
-namespace NpcConsole.Classes
+namespace Npc.Classes
 
-open NpcConsole
-open NpcConsole.Attributes
+open Npc
+open Npc.Attributes
 
 module All =
     // -- BARBARIAN --

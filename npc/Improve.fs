@@ -1,8 +1,8 @@
-namespace NpcConsole
+namespace Npc
 
 open System
 
-open NpcConsole.Attributes
+open Npc.Attributes
 
 // Describes how to improve a character, and emit a new one along with
 // any further pending improvements.

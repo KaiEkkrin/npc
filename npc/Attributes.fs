@@ -1,4 +1,4 @@
-namespace NpcConsole.Attributes
+namespace Npc.Attributes
 
 open System
 

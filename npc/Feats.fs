@@ -1,6 +1,6 @@
-namespace NpcConsole
+namespace Npc
 
-open NpcConsole.Attributes
+open Npc.Attributes
 
 module Feats =
 
@@ -57,6 +57,11 @@ module Feats =
         Improve.skill Skills.reflexSave Expert
     ]
     let lowLightVision = feat 1 [] "Low-light vision" 0 []
+    let mediumArmorExpertise = feat 13 [] "Medium Armor Expertise" 0 [
+        Improve.skill (Skills.armorSkill Unarmored) Expert
+        Improve.skill (Skills.armorSkill LightArmor) Expert
+        Improve.skill (Skills.armorSkill MediumArmor) Expert
+    ]
     let resolve = feat 9 [] "Resolve" 0 [
         Improve.skill Skills.willSave Master
     ]

@@ -1,19 +1,25 @@
-namespace NpcConsole.Classes
+namespace Npc.Classes
 
-open NpcConsole
-open NpcConsole.Attributes
-open NpcConsole.Classes.ClassBasics
+open Npc
+open Npc.Attributes
+open Npc.Classes.ClassBasics
 
 module Druid =
 
     let druidSpellSkill = Skills.spellSkill (Primal, Wisdom)
 
     let animalCompanion = classFeat Druid 1 [Improve.hasFeat "Animal"] "Animal Companion" 133 []
+    let druidWeaponExpertise = classFeat Druid 11 [] "Druid Weapon Expertise" 133 [
+        Weapons.improveSkill (SimpleWeapon, Melee) Expert
+        Weapons.improveSkill (SimpleWeapon, Ranged) Expert
+        Weapons.improveSkill (Unarmed, Melee) Expert
+    ]
     let expertSpellcaster = classFeat Druid 7 [] "Expert Spellcaster" 98 [
         classSkill Druid Expert
         Improve.skill druidSpellSkill Expert
     ]
     let leshyFamiliar = classFeat Druid 1 [Improve.hasFeat "Leaf"] "Leshy Familiar" 133 []
+    let resolve = classFeat Druid 11 [] "Resolve" 133 []
     let stormBorn = classFeat Druid 1 [Improve.hasFeat "Storm"] "Storm Born" 134 []
     let wildShape = classFeat Druid 1 [Improve.hasFeat "Wild"] "Wild Shape" 134 []
     let wildEmpathy = classFeat Druid 1 [] "Wild Empathy" 132 []
@@ -50,6 +56,10 @@ module Druid =
         classFeat Druid 10 [] "Overwhelming Energy" 137 []
         classFeat Druid 10 [Improve.hasOneFeatOf ["Leaf"; "Wild Shape"]] "Plant Shape" 138 []
         classFeat Druid 10 [Improve.hasFeat "Animal Companion"] "Side by Side" 138 []
+        classFeat Druid 12 [Improve.hasFeat "Soaring Shape"] "Dragon Shape" 138 []
+        classFeat Druid 12 [Improve.hasFeat "Green Empathy"] "Green Tongue" 138 []
+        classFeat Druid 12 [] "Primal Focus" 138 []
+        classFeat Druid 12 [Improve.hasFeat "Call of the Wild"] "Primal Summons" 138 []
     ]
 
     let druidOrders = [
@@ -150,5 +160,24 @@ module Druid =
             Improve.addFeats druidFeats 1
             Improve.addFeats Feats.skillFeats 1
             Improve.spell (5, 1)
+            ]
+        | 11<Level> -> c, [
+            Feats.forceAdd druidWeaponExpertise
+            Improve.addFeats Feats.generalFeats 1
+            Feats.forceAdd resolve
+            Skills.increase 1
+            Improve.spell (6, 2)
+            ]
+        | 12<Level> -> c, [
+            Improve.addFeats druidFeats 1
+            Improve.addFeats Feats.skillFeats 1
+            Improve.spell (6, 1)
+            ]
+        | 13<Level> -> c, [
+            Improve.addFeats Ancestry.ancestryFeats 1
+            Feats.forceAdd Feats.mediumArmorExpertise
+            Skills.increase 1
+            Feats.forceAdd Feats.weaponSpecialization
+            Improve.spell (7, 2)
             ]
         | _ -> failwithf "Bad level: %d" c.Level

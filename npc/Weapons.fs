@@ -1,6 +1,6 @@
-namespace NpcConsole
+namespace Npc
 
-open NpcConsole.Attributes
+open Npc.Attributes
 
 module groups =
     // -- WEAPON GROUPS --

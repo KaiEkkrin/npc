@@ -1,6 +1,6 @@
-namespace NpcConsole
+namespace Npc
 
-open NpcConsole.Attributes
+open Npc.Attributes
 
 module Armors =
     // -- ARMOR GROUPS --

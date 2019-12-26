@@ -1,6 +1,6 @@
-namespace NpcConsole
+namespace Npc
 
-open NpcConsole.Attributes
+open Npc.Attributes
 
 module Background =
     let hasNone c = Option.isNone c.Background
