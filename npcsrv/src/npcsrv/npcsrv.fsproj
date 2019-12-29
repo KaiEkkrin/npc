@@ -1,29 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
-    <DebugType>portable</DebugType>
     <AssemblyName>npcsrv</AssemblyName>
     <OutputType>Exe</OutputType>
-    <EnableDefaultContentItems>false</EnableDefaultContentItems>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
-
+  <ItemGroup>
+    <Compile Include="WebInteract.fs" />
+    <Compile Include="Program.fs" />
+    <None Include="web.config" />
+    <Content Include="WebRoot/**/*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.*" />
     <PackageReference Include="Giraffe" Version="3.4.*" />
     <PackageReference Include="TaskBuilder.fs" Version="2.1.*" />
   </ItemGroup>
-
   <ItemGroup>
-    <Compile Include="Program.fs" />
+    <ProjectReference Include="..\..\..\npc\npc.fsproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <None Include="web.config" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="WebRoot\**\*">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-
 </Project>

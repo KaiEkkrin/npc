@@ -70,47 +70,16 @@ module Skills =
         |> Set.toList
         |> List.sortBy (fun sk -> sk.Name)
 
-    let weaponSkill (w: Weapon) = {
-        Name = sprintf "%s (%A)" w.Name w.Category
-        KeyAbility = match w.Type with | Melee -> Strength | Ranged -> Dexterity // TODO admit finesse weapons
+    // How to add one or more skills at a particular proficiency
+    let add (skills: Skill list) prof count = {
+        Prompt = sprintf "%A skill" prof
+        Choices = skills |> List.map (fun sk -> AddSkill (sk, prof))
+        Count = Some count
     }
 
-    let armorSkill category = {
-        Name = match category with | Unarmored -> "Unarmored" | c -> sprintf "%A armor" c
-        KeyAbility = Dexterity // TODO cap (although that is based on the armor itself)
+    // How to increase one skill out of a list
+    let increase (skills: Skill list) = {
+        Prompt = "Skill increase"
+        Choices = skills |> List.map IncreaseSkill
+        Count = Some 1
     }
-
-    let classSkill (cl, ab) = {
-        Name = sprintf "%A Class" cl
-        KeyAbility = ab
-    }
-
-    let spellSkill (tradition, ab) = {
-        Name = sprintf "%A Spell" tradition
-        KeyAbility = ab
-    }
-
-    // Increases a skill.  How high depends on level:
-    let increase count =
-        let canIncrease sk c =
-            match Map.tryFind sk c.Skills with
-            | None -> true
-            | Some Untrained -> true
-            | Some Trained -> c.Level >= 3<Level>
-            | Some Expert -> c.Level >= 7<Level>
-            | Some Master -> c.Level >= 15<Level>
-            | Some Legendary -> false
-
-        let increase sk c =
-            match Map.tryFind sk c.Skills with
-            | Some Legendary -> failwith "Cannot increase a legendary skill"
-            | Some Master -> Improve.addSkill sk Legendary c
-            | Some Expert -> Improve.addSkill sk Master c
-            | Some Trained -> Improve.addSkill sk Expert c
-            | _ -> Improve.addSkill sk Trained c
-
-        {
-            Prompt = "Skill increase"
-            Choices = regularSkills |> List.map (fun sk -> sk.Name, canIncrease sk, increase sk)
-            Count = count
-        }

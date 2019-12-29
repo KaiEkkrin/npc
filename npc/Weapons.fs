@@ -270,25 +270,11 @@ module Weapons =
     // Improves the skill of a whole category of weapons (as perceived by this character).
     // We need to do this by analysing the character and stacking up another improvement
     // because we don't know before time how many skills need improving
-    let improveSkill (cat, ty) prof =
-        let improveWeapons c =
-            let improvements =
-                c.Weapons
-                |> List.filter (fun w ->
-                    let hasSkill = Improve.hasSkill (Skills.weaponSkill w) prof c
-                    w.Category = cat && w.Type = ty && not hasSkill)
-                |> List.map (fun w -> Improve.skill (Skills.weaponSkill w) prof)
-            c, improvements
-        {
-            Prompt = sprintf "%A in %A %A weapons" prof cat ty
-            Choices = ["All", (fun _ -> true), improveWeapons]
-            Count = 1
-        }
-
-    // Filters trained weapon skills from a character.
-    let filter c ty cat =
-        c.Weapons
-        |> List.filter (fun w -> w.Category = cat && w.Type = ty && Improve.hasSkill (Skills.weaponSkill w) Trained c)
+    let improveSkill (cat, ty) prof = {
+        Prompt = sprintf "%A in %A %A" prof cat ty
+        Choices = [AddWeaponSkills (cat, ty, prof)]
+        Count = None
+    }
 
     // Adds a melee weapon to the character.  (Excluding shields; we'll
     // do those in their own way.)
@@ -297,31 +283,7 @@ module Weapons =
     // For now, we'll assume Trained is good enough and not try to filter for
     // Expert or higher in particular weapons; reasonable if we choose a weapon
     // at character level 1.
-    let addMeleeWeapon =
-        let improve c =
-            let ofCat = filter c Melee
-            let bestWeapons = // TODO take rarity into account; for now allowing all
-                if not (List.isEmpty <| ofCat AdvancedWeapon) then ofCat AdvancedWeapon
-                elif not (List.isEmpty <| ofCat MartialWeapon) then ofCat MartialWeapon
-                else ofCat SimpleWeapon
-            c, [{
-                Prompt = "Melee weapon"
-                Choices = bestWeapons |> List.map (fun w -> w.Name, (fun _ -> true), fun c -> { c with MeleeWeapon = Some w }, [])
-                Count = 1
-            }]
-        Improve.single "Melee weapon" improve
+    let addMeleeWeapon = AddWeaponOfType Melee
 
     // Similarly :)
-    let addRangedWeapon =
-        let improve c =
-            let ofCat = filter c Ranged
-            let bestWeapons = // TODO take rarity into account; for now allowing all
-                if not (List.isEmpty <| ofCat AdvancedWeapon) then ofCat AdvancedWeapon
-                elif not (List.isEmpty <| ofCat MartialWeapon) then ofCat MartialWeapon
-                else ofCat SimpleWeapon
-            c, [{
-                Prompt = "Ranged weapon"
-                Choices = bestWeapons |> List.map (fun w -> w.Name, (fun _ -> true), fun c -> { c with RangedWeapon = Some w }, [])
-                Count = 1
-            }]
-        Improve.single "Ranged weapon" improve
+    let addRangedWeapon = AddWeaponOfType Ranged

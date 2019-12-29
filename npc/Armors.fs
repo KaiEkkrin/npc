@@ -15,9 +15,9 @@ module Armors =
     let flexible = "Flexible"
     let noisy = "Noisy"
 
-    let armor (name, category, bonus, dexCap, speedPenalty, strength, group, traits) = {
+    let armor (name, cat, bonus, dexCap, speedPenalty, strength, group, traits) = {
         Name = name
-        Skill = Skills.armorSkill category
+        Skill = Char2.armorSkill cat
         Bonus = bonus * 1<Modifier>
         DexCap = match dexCap with | Some dc -> Some (dc * 1<Modifier>) | None -> None
         SpeedPenalty = speedPenalty * 1<Feet>

@@ -1,12 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Include="Attributes.fs" />
     <Compile Include="Improve.fs" />
+    <Compile Include="Improve2.fs" />
     <Compile Include="Skills.fs" />
     <Compile Include="Weapons.fs" />
     <Compile Include="Armors.fs" />
@@ -21,7 +20,7 @@
     <Compile Include="Rogue.fs" />
     <Compile Include="Class.fs" />
     <Compile Include="Build.fs" />
+    <Compile Include="Build2.fs" />
     <Compile Include="CharacterSheet.fs" />
   </ItemGroup>
-
 </Project>
