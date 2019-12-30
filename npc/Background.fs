@@ -7,11 +7,11 @@ module Background =
 
     // All the backgrounds work in a similar way.
     // TODO Support multiple choice of lore skills here
-    let background (name, abilities, skill, lore, feat) = name, hasNone, (fun c -> { c with Background = Some name }, [
-        Improve.ability abilities 1
-        Improve.anyAbility 1
-        Improve.skill skill Trained
-        Improve.skill (Skills.lore lore) Trained
+    let background (name, abilities, skill, lore, feat) = AddBackground (name, [
+        Improve2.abilityBoost abilities 1
+        Improve2.anyAbilityBoost 1
+        Improve2.skill skill Trained
+        Improve2.skill (Skills.lore lore) Trained
         Feats.forceAdd feat
     ])
 
@@ -54,5 +54,5 @@ module Background =
             //background ("Tinker", [Dexterity; Intelligence], Skills.crafting, "Engineering", Feats.specialtyCrafting)
             background ("Warrior", [Strength; Constitution], Skills.intimidation, "Warfare", Feats.intimidatingGlare)
         ]
-        Count = 1
+        Count = Some 1
     }

@@ -3,181 +3,184 @@ namespace Npc.Classes
 open Npc
 open Npc.Attributes
 open Npc.Classes.ClassBasics
+open Npc.FeatReq
 
 module Druid =
 
     let druidSpellSkill = Skills.spellSkill (Primal, Wisdom)
 
-    let animalCompanion = classFeat Druid 1 [Improve.hasFeat "Animal"] "Animal Companion" 133 []
-    let druidWeaponExpertise = classFeat Druid 11 [] "Druid Weapon Expertise" 133 [
+    let animalCompanion = classFeat Druid 1 (FeatReq "Animal") "Animal Companion" 133 []
+    let druidWeaponExpertise = classFeatWith Druid 11 NoReq "Druid Weapon Expertise" 133 [
         Weapons.improveSkill (SimpleWeapon, Melee) Expert
         Weapons.improveSkill (SimpleWeapon, Ranged) Expert
         Weapons.improveSkill (Unarmed, Melee) Expert
     ]
-    let expertSpellcaster = classFeat Druid 7 [] "Expert Spellcaster" 98 [
+    let expertSpellcaster = classFeatWith Druid 7 NoReq "Expert Spellcaster" 98 [
         classSkill Druid Expert
-        Improve.skill druidSpellSkill Expert
+        Improve2.skill druidSpellSkill Expert
     ]
-    let leshyFamiliar = classFeat Druid 1 [Improve.hasFeat "Leaf"] "Leshy Familiar" 133 []
-    let resolve = classFeat Druid 11 [] "Resolve" 133 []
-    let stormBorn = classFeat Druid 1 [Improve.hasFeat "Storm"] "Storm Born" 134 []
-    let wildShape = classFeat Druid 1 [Improve.hasFeat "Wild"] "Wild Shape" 134 []
-    let wildEmpathy = classFeat Druid 1 [] "Wild Empathy" 132 []
+    let leshyFamiliar = classFeat Druid 1 (FeatReq "Leaf") "Leshy Familiar" 133 []
+    let resolve = classFeat Druid 11 NoReq "Resolve" 133 []
+    let stormBorn = classFeat Druid 1 (FeatReq "Storm") "Storm Born" 134 []
+    let wildShape = classFeat Druid 1 (FeatReq "Wild") "Wild Shape" 134 []
+    let wildEmpathy = classFeat Druid 1 NoReq "Wild Empathy" 132 []
 
     let druidFeats = [
         animalCompanion
         leshyFamiliar
-        classFeat Druid 1 [] "Reach Spell" 134 []
+        classFeat Druid 1 NoReq "Reach Spell" 134 []
         stormBorn
-        classFeat Druid 1 [] "Widen Spell" 134 []
+        classFeat Druid 1 NoReq "Widen Spell" 134 []
         wildShape
-        classFeat Druid 2 [] "Call of the Wild" 134 []
-        classFeat Druid 2 [] "Enhanced Familiar" 134 [] // TODO requires a familiar
-        classFeat Druid 2 [] "Order Explorer" 134 [] // TODO how to add an order feat without adding the order itself
-        classFeat Druid 2 [] "Poison Resistance" 135 [] // TODO resistances
-        classFeat Druid 4 [Improve.hasAbilityScore Strength 14<Score>; Improve.hasFeat "Wild Shape"] "Form Control" 135 []
-        classFeat Druid 4 [Improve.hasFeat "Animal Companion"] "Mature Animal Companion" 135 []
-        classFeat Druid 4 [Improve.hasFeat "Order Explorer"] "Order Magic" 135 [] // TODO multiple times, etc
-        classFeat Druid 4 [Improve.hasFeat "Wild Shape"] "Thousand Faces" 135 []
-        classFeat Druid 4 [Improve.hasFeat "Leaf"] "Woodland Stride" 135 []
-        classFeat Druid 6 [Improve.hasFeat "Leaf"] "Green Empathy" 136 []
-        classFeat Druid 6 [Improve.hasFeat "Wild Shape"] "Insect Shape" 136 []
-        classFeat Druid 6 [] "Steady Spellcasting" 136 []
-        classFeat Druid 6 [Improve.hasFeat "Storm"] "Storm Retribution" 136 [] // TODO has tempest surge spell
-        classFeat Druid 8 [Improve.hasFeat "Wild Shape"] "Ferocious Shape" 136 []
-        classFeat Druid 8 [] "Fey Caller" 136 []
-        classFeat Druid 8 [Improve.hasFeat "Mature Animal Companion"] "Incredible Companion" 137 []
-        classFeat Druid 8 [Improve.hasFeat "Wild Shape"] "Soaring Shape" 137 []
-        classFeat Druid 8 [Improve.hasFeat "Storm"] "Wind Caller" 137 [
-            Improve.pool ("Focus", 1)
+        classFeat Druid 2 NoReq "Call of the Wild" 134 []
+        classFeat Druid 2 NoReq "Enhanced Familiar" 134 [] // TODO requires a familiar
+        classFeat Druid 2 NoReq "Order Explorer" 134 [] // TODO how to add an order feat without adding the order itself
+        classFeat Druid 2 NoReq "Poison Resistance" 135 [] // TODO resistances
+        classFeat Druid 4 (AbilityReq (Strength, 14<Score>) >&& FeatReq "Wild Shape") "Form Control" 135 []
+        classFeat Druid 4 (FeatReq "Animal Companion") "Mature Animal Companion" 135 []
+        classFeat Druid 4 (FeatReq "Order Explorer") "Order Magic" 135 [] // TODO multiple times, etc
+        classFeat Druid 4 (FeatReq "Wild Shape") "Thousand Faces" 135 []
+        classFeat Druid 4 (FeatReq "Leaf") "Woodland Stride" 135 []
+        classFeat Druid 6 (FeatReq "Leaf") "Green Empathy" 136 []
+        classFeat Druid 6 (FeatReq "Wild Shape") "Insect Shape" 136 []
+        classFeat Druid 6 NoReq "Steady Spellcasting" 136 []
+        classFeat Druid 6 (FeatReq "Storm") "Storm Retribution" 136 [] // TODO has tempest surge spell
+        classFeat Druid 8 (FeatReq "Wild Shape") "Ferocious Shape" 136 []
+        classFeat Druid 8 NoReq "Fey Caller" 136 []
+        classFeat Druid 8 (FeatReq "Mature Animal Companion") "Incredible Companion" 137 []
+        classFeat Druid 8 (FeatReq "Wild Shape") "Soaring Shape" 137 []
+        classFeatWith Druid 8 (FeatReq "Storm") "Wind Caller" 137 [
+            Improve2.pool ("Focus", 1)
         ]
-        classFeat Druid 10 [Improve.hasFeat "Wild Shape"] "Elemental Shape" 137 []
-        classFeat Druid 10 [] "Healing Transformation" 137 []
-        classFeat Druid 10 [] "Overwhelming Energy" 137 []
-        classFeat Druid 10 [Improve.hasOneFeatOf ["Leaf"; "Wild Shape"]] "Plant Shape" 138 []
-        classFeat Druid 10 [Improve.hasFeat "Animal Companion"] "Side by Side" 138 []
-        classFeat Druid 12 [Improve.hasFeat "Soaring Shape"] "Dragon Shape" 138 []
-        classFeat Druid 12 [Improve.hasFeat "Green Empathy"] "Green Tongue" 138 []
-        classFeat Druid 12 [] "Primal Focus" 138 []
-        classFeat Druid 12 [Improve.hasFeat "Call of the Wild"] "Primal Summons" 138 []
+        classFeat Druid 10 (FeatReq "Wild Shape") "Elemental Shape" 137 []
+        classFeat Druid 10 NoReq "Healing Transformation" 137 []
+        classFeat Druid 10 NoReq "Overwhelming Energy" 137 []
+        classFeat Druid 10 (FeatReq "Leaf" >|| FeatReq "Wild Shape") "Plant Shape" 138 []
+        classFeat Druid 10 (FeatReq "Animal Companion") "Side by Side" 138 []
+        classFeat Druid 12 (FeatReq "Soaring Shape") "Dragon Shape" 138 []
+        classFeat Druid 12 (FeatReq "Green Empathy") "Green Tongue" 138 []
+        classFeat Druid 12 NoReq "Primal Focus" 138 []
+        classFeat Druid 12 (FeatReq "Call of the Wild") "Primal Summons" 138 []
     ]
 
     let druidOrders = [
-        classFeat Druid 1 [] "Animal" 131 [
-            Improve.skill Skills.athletics Trained
+        classFeatWith Druid 1 NoReq "Animal" 131 [
+            Improve2.skill Skills.athletics Trained
             Feats.forceAdd animalCompanion
             // TODO Heal animal spell
         ]
-        classFeat Druid 1 [] "Leaf" 131 [
-            Improve.skill Skills.diplomacy Trained
+        classFeatWith Druid 1 NoReq "Leaf" 131 [
+            Improve2.skill Skills.diplomacy Trained
             Feats.forceAdd leshyFamiliar
-            Improve.pool ("Focus", 1)
+            Improve2.pool ("Focus", 1)
         ]
-        classFeat Druid 1 [] "Storm" 132 [
-            Improve.skill Skills.acrobatics Trained
+        classFeatWith Druid 1 NoReq "Storm" 132 [
+            Improve2.skill Skills.acrobatics Trained
             Feats.forceAdd stormBorn
-            Improve.pool ("Focus", 1)
+            Improve2.pool ("Focus", 1)
         ]
-        classFeat Druid 1 [] "Wild" 132 [
-            Improve.skill Skills.intimidation Trained
+        classFeatWith Druid 1 NoReq "Wild" 132 [
+            Improve2.skill Skills.intimidation Trained
             Feats.forceAdd wildShape
         ]
     ]
+
+    let addDruidFeat = Improve2.feat "Druid feat" druidFeats 1
 
     let druid c =
         match c.Level with 
         | 1<Level> ->
             { c with Class = Some Druid }, [
-                Improve.addFeats (classAbilityBoostFeats Druid [Wisdom]) 1
-                Improve.hitPointsPerLevel 8
-                Improve.skill Skills.perception Trained
-                Improve.skill Skills.fortitudeSave Trained
-                Improve.skill Skills.reflexSave Trained
-                Improve.skill Skills.willSave Expert
-                Improve.skill Skills.nature Trained
-                Improve.skills Skills.regularSkills Trained ((modValue Intelligence c) + 2)
+                Improve2.feat "Ability boost" (classAbilityBoostFeats Druid [Wisdom]) 1
+                Improve2.hitPointsPerLevel 8
+                Improve2.skill Skills.perception Trained
+                Improve2.skill Skills.fortitudeSave Trained
+                Improve2.skill Skills.reflexSave Trained
+                Improve2.skill Skills.willSave Expert
+                Improve2.skill Skills.nature Trained
+                Improve2.skills Skills.regularSkills Trained ((modValue Intelligence c) + 2)
                 Weapons.improveSkill (SimpleWeapon, Melee) Trained
                 Weapons.improveSkill (SimpleWeapon, Ranged) Trained
                 Weapons.improveSkill (Unarmed, Melee) Trained
-                Improve.skill (Skills.armorSkill LightArmor) Trained
-                Improve.skill (Skills.armorSkill MediumArmor) Trained
-                Improve.skill (Skills.armorSkill Unarmored) Trained
-                Improve.spellSkill (Skills.spellSkill (Primal, Wisdom))
-                Improve.pool ("Focus", 1)
-                Improve.spell (0, 4)
-                Improve.spell (1, 2)
-                Improve.addFeats druidOrders 1
+                Improve2.skill (Char2.armorSkill LightArmor) Trained
+                Improve2.skill (Char2.armorSkill MediumArmor) Trained
+                Improve2.skill (Char2.armorSkill Unarmored) Trained
+                Improve2.spellSkill (Skills.spellSkill (Primal, Wisdom))
+                Improve2.pool ("Focus", 1)
+                Improve2.spell (0, 4)
+                Improve2.spell (1, 2)
+                Improve2.feat "Order" druidOrders 1
                 Feats.forceAdd Feats.shieldBlock
                 Feats.forceAdd wildEmpathy
             ]
         | 2<Level> -> c, [
-            Improve.addFeats druidFeats 1
-            Improve.addFeats Feats.skillFeats 1
-            Improve.spell (1, 1)
+            addDruidFeat
+            Feats.addSkillFeat
+            Improve2.spell (1, 1)
             ]
         | 3<Level> -> c, [
             Feats.forceAdd Feats.alertness
-            Improve.addFeats Feats.generalFeats 1
+            Feats.addGeneralFeat
             Feats.forceAdd Feats.greatFortitude
-            Skills.increase 1
-            Improve.spell (2, 2)
+            Skills.increase Skills.regularSkills
+            Improve2.spell (2, 2)
             ]
         | 4<Level> -> c, [
-            Improve.addFeats druidFeats 1
-            Improve.addFeats Feats.skillFeats 1
-            Improve.spell (2, 1)
+            addDruidFeat
+            Feats.addSkillFeat
+            Improve2.spell (2, 1)
             ]
         | 5<Level> -> c, [
-            Improve.anyAbility 4
-            Improve.addFeats Ancestry.ancestryFeats 1
+            Improve2.anyAbilityBoost 4
+            Ancestry.addAncestryFeat
             Feats.forceAdd Feats.lightningReflexes
-            Skills.increase 1
-            Improve.spell (3, 2)
+            Skills.increase Skills.regularSkills
+            Improve2.spell (3, 2)
             ]
         | 6<Level> -> c, [
-            Improve.addFeats druidFeats 1
-            Improve.addFeats Feats.skillFeats 1
-            Improve.spell (3, 1)
+            addDruidFeat
+            Feats.addSkillFeat
+            Improve2.spell (3, 1)
             ]
         | 7<Level> -> c, [
             Feats.forceAdd expertSpellcaster
-            Improve.addFeats Feats.generalFeats 1
-            Skills.increase 1
-            Improve.spell (4, 2)
+            Feats.addGeneralFeat
+            Skills.increase Skills.regularSkills
+            Improve2.spell (4, 2)
             ]
         | 8<Level> -> c, [
-            Improve.addFeats druidFeats 1
-            Improve.addFeats Feats.skillFeats 1
-            Improve.spell (4, 1)
+            addDruidFeat
+            Feats.addSkillFeat
+            Improve2.spell (4, 1)
             ]
         | 9<Level> -> c, [
-            Improve.addFeats Ancestry.ancestryFeats 1
-            Skills.increase 1
-            Improve.spell (5, 2)
+            Ancestry.addAncestryFeat
+            Skills.increase Skills.regularSkills
+            Improve2.spell (5, 2)
             ]
         | 10<Level> -> c, [
-            Improve.anyAbility 4
-            Improve.addFeats druidFeats 1
-            Improve.addFeats Feats.skillFeats 1
-            Improve.spell (5, 1)
+            Improve2.anyAbilityBoost 4
+            addDruidFeat
+            Feats.addSkillFeat
+            Improve2.spell (5, 1)
             ]
         | 11<Level> -> c, [
             Feats.forceAdd druidWeaponExpertise
-            Improve.addFeats Feats.generalFeats 1
+            Feats.addGeneralFeat
             Feats.forceAdd resolve
-            Skills.increase 1
-            Improve.spell (6, 2)
+            Skills.increase Skills.regularSkills
+            Improve2.spell (6, 2)
             ]
         | 12<Level> -> c, [
-            Improve.addFeats druidFeats 1
-            Improve.addFeats Feats.skillFeats 1
-            Improve.spell (6, 1)
+            addDruidFeat
+            Feats.addSkillFeat
+            Improve2.spell (6, 1)
             ]
         | 13<Level> -> c, [
-            Improve.addFeats Ancestry.ancestryFeats 1
+            Ancestry.addAncestryFeat
             Feats.forceAdd Feats.mediumArmorExpertise
-            Skills.increase 1
+            Skills.increase Skills.regularSkills
             Feats.forceAdd Feats.weaponSpecialization
-            Improve.spell (7, 2)
+            Improve2.spell (7, 2)
             ]
         | _ -> failwithf "Bad level: %d" c.Level

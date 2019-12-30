@@ -94,12 +94,23 @@ module Char2 =
         let rcw = c.Weapons |> List.map (fun w -> if (pred w) then { w with Category = cat } else w)
         { c with Weapons = rcw }
 
+    let addSpells (lv, ct) c =
+        match Map.tryFind lv c.Spells with
+        | Some already -> { c with Spells = Map.add lv (ct + already) c.Spells }
+        | None -> { c with Spells = Map.add lv ct c.Spells }
+
+    let increasePool p n c =
+        match Map.tryFind p c.Pools with
+        | Some already -> { c with Pools = Map.add p (already + n) c.Pools }
+        | None -> { c with Pools = Map.add p n c.Pools }
+
 // Serializable feat requirements are a bit exciting
 // TODO This little bit really wants a unit test :P
 type FeatRequirement =
     NoReq
     | AncestryReq of string
     | HeritageReq of string
+    | ClassReq of Class
     | LevelReq of int<Level>
     | AbilityReq of Ability * int<Score>
     | SkillReq of Skill * ProficiencyRank
@@ -115,6 +126,7 @@ module FeatReq =
         | NoReq -> true
         | AncestryReq a -> match c.Ancestry with | Some a2 when a2 = a -> true | _ -> false
         | HeritageReq h -> match c.Heritage with | Some h2 when h2 = h -> true | _ -> false
+        | ClassReq cl -> match c.Class with | Some c2 when c2 = cl -> true | _ -> false
         | LevelReq lv -> c.Level >= lv
         | AbilityReq (ab, score) ->
             match Map.tryFind ab c.Abilities with
@@ -176,12 +188,15 @@ type Change2 =
     | AbilityFlaw of Ability
     | AddSkill of Skill * ProficiencyRank
     | AddSkillOr of Skill * Skill list * ProficiencyRank // adds the first skill or one of the others if the character has it already
-    | IncreaseSkill of Skill
+    | IncreaseSkill of Skill // only if the character has it at Trained or greater already
     | AddWeaponSkills of WeaponCategory * WeaponType * ProficiencyRank
     | AddWeapon of Weapon
     | AddWeaponOfType of WeaponType
     | Recategorise of WeaponCategory * WeaponTrait * WeaponCategory
     | AddFeat of FeatRequirement * Feat * Improvement2 list
+    | AddSpellSkill of Skill // adds a spell skill and adds Trained in that skill
+    | AddSpell of int<Level> * int // (lv, ct) -> adds ct spell slots at level lv
+    | IncreasePool of string * int
 with
     member this.AsString =
         match this with
@@ -203,6 +218,9 @@ with
         | AddWeaponOfType ty -> sprintf "%A weapon" ty
         | Recategorise (oldCat, tr, newCat) -> sprintf "Change %A %A weapons to %A" oldCat tr newCat
         | AddFeat (_, f, __) -> f.Name
+        | AddSpellSkill sk -> sprintf "Add spell skill %s" sk.Name
+        | AddSpell (lv, ct) -> sprintf "Add %d spell slots of level %d" ct lv
+        | IncreasePool (p, n) -> sprintf "Increase %s pool by %d" p n
 
     override this.ToString () = this.AsString
 
@@ -218,6 +236,7 @@ with
         | AddWeapon w -> Option.isNone (match w.Type with | Melee -> c.MeleeWeapon | Ranged -> c.RangedWeapon)
         | AddWeaponOfType ty -> Option.isNone (match ty with | Melee -> c.MeleeWeapon | Ranged -> c.RangedWeapon)
         | AddFeat (r, _, __) -> FeatReq.fulfils c r
+        | AddSpellSkill _ -> Option.isNone c.SpellSkill
         | _ -> true
 
     member this.Apply (c: Character) =
@@ -264,6 +283,13 @@ with
         | Recategorise (oldCat, tr, newCat) ->
             Char2.recategorise (fun w -> w.Category = oldCat && List.contains tr w.Traits) newCat c, []
         | AddFeat (_, f, more) -> { c with Feats = f::c.Feats }, more
+        | AddSpellSkill sk -> { c with SpellSkill = Some sk }, [{
+            Prompt = sprintf "Trained in %s" sk.Name
+            Choices = [AddSkill (sk, Trained)]
+            Count = None
+        }]
+        | AddSpell (lv, ct) -> Char2.addSpells (lv, ct) c, []
+        | IncreasePool (p, n) -> Char2.increasePool p n c, []
 
 // An improvement is a collection of changes, one or more of which
 // may be applied.
@@ -318,8 +344,29 @@ module Improve2 =
         Count = Some count
     }
 
+    let skill (sk: Skill) prof = {
+        Prompt = sprintf "%A in %s" prof sk.Name
+        Choices = [AddSkill (sk, prof)]
+        Count = None
+    }
+
+    let skills (sks: Skill list) prof count = {
+        Prompt = sprintf "%A in" prof
+        Choices = sks |> List.map (fun sk -> AddSkill (sk, prof))
+        Count = Some count
+    }
+
     let feat prompt feats count = {
         Prompt = sprintf "%s feat" prompt
         Choices = feats
         Count = Some count
+    }
+    
+    let spellSkill sk = AddSpellSkill sk |> single
+    let spell (lv, ct) = AddSpell (lv * 1<Level>, ct) |> single
+
+    let pool (p, n) = {
+        Prompt = sprintf "Increase %s pool by %d" p n
+        Choices = [IncreasePool (p, n)]
+        Count = None
     }

@@ -70,6 +70,16 @@ module Skills =
         |> Set.toList
         |> List.sortBy (fun sk -> sk.Name)
 
+    let classSkill ((cl: Class), ab) = {
+        Name = sprintf "%A class" cl
+        KeyAbility = ab
+    }
+
+    let spellSkill ((tradition: Tradition), ab) = {
+        Name = sprintf "%A Spell" tradition
+        KeyAbility = ab
+    }
+
     // How to add one or more skills at a particular proficiency
     let add (skills: Skill list) prof count = {
         Prompt = sprintf "%A skill" prof

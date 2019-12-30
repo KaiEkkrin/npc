@@ -268,8 +268,6 @@ module Weapons =
     ]
 
     // Improves the skill of a whole category of weapons (as perceived by this character).
-    // We need to do this by analysing the character and stacking up another improvement
-    // because we don't know before time how many skills need improving
     let improveSkill (cat, ty) prof = {
         Prompt = sprintf "%A in %A %A" prof cat ty
         Choices = [AddWeaponSkills (cat, ty, prof)]

@@ -333,3 +333,6 @@ module Feats =
         toughness
         untrainedImprovisation
     ]]
+
+    let addSkillFeat = Improve2.feat "Skill feat" skillFeats 1
+    let addGeneralFeat = Improve2.feat "General feat" generalFeats 1

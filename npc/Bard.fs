@@ -3,31 +3,32 @@ namespace Npc.Classes
 open Npc
 open Npc.Attributes
 open Npc.Classes.ClassBasics
+open Npc.FeatReq
 
 module Bard =
 
     let bardSpellSkill = Skills.spellSkill (Occult, Charisma)
 
     let bardicLoreSkill = { Name = "Bardic Lore"; KeyAbility = Intelligence }
-    let bardicLore = classFeat Bard 1 [Improve.hasFeat "Enigma"] "Bardic Lore" 99 [
-        Improve.skill bardicLoreSkill Trained // TODO make it expert upon Legendary proficiency in Occultism
+    let bardicLore = classFeatWith Bard 1 (FeatReq "Enigma") "Bardic Lore" 99 [
+        Improve2.skill bardicLoreSkill Trained // TODO make it expert upon Legendary proficiency in Occultism
     ]
-    let enigma = classFeat Bard 1 [] "Enigma" 97 [
-            Feats.forceAdd bardicLore // TODO also add to spell repertoire
-        ]
-    let expertSpellcaster = classFeat Bard 7 [] "Expert Spellcaster" 98 [
+    let enigma = classFeatWith Bard 1 NoReq "Enigma" 97 [
+        Feats.forceAdd bardicLore // TODO also add to spell repertoire
+    ]
+    let expertSpellcaster = classFeatWith Bard 7 NoReq "Expert Spellcaster" 98 [
         classSkill Bard Expert
-        Improve.skill bardSpellSkill Expert
+        Improve2.skill bardSpellSkill Expert
     ]
-    let lingeringComposition = classFeat Bard 1 [Improve.hasFeat "Maestro"] "Lingering Composition" 99 [
-        Improve.pool ("Focus", 1)
+    let lingeringComposition = classFeatWith Bard 1 (FeatReq "Maestro") "Lingering Composition" 99 [
+        Improve2.pool ("Focus", 1)
     ]
-    let maestro = classFeat Bard 1 [] "Maestro" 97 [
+    let maestro = classFeatWith Bard 1 NoReq "Maestro" 97 [
             Feats.forceAdd lingeringComposition
         ]
-    let signatureSpells = classFeat Bard 1 [] "Signature Spells" 98 []
-    let versatilePerformance = classFeat Bard 1 [Improve.hasFeat "Polymath"] "Versatile Performance" 100 []
-    let polymath = classFeat Bard 1 [] "Polymath" 97 [
+    let signatureSpells = classFeat Bard 1 NoReq "Signature Spells" 98 []
+    let versatilePerformance = classFeat Bard 1 (FeatReq "Polymath") "Versatile Performance" 100 []
+    let polymath = classFeatWith Bard 1 NoReq "Polymath" 97 [
             Feats.forceAdd versatilePerformance
         ]
 
@@ -36,113 +37,115 @@ module Bard =
     let bardFeats = [
         bardicLore
         lingeringComposition
-        classFeat Bard 1 [] "Reach Spell" 99 []
+        classFeat Bard 1 NoReq "Reach Spell" 99 []
         versatilePerformance
-        classFeat Bard 2 [] "Cantrip Expansion" 100 []
-        classFeat Bard 2 [Improve.hasFeat "Polymath"] "Esoteric Polymath" 100 []
-        classFeat Bard 2 [Improve.hasFeat "Maestro"] "Inspire Competence" 100 [] // TODO allow spontaneous casters to choose their exact spells on level up
-        classFeat Bard 2 [Improve.hasFeat "Enigma"] "Loremaster's Etude" 100 [
-            Improve.pool ("Focus", 1)
+        classFeat Bard 2 NoReq "Cantrip Expansion" 100 []
+        classFeat Bard 2 (FeatReq "Polymath") "Esoteric Polymath" 100 []
+        classFeat Bard 2 (FeatReq "Maestro") "Inspire Competence" 100 [] // TODO allow spontaneous casters to choose their exact spells on level up
+        classFeatWith Bard 2 (FeatReq "Enigma") "Loremaster's Etude" 100 [
+            Improve2.pool ("Focus", 1)
         ]
-        classFeat Bard 2 [] "Multifarious Muse" 100 [ // TODO take this feat multiple times
-            Improve.addFeats bardMuses 1 // TODO also add one feat out of the ones thus unlocked
+        classFeatWith Bard 2 NoReq "Multifarious Muse" 100 [ // TODO take this feat multiple times
+            Improve2.feat "Muse" bardMuses 1 // TODO also add one feat out of the ones thus unlocked
         ]
-        classFeat Bard 4 [Improve.hasFeat "Maestro"] "Inspire Defense" 100 []
-        classFeat Bard 4 [] "Melodious Spell" 101 []
-        classFeat Bard 4 [] "Triple Time" 101 []
-        classFeat Bard 4 [Improve.hasFeat "Polymath"] "Versatile Signature" 101 []
-        classFeat Bard 6 [] "Dirge of Doom" 101 []
-        classFeat Bard 6 [Improve.hasFeat "Maestro"] "Harmonize" 101 []
-        classFeat Bard 6 [] "Steady Spellcasting" 101 []
-        classFeat Bard 8 [Improve.hasFeat "Polymath"; Improve.hasSkill Skills.occultism Master] "Eclectic Skill" 101 [] // TODO change untrained skill checks
-        classFeat Bard 8 [Improve.hasFeat "Maestro"] "Inspire Heroics" 102 [
-            Improve.pool ("Focus", 1)
+        classFeat Bard 4 (FeatReq "Maestro") "Inspire Defense" 100 []
+        classFeat Bard 4 NoReq "Melodious Spell" 101 []
+        classFeat Bard 4 NoReq "Triple Time" 101 []
+        classFeat Bard 4 (FeatReq "Polymath") "Versatile Signature" 101 []
+        classFeat Bard 6 NoReq "Dirge of Doom" 101 []
+        classFeat Bard 6 (FeatReq "Maestro") "Harmonize" 101 []
+        classFeat Bard 6 NoReq "Steady Spellcasting" 101 []
+        classFeat Bard 8 (FeatReq "Polymath" >&& SkillReq (Skills.occultism, Master)) "Eclectic Skill" 101 [] // TODO change untrained skill checks
+        classFeatWith Bard 8 (FeatReq "Maestro") "Inspire Heroics" 102 [
+            Improve2.pool ("Focus", 1)
         ]
-        classFeat Bard 8 [Improve.hasFeat "Enigma"] "Know-it-all" 102 []
-        classFeat Bard 10 [] "House of Imaginary Walls" 102 []
-        classFeat Bard 10 [] "Quickened Casting" 102 []
-        classFeat Bard 10 [Improve.hasFeat "Polymath"] "Unusual Composition" 102 []
+        classFeat Bard 8 (FeatReq "Enigma") "Know-it-all" 102 []
+        classFeat Bard 10 NoReq "House of Imaginary Walls" 102 []
+        classFeat Bard 10 NoReq "Quickened Casting" 102 []
+        classFeat Bard 10 (FeatReq "Polymath") "Unusual Composition" 102 []
     ]
+
+    let addBardFeat = Improve2.feat "Bard feat" bardFeats 1
 
     let bard c =
         match c.Level with 
         | 1<Level> ->
             { c with Class = Some Bard }, [
-                Improve.addFeats (classAbilityBoostFeats Bard [Charisma]) 1
-                Improve.hitPointsPerLevel 8
-                Improve.skill Skills.perception Expert
-                Improve.skill Skills.fortitudeSave Trained
-                Improve.skill Skills.reflexSave Trained
-                Improve.skill Skills.willSave Expert
-                Improve.skill Skills.occultism Trained
-                Improve.skill Skills.performance Trained
-                Improve.skills Skills.regularSkills Trained ((modValue Intelligence c) + 4)
+                Improve2.feat "Ability boost" (classAbilityBoostFeats Bard [Charisma]) 1
+                Improve2.hitPointsPerLevel 8
+                Improve2.skill Skills.perception Expert
+                Improve2.skill Skills.fortitudeSave Trained
+                Improve2.skill Skills.reflexSave Trained
+                Improve2.skill Skills.willSave Expert
+                Improve2.skill Skills.occultism Trained
+                Improve2.skill Skills.performance Trained
+                Improve2.skills Skills.regularSkills Trained ((modValue Intelligence c) + 4)
                 Weapons.improveSkill (SimpleWeapon, Melee) Trained
                 Weapons.improveSkill (SimpleWeapon, Ranged) Trained
                 Weapons.improveSkill (Unarmed, Melee) Trained
-                Improve.skill (Skills.weaponSkill Weapons.longsword) Trained
-                Improve.skill (Skills.weaponSkill Weapons.rapier) Trained
-                Improve.skill (Skills.weaponSkill Weapons.sap) Trained
-                Improve.skill (Skills.weaponSkill Weapons.shortbow) Trained
-                Improve.skill (Skills.weaponSkill Weapons.whip) Trained
-                Improve.skill (Skills.armorSkill LightArmor) Trained
-                Improve.skill (Skills.armorSkill Unarmored) Trained
-                Improve.spellSkill (Skills.spellSkill (Occult, Charisma))
-                Improve.pool ("Focus", 1)
-                Improve.spell (0, 5)
-                Improve.spell (1, 2)
-                Improve.addFeats bardMuses 1
+                Improve2.skill (Char2.weaponSkill Weapons.longsword) Trained
+                Improve2.skill (Char2.weaponSkill Weapons.rapier) Trained
+                Improve2.skill (Char2.weaponSkill Weapons.sap) Trained
+                Improve2.skill (Char2.weaponSkill Weapons.shortbow) Trained
+                Improve2.skill (Char2.weaponSkill Weapons.whip) Trained
+                Improve2.skill (Char2.armorSkill LightArmor) Trained
+                Improve2.skill (Char2.armorSkill Unarmored) Trained
+                Improve2.spellSkill (Skills.spellSkill (Occult, Charisma))
+                Improve2.pool ("Focus", 1)
+                Improve2.spell (0, 5)
+                Improve2.spell (1, 2)
+                Improve2.feat "Muse" bardMuses 1
             ]
         | 2<Level> -> c, [
-            Improve.addFeats bardFeats 1
-            Improve.addFeats Feats.skillFeats 1
-            Improve.spell (1, 1)
+            addBardFeat
+            Feats.addSkillFeat
+            Improve2.spell (1, 1)
             ]
         | 3<Level> -> c, [
-            Improve.addFeats Feats.generalFeats 1
+            Feats.addGeneralFeat
             Feats.forceAdd Feats.lightningReflexes
             Feats.forceAdd signatureSpells
-            Skills.increase 1
-            Improve.spell (2, 2)
+            Skills.increase Skills.regularSkills
+            Improve2.spell (2, 2)
             ]
         | 4<Level> -> c, [
-            Improve.addFeats bardFeats 1
-            Improve.addFeats Feats.skillFeats 1
-            Improve.spell (2, 1)
+            addBardFeat
+            Feats.addSkillFeat
+            Improve2.spell (2, 1)
             ]
         | 5<Level> -> c, [
-            Improve.anyAbility 4
-            Improve.addFeats Ancestry.ancestryFeats 1
-            Skills.increase 1
-            Improve.spell (3, 2)
+            Improve2.anyAbilityBoost 4
+            Ancestry.addAncestryFeat
+            Skills.increase Skills.regularSkills
+            Improve2.spell (3, 2)
             ]
         | 6<Level> -> c, [
-            Improve.addFeats bardFeats 1
-            Improve.addFeats Feats.skillFeats 1
-            Improve.spell (3, 1)
+            addBardFeat
+            Feats.addSkillFeat
+            Improve2.spell (3, 1)
             ]
         | 7<Level> -> c, [
             Feats.forceAdd expertSpellcaster
-            Improve.addFeats Feats.generalFeats 1
-            Skills.increase 1
-            Improve.spell (4, 2)
+            Feats.addGeneralFeat
+            Skills.increase Skills.regularSkills
+            Improve2.spell (4, 2)
             ]
         | 8<Level> -> c, [
-            Improve.addFeats bardFeats 1
-            Improve.addFeats Feats.skillFeats 1
-            Improve.spell (4, 1)
+            addBardFeat
+            Feats.addSkillFeat
+            Improve2.spell (4, 1)
             ]
         | 9<Level> -> c, [
-            Improve.addFeats Ancestry.ancestryFeats 1
+            Ancestry.addAncestryFeat
             Feats.forceAdd Feats.greatFortitude
             Feats.forceAdd Feats.resolve
-            Skills.increase 1
-            Improve.spell (5, 2)
+            Skills.increase Skills.regularSkills
+            Improve2.spell (5, 2)
             ]
         | 10<Level> -> c, [
-            Improve.anyAbility 4
-            Improve.addFeats bardFeats 1
-            Improve.addFeats Feats.skillFeats 1
-            Improve.spell (5, 1)
+            Improve2.anyAbilityBoost 4
+            addBardFeat
+            Feats.addSkillFeat
+            Improve2.spell (5, 1)
             ]
         | _ -> failwithf "Bad level: %d" c.Level
