@@ -23,61 +23,69 @@ type IInteraction =
 // - The unwrapped expression is a Character, with the desired improvement(s)
 // applied
 type Builder (interact: IInteraction) =
-    // How to prompt the user which improvement(s) they want and apply them
-    // recursively.
-    let rec prompt imp c =
-        if imp.Count = 0 then c // No improvements to apply
-        else
-            // Create a list of the names of the choices that can actually be
-            // applied to this character:
-            let applicable = imp.Choices |> List.filter (fun (_, req, _) -> req c)
-            let applicCount = List.length applicable
+    // Prompts for one choice out of several:
+    let prompt title chs =
+        let named = chs |> List.map (fun ch -> sprintf "%A" ch, ch)
+        let mapped = named |> Map.ofList
+        let chosen = interact.Prompt (title, named |> List.map fst)
+        Map.find chosen mapped
 
-            // Get the next one to be applied to the character, interrogating the user if need be
-            let chosenName =
-                if applicCount < imp.Count then failwithf "%s : Needed at least %d choices, have %d" imp.Prompt imp.Count applicCount
-                elif applicCount = imp.Count then applicable |> List.head |> fun (n, _, _) -> n
-                else interact.Prompt (imp.Prompt, (applicable |> List.map (fun (n, _, _) -> n)))
+    // Improves a character, taking the improvements in order until
+    // we run out
+    let rec improve imps c =
+        match imps with
+        | [] -> c
+        | imp::left ->
+            // Work out what choices we have
+            let possible = imp.Choices |> List.filter (fun ch -> ch.CanApply c)
 
-            let chosenFunc = applicable |> List.pick (fun (n, _, fn) -> if n = chosenName then Some fn else None)
+            // Work out which one we will apply
+            let chosen =
+                match imp.Count, possible with
+                | None, [] -> None
+                | None, ch::_ -> Some ch
+                | Some n, ch::chs when n = (List.length chs) -> Some ch
+                | Some n, chs when n > (List.length chs) ->
+                    failwithf "%s : Wanted %d, only %d possible" imp.Prompt n (List.length chs)
+                | Some _, chs ->
+                    // TODO I need to be able to split this into "show next prompt"
+                    // and "apply given choice (from that prompt)"
+                    Some (prompt imp.Prompt chs)
 
-            // Apply that improvement, and then continue to prompt for the rest.
-            // As we go, we'll edit the prompts of sub-improvements so that the user
-            // can see the breadcrumb trail.  (TODO make this a list for formatting elsewhere?)
-            let remaining = imp.Choices |> List.filter (fun (n, _, _) -> n <> chosenName )
-            (chosenFunc c)
-            |> (fun (c2, i2s) -> c2, i2s |> List.map (fun i2 -> { i2 with Prompt = sprintf "%s -> %s" imp.Prompt i2.Prompt }))
-            >>= (prompt { imp with Choices = remaining; Count = imp.Count - 1 })
-
-    // Character-improvement bind.
-    and (>>=) (c, i) f =
-        match i with
-        | [] -> f c // no more improvements to apply
-        | imp::imps ->
-            // Prompt for this improvement, then apply the others:
-            (prompt imp c, imps) >>= f
-
-    // Levels up a character:
-    let rec doLevelUp level c =
-        if c.Level = level then c
-        else
-            let newLevel = c.Level + 1<Level>
-            (c, [Improve.levelUpTo newLevel; Classes.All.levelUpTo newLevel]) >>= (doLevelUp level)
+            // Do it and either continue with this improvement, or move on
+            // to the next one
+            match chosen with
+            | None -> improve left c
+            | Some ch ->
+                let updated, more = ch.Apply c
+                let continued = {
+                    Prompt = imp.Prompt
+                    Choices = imp.Choices |> List.filter (fun ch2 -> ch2 <> ch)
+                    Count = match imp.Count with | Some n -> Some (n - 1) | None -> None
+                }
+                improve (List.concat [more; [continued]; imps]) updated
 
     // The canonical ability order (useful for display)
     static member AbilityOrder = [Strength; Dexterity; Constitution; Intelligence; Wisdom; Charisma]
 
-    // Creates a character.
-    // TODO : Change the character build process to choose gear at the end rather than in the
-    // first level -- so that we choose the gear that is most relevant to the character :)
-    member this.Build (name, level) =
-        ({
+    // Builds a level up of an existing character to a given level, returning
+    // the required improvements.
+    member this.LevelUp newLv c =
+        let oldLv = c.Level
+        List.unfold (fun lv ->
+            if lv < newLv then Some (Classes.All.classes, lv + 1<Level>)
+            else None) oldLv
+
+    // Starts a character build, emitting (character, list of improvements
+    // that need applying)
+    member this.Start name level =
+        let c = {
             Name = name
             Ancestry = None
             Heritage = None
             Background = None
             Class = None
-            Level = 1<Level>
+            Level = 0<Level> // adding a class also adds 1 to level
             HitPoints = { Flat = 0; PerLevel = 0 }
             Size = None
             Speed = 0<Feet>
@@ -91,12 +99,18 @@ type Builder (interact: IInteraction) =
             SpellSkill = None
             Spells = Map.empty
             Pools = Map.empty
-        }, [
+        }
+        let firstLevel = [
             Ancestry.ancestries
             Background.backgrounds
             Classes.All.classes
-            Improve.addArmor Armors.allArmors
-            Weapons.addMeleeWeapon
-            Weapons.addRangedWeapon
-        ])
-        >>= doLevelUp (level * 1<Level>)
+            Armors.addArmor
+            Improve2.single Weapons.addMeleeWeapon
+            Improve2.single Weapons.addRangedWeapon
+        ]
+        let otherLevels = c |> this.LevelUp (level - 1<Level>)
+        c, List.append firstLevel otherLevels
+
+    // Builds a complete character using our interact, given a pair
+    // (character, improvement list).
+    member this.Build (c, imps) = improve imps c

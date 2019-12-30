@@ -52,3 +52,8 @@ module Armors =
     ]
 
     let allArmors = List.concat [unarmored; lightArmors; mediumArmors; heavyArmors]
+    let addArmor = {
+        Prompt = "Armor"
+        Choices = allArmors |> List.map AddArmor
+        Count = Some 1
+    }

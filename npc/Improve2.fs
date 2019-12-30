@@ -4,6 +4,20 @@ open Npc.Attributes
 
 // How to build characters -- serializable version.
 module Char2 =
+    let canAddClass cl defs c =
+        let canLevelTo lv =
+            defs |> List.tryFind (fun (lv2, _) -> lv2 = lv) |> Option.isSome
+        if not (canLevelTo 1<Level>) then failwithf "No level 1 for %A" cl
+        match c.Level, c.Class with
+        | 0<Level>, None -> true
+        | oldLv, Some cl2 when cl2 = cl && canLevelTo (oldLv + 1<Level>) -> true
+        | _ -> false
+
+    let addClass cl defs c =
+        let newLv = c.Level + 1<Level>
+        let (_, imps) = defs |> List.find (fun (lv2, _) -> lv2 = newLv)
+        { c with Class = Some cl; Level = newLv }, imps
+
     // Adds an ability boost.
     let abilityBoost ab c =
         let boosted =
@@ -75,7 +89,7 @@ module Char2 =
     // Filters trained weapon skills from a character.
     let filterWeapons ty c =
         c.Weapons
-        |> List.filter (fun w -> w.Type = ty && Improve.hasSkill (weaponSkill w) Trained c)
+        |> List.filter (fun w -> w.Type = ty && hasSkill (weaponSkill w) Trained c)
 
     // Gets the best weapons for a character.
     let bestWeapons ty c =
@@ -93,6 +107,10 @@ module Char2 =
     let recategorise pred cat c =
         let rcw = c.Weapons |> List.map (fun w -> if (pred w) then { w with Category = cat } else w)
         { c with Weapons = rcw }
+
+    let canAddArmor a c =
+        let strengthScore = Map.find Strength c.Abilities
+        Option.isNone c.Armor && strengthScore >= a.Strength && hasSkill a.Skill Trained c
 
     let addSpells (lv, ct) c =
         match Map.tryFind lv c.Spells with
@@ -180,6 +198,7 @@ type Change2 =
     | AddAncestry of string * Improvement2 list
     | AddHeritage of string * Improvement2 list
     | AddBackground of string * Improvement2 list
+    | AddClass of Class * (int<Level> * Improvement2 list) list // levels up characters appropriately
     | IncreaseHitPointsFlat of int
     | IncreaseHitPointsPerLevel of int
     | AddSize of Size
@@ -188,11 +207,13 @@ type Change2 =
     | AbilityFlaw of Ability
     | AddSkill of Skill * ProficiencyRank
     | AddSkillOr of Skill * Skill list * ProficiencyRank // adds the first skill or one of the others if the character has it already
+    | AddSkillsBasedOnInt of int * Skill list // adds n + Int Trained skills
     | IncreaseSkill of Skill // only if the character has it at Trained or greater already
     | AddWeaponSkills of WeaponCategory * WeaponType * ProficiencyRank
     | AddWeapon of Weapon
     | AddWeaponOfType of WeaponType
     | Recategorise of WeaponCategory * WeaponTrait * WeaponCategory
+    | AddArmor of Armor
     | AddFeat of FeatRequirement * Feat * Improvement2 list
     | AddSpellSkill of Skill // adds a spell skill and adds Trained in that skill
     | AddSpell of int<Level> * int // (lv, ct) -> adds ct spell slots at level lv
@@ -204,6 +225,7 @@ with
         | AddAncestry (n, _) -> n
         | AddHeritage (n, _) -> n
         | AddBackground (n, _) -> n
+        | AddClass (n, _) -> sprintf "%A" n
         | IncreaseHitPointsFlat p -> sprintf "Increase hit points by %d" p
         | IncreaseHitPointsPerLevel p -> sprintf "Increase hit points by %d per level" p
         | AddSize sz -> sprintf "%A size" sz
@@ -212,11 +234,13 @@ with
         | AbilityFlaw ab -> sprintf "%A flaw" ab
         | AddSkill (sk, prof) -> sprintf "%A in %s" prof sk.Name
         | AddSkillOr (sk, _, prof) -> sprintf "%A in %s (or another)" prof sk.Name
+        | AddSkillsBasedOnInt (n, _) -> sprintf "Add (%d + Int modifier) trained skills" n
         | IncreaseSkill sk -> sk.Name
         | AddWeaponSkills (cat, ty, prof) -> sprintf "%A %A to %A" cat ty prof
         | AddWeapon w -> w.Name
         | AddWeaponOfType ty -> sprintf "%A weapon" ty
         | Recategorise (oldCat, tr, newCat) -> sprintf "Change %A %A weapons to %A" oldCat tr newCat
+        | AddArmor a -> a.Name
         | AddFeat (_, f, __) -> f.Name
         | AddSpellSkill sk -> sprintf "Add spell skill %s" sk.Name
         | AddSpell (lv, ct) -> sprintf "Add %d spell slots of level %d" ct lv
@@ -229,12 +253,14 @@ with
         | AddAncestry _ -> Option.isNone c.Ancestry
         | AddHeritage _ -> Option.isNone c.Heritage
         | AddBackground _ -> Option.isNone c.Background
+        | AddClass (cl, defs) -> Char2.canAddClass cl defs c
         | AddSize _ -> Option.isNone c.Size
         | AddSkill (sk, prof) -> Char2.doesNotHaveSkill sk prof c
         | AddSkillOr (sk, sks, prof) -> Char2.hasAllSkills (sk::sks) prof c |> not
         | IncreaseSkill sk -> Char2.canIncreaseSkill sk c
         | AddWeapon w -> Option.isNone (match w.Type with | Melee -> c.MeleeWeapon | Ranged -> c.RangedWeapon)
         | AddWeaponOfType ty -> Option.isNone (match ty with | Melee -> c.MeleeWeapon | Ranged -> c.RangedWeapon)
+        | AddArmor a -> Char2.canAddArmor a c
         | AddFeat (r, _, __) -> FeatReq.fulfils c r
         | AddSpellSkill _ -> Option.isNone c.SpellSkill
         | _ -> true
@@ -245,6 +271,7 @@ with
         | AddAncestry (a, imps) -> { c with Ancestry = Some a }, imps
         | AddHeritage (h, imps) -> { c with Heritage = Some h }, imps
         | AddBackground (b, imps) -> { c with Background = Some b }, imps
+        | AddClass (cl, defs) -> Char2.addClass cl defs c
         | IncreaseHitPointsFlat p ->
             let hp = { c.HitPoints with Flat = c.HitPoints.Flat + p }
             { c with HitPoints = hp }, []
@@ -264,6 +291,14 @@ with
                 Choices = sks |> List.map (fun sk2 -> AddSkill (sk2, prof))
                 Count = Some 1
             }]
+        | AddSkillsBasedOnInt (n, sks) ->
+            let intScore = Map.find Intelligence c.Abilities
+            let count = n + (Derive.modifier intScore) / 1<Modifier>
+            c, [{
+                Prompt = "Trained skill"
+                Choices = sks |> List.map (fun sk -> AddSkill (sk, Trained))
+                Count = Some count
+            }]
         | IncreaseSkill sk -> Char2.increaseSkill sk c, []
         | AddWeaponSkills (cat, ty, prof) ->
             c, c.Weapons
@@ -282,6 +317,7 @@ with
             }]
         | Recategorise (oldCat, tr, newCat) ->
             Char2.recategorise (fun w -> w.Category = oldCat && List.contains tr w.Traits) newCat c, []
+        | AddArmor a -> { c with Armor = Some a }, []
         | AddFeat (_, f, more) -> { c with Feats = f::c.Feats }, more
         | AddSpellSkill sk -> { c with SpellSkill = Some sk }, [{
             Prompt = sprintf "Trained in %s" sk.Name
@@ -354,6 +390,12 @@ module Improve2 =
         Prompt = sprintf "%A in" prof
         Choices = sks |> List.map (fun sk -> AddSkill (sk, prof))
         Count = Some count
+    }
+
+    let skillsBasedOnInt n (sks: Skill list) = {
+        Prompt = sprintf "(%d + Int modifier) skills" n
+        Choices = [AddSkillsBasedOnInt (n, sks)]
+        Count = None
     }
 
     let feat prompt feats count = {

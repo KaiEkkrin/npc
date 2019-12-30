@@ -49,7 +49,7 @@ module CharacterSheet =
         match weapon with
         | Some w ->
             // TODO Dexterity bonus on melee weapon attack, sometimes
-            let sk = Skills.weaponSkill w
+            let sk = Char2.weaponSkill w
             yield printSkill c sk
             // TODO When do ranged weapons gain a damage bonus?  From what?  I forget...
             let damageModifier =

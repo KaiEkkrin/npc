@@ -64,75 +64,73 @@ module Ranger =
 
     let addRangerFeat = Improve2.feat "Ranger feat" rangerFeats 1
 
-    let ranger c =
-        match c.Level with 
-        | 1<Level> ->
-            { c with Class = Some Ranger }, [
-                Improve2.feat "Ability boost" (classAbilityBoostFeats Ranger [Strength; Dexterity]) 1
-                Improve2.hitPointsPerLevel 10
-                Improve2.skill Skills.perception Expert
-                Improve2.skill Skills.fortitudeSave Expert
-                Improve2.skill Skills.reflexSave Expert
-                Improve2.skill Skills.willSave Trained
-                Improve2.skill Skills.nature Trained
-                Improve2.skill Skills.survival Trained
-                Improve2.skills Skills.regularSkills Trained ((modValue Intelligence c) + 4)
-                Weapons.improveSkill (SimpleWeapon, Melee) Trained
-                Weapons.improveSkill (SimpleWeapon, Ranged) Trained
-                Weapons.improveSkill (MartialWeapon, Melee) Trained
-                Weapons.improveSkill (MartialWeapon, Ranged) Trained
-                Weapons.improveSkill (Unarmed, Melee) Trained
-                Improve2.skill (Char2.armorSkill LightArmor) Trained
-                Improve2.skill (Char2.armorSkill MediumArmor) Trained
-                Improve2.skill (Char2.armorSkill Unarmored) Trained
-                Feats.forceAdd huntPrey
-                Feats.forceAdd huntersEdge
-                addRangerFeat
-            ]
-        | 2<Level> -> c, [
+    let ranger = AddClass (Ranger, [
+        1<Level>, [
+            Improve2.feat "Ability boost" (classAbilityBoostFeats Ranger [Strength; Dexterity]) 1
+            Improve2.hitPointsPerLevel 10
+            Improve2.skill Skills.perception Expert
+            Improve2.skill Skills.fortitudeSave Expert
+            Improve2.skill Skills.reflexSave Expert
+            Improve2.skill Skills.willSave Trained
+            Improve2.skill Skills.nature Trained
+            Improve2.skill Skills.survival Trained
+            Improve2.skillsBasedOnInt 4 Skills.regularSkills
+            Weapons.improveSkill (SimpleWeapon, Melee) Trained
+            Weapons.improveSkill (SimpleWeapon, Ranged) Trained
+            Weapons.improveSkill (MartialWeapon, Melee) Trained
+            Weapons.improveSkill (MartialWeapon, Ranged) Trained
+            Weapons.improveSkill (Unarmed, Melee) Trained
+            Improve2.skill (Char2.armorSkill LightArmor) Trained
+            Improve2.skill (Char2.armorSkill MediumArmor) Trained
+            Improve2.skill (Char2.armorSkill Unarmored) Trained
+            Feats.forceAdd huntPrey
+            Feats.forceAdd huntersEdge
+            addRangerFeat
+        ]
+        2<Level>, [
             addRangerFeat
             Feats.addSkillFeat
-            ]
-        | 3<Level> -> c, [
+        ]
+        3<Level>, [
             Feats.addGeneralFeat
             Feats.forceAdd Feats.ironWill
             Skills.increase Skills.regularSkills
-            ]
-        | 4<Level> -> c, [
+        ]
+        4<Level>, [
             addRangerFeat
             Feats.addSkillFeat
-            ]
-        | 5<Level> -> c, [
+        ]
+        5<Level>, [
             Improve2.anyAbilityBoost 4
             Ancestry.addAncestryFeat
             Skills.increase Skills.regularSkills
             Feats.forceAdd tracklessStep
             Feats.forceAdd weaponExpertise
-            ]
-        | 6<Level> -> c, [
+        ]
+        6<Level>, [
             addRangerFeat
             Feats.addSkillFeat
-            ]
-        | 7<Level> -> c, [
+        ]
+        7<Level>, [
             Feats.forceAdd Feats.evasion
             Feats.addGeneralFeat
             Skills.increase Skills.regularSkills
             Feats.forceAdd vigilantSenses
             Feats.forceAdd Feats.weaponSpecialization
-            ]
-        | 8<Level> -> c, [
+        ]
+        8<Level>, [
             addRangerFeat
             Feats.addSkillFeat
-            ]
-        | 9<Level> -> c, [
+        ]
+        9<Level>, [
             Ancestry.addAncestryFeat
             Feats.forceAdd naturesEdge
             Feats.forceAdd rangerExpertise
             Skills.increase Skills.regularSkills
-            ]
-        | 10<Level> -> c, [
+        ]
+        10<Level>, [
             Improve2.anyAbilityBoost 4
             addRangerFeat
             Feats.addSkillFeat
-            ]
-        | _ -> failwithf "Bad level: %d" c.Level
+        ]
+    ])

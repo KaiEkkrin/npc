@@ -87,100 +87,98 @@ module Druid =
 
     let addDruidFeat = Improve2.feat "Druid feat" druidFeats 1
 
-    let druid c =
-        match c.Level with 
-        | 1<Level> ->
-            { c with Class = Some Druid }, [
-                Improve2.feat "Ability boost" (classAbilityBoostFeats Druid [Wisdom]) 1
-                Improve2.hitPointsPerLevel 8
-                Improve2.skill Skills.perception Trained
-                Improve2.skill Skills.fortitudeSave Trained
-                Improve2.skill Skills.reflexSave Trained
-                Improve2.skill Skills.willSave Expert
-                Improve2.skill Skills.nature Trained
-                Improve2.skills Skills.regularSkills Trained ((modValue Intelligence c) + 2)
-                Weapons.improveSkill (SimpleWeapon, Melee) Trained
-                Weapons.improveSkill (SimpleWeapon, Ranged) Trained
-                Weapons.improveSkill (Unarmed, Melee) Trained
-                Improve2.skill (Char2.armorSkill LightArmor) Trained
-                Improve2.skill (Char2.armorSkill MediumArmor) Trained
-                Improve2.skill (Char2.armorSkill Unarmored) Trained
-                Improve2.spellSkill (Skills.spellSkill (Primal, Wisdom))
-                Improve2.pool ("Focus", 1)
-                Improve2.spell (0, 4)
-                Improve2.spell (1, 2)
-                Improve2.feat "Order" druidOrders 1
-                Feats.forceAdd Feats.shieldBlock
-                Feats.forceAdd wildEmpathy
-            ]
-        | 2<Level> -> c, [
+    let druid = AddClass (Druid, [
+        1<Level>, [
+            Improve2.feat "Ability boost" (classAbilityBoostFeats Druid [Wisdom]) 1
+            Improve2.hitPointsPerLevel 8
+            Improve2.skill Skills.perception Trained
+            Improve2.skill Skills.fortitudeSave Trained
+            Improve2.skill Skills.reflexSave Trained
+            Improve2.skill Skills.willSave Expert
+            Improve2.skill Skills.nature Trained
+            Improve2.skillsBasedOnInt 2 Skills.regularSkills
+            Weapons.improveSkill (SimpleWeapon, Melee) Trained
+            Weapons.improveSkill (SimpleWeapon, Ranged) Trained
+            Weapons.improveSkill (Unarmed, Melee) Trained
+            Improve2.skill (Char2.armorSkill LightArmor) Trained
+            Improve2.skill (Char2.armorSkill MediumArmor) Trained
+            Improve2.skill (Char2.armorSkill Unarmored) Trained
+            Improve2.spellSkill (Skills.spellSkill (Primal, Wisdom))
+            Improve2.pool ("Focus", 1)
+            Improve2.spell (0, 4)
+            Improve2.spell (1, 2)
+            Improve2.feat "Order" druidOrders 1
+            Feats.forceAdd Feats.shieldBlock
+            Feats.forceAdd wildEmpathy
+        ]
+        2<Level>, [
             addDruidFeat
             Feats.addSkillFeat
             Improve2.spell (1, 1)
-            ]
-        | 3<Level> -> c, [
+        ]
+        3<Level>, [
             Feats.forceAdd Feats.alertness
             Feats.addGeneralFeat
             Feats.forceAdd Feats.greatFortitude
             Skills.increase Skills.regularSkills
             Improve2.spell (2, 2)
-            ]
-        | 4<Level> -> c, [
+        ]
+        4<Level>, [
             addDruidFeat
             Feats.addSkillFeat
             Improve2.spell (2, 1)
-            ]
-        | 5<Level> -> c, [
+        ]
+        5<Level>, [
             Improve2.anyAbilityBoost 4
             Ancestry.addAncestryFeat
             Feats.forceAdd Feats.lightningReflexes
             Skills.increase Skills.regularSkills
             Improve2.spell (3, 2)
-            ]
-        | 6<Level> -> c, [
+        ]
+        6<Level>, [
             addDruidFeat
             Feats.addSkillFeat
             Improve2.spell (3, 1)
-            ]
-        | 7<Level> -> c, [
+        ]
+        7<Level>, [
             Feats.forceAdd expertSpellcaster
             Feats.addGeneralFeat
             Skills.increase Skills.regularSkills
             Improve2.spell (4, 2)
-            ]
-        | 8<Level> -> c, [
+        ]
+        8<Level>, [
             addDruidFeat
             Feats.addSkillFeat
             Improve2.spell (4, 1)
-            ]
-        | 9<Level> -> c, [
+        ]
+        9<Level>, [
             Ancestry.addAncestryFeat
             Skills.increase Skills.regularSkills
             Improve2.spell (5, 2)
-            ]
-        | 10<Level> -> c, [
+        ]
+        10<Level>, [
             Improve2.anyAbilityBoost 4
             addDruidFeat
             Feats.addSkillFeat
             Improve2.spell (5, 1)
-            ]
-        | 11<Level> -> c, [
+        ]
+        11<Level>, [
             Feats.forceAdd druidWeaponExpertise
             Feats.addGeneralFeat
             Feats.forceAdd resolve
             Skills.increase Skills.regularSkills
             Improve2.spell (6, 2)
-            ]
-        | 12<Level> -> c, [
+        ]
+        12<Level>, [
             addDruidFeat
             Feats.addSkillFeat
             Improve2.spell (6, 1)
-            ]
-        | 13<Level> -> c, [
+        ]
+        13<Level>, [
             Ancestry.addAncestryFeat
             Feats.forceAdd Feats.mediumArmorExpertise
             Skills.increase Skills.regularSkills
             Feats.forceAdd Feats.weaponSpecialization
             Improve2.spell (7, 2)
-            ]
-        | _ -> failwithf "Bad level: %d" c.Level
+        ]
+    ])

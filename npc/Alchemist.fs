@@ -75,143 +75,141 @@ module Alchemist =
     let addAlchemistFeat = Improve2.feat "Alchemist feat" alchemistFeats 1
     let increaseFormulaPool = Improve2.pool ("Formulas", 2)
 
-    let alchemist c =
-        match c.Level with 
-        | 1<Level> ->
-            { c with Class = Some Alchemist }, [
-                Improve2.feat "Ability boost" (classAbilityBoostFeats Alchemist [Intelligence]) 1
-                Improve2.hitPointsPerLevel 8
-                Improve2.skill Skills.perception Trained
-                Improve2.skill Skills.fortitudeSave Expert
-                Improve2.skill Skills.reflexSave Expert
-                Improve2.skill Skills.willSave Trained
-                Improve2.skill Skills.crafting Trained
-                Improve2.skills Skills.regularSkills Trained ((modValue Intelligence c) + 3)
-                Weapons.improveSkill (SimpleWeapon, Melee) Trained
-                Weapons.improveSkill (SimpleWeapon, Ranged) Trained
-                Weapons.improveSkill (Unarmed, Melee) Trained
-                Improve2.skill (Char2.weaponSkill Weapons.alchemicalBomb) Trained
-                Improve2.skill (Char2.armorSkill LightArmor) Trained
-                Improve2.skill (Char2.armorSkill Unarmored) Trained
-                Improve2.pool ("Formulas", 6)
-                Feats.forceAdd Feats.alchemicalCrafting
-                Improve2.feat "Research field" alchemistResearchFields 1
-                addAlchemistFeat
-            ]
-        | 2<Level> -> c, [
+    let alchemist = AddClass (Alchemist, [
+        1<Level>, [
+            Improve2.feat "Ability boost" (classAbilityBoostFeats Alchemist [Intelligence]) 1
+            Improve2.hitPointsPerLevel 8
+            Improve2.skill Skills.perception Trained
+            Improve2.skill Skills.fortitudeSave Expert
+            Improve2.skill Skills.reflexSave Expert
+            Improve2.skill Skills.willSave Trained
+            Improve2.skill Skills.crafting Trained
+            Improve2.skillsBasedOnInt 3 Skills.regularSkills
+            Weapons.improveSkill (SimpleWeapon, Melee) Trained
+            Weapons.improveSkill (SimpleWeapon, Ranged) Trained
+            Weapons.improveSkill (Unarmed, Melee) Trained
+            Improve2.skill (Char2.weaponSkill Weapons.alchemicalBomb) Trained
+            Improve2.skill (Char2.armorSkill LightArmor) Trained
+            Improve2.skill (Char2.armorSkill Unarmored) Trained
+            Improve2.pool ("Formulas", 6)
+            Feats.forceAdd Feats.alchemicalCrafting
+            Improve2.feat "Research field" alchemistResearchFields 1
+            addAlchemistFeat
+        ]
+        2<Level>, [
             increaseFormulaPool
             addAlchemistFeat
             Feats.addSkillFeat
-            ]
-        | 3<Level> -> c, [
+        ]
+        3<Level>, [
             increaseFormulaPool
             Feats.addGeneralFeat
             Skills.increase Skills.regularSkills
-            ]
-        | 4<Level> -> c, [
+        ]
+        4<Level>, [
             increaseFormulaPool
             addAlchemistFeat
             Feats.addSkillFeat
-            ]
-        | 5<Level> -> c, [
+        ]
+        5<Level>, [
             increaseFormulaPool
             Improve2.anyAbilityBoost 4
             Ancestry.addAncestryFeat
             Feats.forceAdd fieldDiscovery
             Skills.increase Skills.regularSkills
-            ]
-        | 6<Level> -> c, [
+        ]
+        6<Level>, [
             increaseFormulaPool
             addAlchemistFeat
             Feats.addSkillFeat
-            ]
-        | 7<Level> -> c, [
+        ]
+        7<Level>, [
             increaseFormulaPool
             Feats.forceAdd alchemicalWeaponExpertise
             Feats.addGeneralFeat
             Feats.forceAdd Feats.ironWill
             Feats.forceAdd perpetualInfusions
             Skills.increase Skills.regularSkills
-            ]
-        | 8<Level> -> c, [
+        ]
+        8<Level>, [
             increaseFormulaPool
             addAlchemistFeat
             Feats.addSkillFeat
-            ]
-        | 9<Level> -> c, [
+        ]
+        9<Level>, [
             increaseFormulaPool
             Feats.forceAdd alchemicalExpertise
             Feats.forceAdd Feats.alertness
             Ancestry.addAncestryFeat
             Feats.forceAdd doubleBrew
             Skills.increase Skills.regularSkills
-            ]
-        | 10<Level> -> c, [
+        ]
+        10<Level>, [
             increaseFormulaPool
             Improve2.anyAbilityBoost 4
             addAlchemistFeat
             Feats.addSkillFeat
-            ]
-        | 11<Level> -> c, [
+        ]
+        11<Level>, [
             increaseFormulaPool
             Feats.addGeneralFeat
             Feats.forceAdd Feats.juggernaut
             Feats.forceAdd perpetualPotency
             Skills.increase Skills.regularSkills
-            ]
-        | 12<Level> -> c, [
+        ]
+        12<Level>, [
             increaseFormulaPool
             addAlchemistFeat
             Feats.addSkillFeat
-            ]
-        | 13<Level> -> c, [
+        ]
+        13<Level>, [
             increaseFormulaPool
             Ancestry.addAncestryFeat
             Feats.forceAdd greaterFieldDiscovery
             Feats.forceAdd Feats.lightArmorExpertise
             Skills.increase Skills.regularSkills
             Feats.forceAdd Feats.weaponSpecialization
-            ]
-        | 14<Level> -> c, [
+        ]
+        14<Level>, [
             increaseFormulaPool
             addAlchemistFeat
             Feats.addSkillFeat
-            ]
-        | 15<Level> -> c, [
+        ]
+        15<Level>, [
             increaseFormulaPool
             Improve2.anyAbilityBoost 4
             Feats.forceAdd alchemicalAlacrity
             Feats.forceAdd Feats.evasion
             Feats.addGeneralFeat
             Skills.increase Skills.regularSkills
-            ]
-        | 16<Level> -> c, [
+        ]
+        16<Level>, [
             increaseFormulaPool
             addAlchemistFeat
             Feats.addSkillFeat
-            ]
-        | 17<Level> -> c, [
+        ]
+        17<Level>, [
             increaseFormulaPool
             Feats.forceAdd alchemicalMastery
             Ancestry.addAncestryFeat
             Feats.forceAdd perpetualPerfection
             Skills.increase Skills.regularSkills
-            ]
-        | 18<Level> -> c, [
+        ]
+        18<Level>, [
             increaseFormulaPool
             addAlchemistFeat
             Feats.addSkillFeat
-            ]
-        | 19<Level> -> c, [
+        ]
+        19<Level>, [
             increaseFormulaPool
             Feats.addGeneralFeat
             Feats.forceAdd Feats.lightArmorMastery
             Skills.increase Skills.regularSkills
-            ]
-        | 20<Level> -> c, [
+        ]
+        20<Level>, [
             increaseFormulaPool
             Improve2.anyAbilityBoost 4
             addAlchemistFeat
             Feats.addSkillFeat
-            ]
-        | _ -> failwithf "Bad level: %d" c.Level
+        ]
+    ])

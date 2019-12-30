@@ -67,85 +67,83 @@ module Bard =
 
     let addBardFeat = Improve2.feat "Bard feat" bardFeats 1
 
-    let bard c =
-        match c.Level with 
-        | 1<Level> ->
-            { c with Class = Some Bard }, [
-                Improve2.feat "Ability boost" (classAbilityBoostFeats Bard [Charisma]) 1
-                Improve2.hitPointsPerLevel 8
-                Improve2.skill Skills.perception Expert
-                Improve2.skill Skills.fortitudeSave Trained
-                Improve2.skill Skills.reflexSave Trained
-                Improve2.skill Skills.willSave Expert
-                Improve2.skill Skills.occultism Trained
-                Improve2.skill Skills.performance Trained
-                Improve2.skills Skills.regularSkills Trained ((modValue Intelligence c) + 4)
-                Weapons.improveSkill (SimpleWeapon, Melee) Trained
-                Weapons.improveSkill (SimpleWeapon, Ranged) Trained
-                Weapons.improveSkill (Unarmed, Melee) Trained
-                Improve2.skill (Char2.weaponSkill Weapons.longsword) Trained
-                Improve2.skill (Char2.weaponSkill Weapons.rapier) Trained
-                Improve2.skill (Char2.weaponSkill Weapons.sap) Trained
-                Improve2.skill (Char2.weaponSkill Weapons.shortbow) Trained
-                Improve2.skill (Char2.weaponSkill Weapons.whip) Trained
-                Improve2.skill (Char2.armorSkill LightArmor) Trained
-                Improve2.skill (Char2.armorSkill Unarmored) Trained
-                Improve2.spellSkill (Skills.spellSkill (Occult, Charisma))
-                Improve2.pool ("Focus", 1)
-                Improve2.spell (0, 5)
-                Improve2.spell (1, 2)
-                Improve2.feat "Muse" bardMuses 1
-            ]
-        | 2<Level> -> c, [
+    let bard = AddClass (Bard, [
+        1<Level>, [
+            Improve2.feat "Ability boost" (classAbilityBoostFeats Bard [Charisma]) 1
+            Improve2.hitPointsPerLevel 8
+            Improve2.skill Skills.perception Expert
+            Improve2.skill Skills.fortitudeSave Trained
+            Improve2.skill Skills.reflexSave Trained
+            Improve2.skill Skills.willSave Expert
+            Improve2.skill Skills.occultism Trained
+            Improve2.skill Skills.performance Trained
+            Improve2.skillsBasedOnInt 4 Skills.regularSkills
+            Weapons.improveSkill (SimpleWeapon, Melee) Trained
+            Weapons.improveSkill (SimpleWeapon, Ranged) Trained
+            Weapons.improveSkill (Unarmed, Melee) Trained
+            Improve2.skill (Char2.weaponSkill Weapons.longsword) Trained
+            Improve2.skill (Char2.weaponSkill Weapons.rapier) Trained
+            Improve2.skill (Char2.weaponSkill Weapons.sap) Trained
+            Improve2.skill (Char2.weaponSkill Weapons.shortbow) Trained
+            Improve2.skill (Char2.weaponSkill Weapons.whip) Trained
+            Improve2.skill (Char2.armorSkill LightArmor) Trained
+            Improve2.skill (Char2.armorSkill Unarmored) Trained
+            Improve2.spellSkill (Skills.spellSkill (Occult, Charisma))
+            Improve2.pool ("Focus", 1)
+            Improve2.spell (0, 5)
+            Improve2.spell (1, 2)
+            Improve2.feat "Muse" bardMuses 1
+        ]
+        2<Level>, [
             addBardFeat
             Feats.addSkillFeat
             Improve2.spell (1, 1)
-            ]
-        | 3<Level> -> c, [
+        ]
+        3<Level>, [
             Feats.addGeneralFeat
             Feats.forceAdd Feats.lightningReflexes
             Feats.forceAdd signatureSpells
             Skills.increase Skills.regularSkills
             Improve2.spell (2, 2)
-            ]
-        | 4<Level> -> c, [
+        ]
+        4<Level>, [
             addBardFeat
             Feats.addSkillFeat
             Improve2.spell (2, 1)
-            ]
-        | 5<Level> -> c, [
+        ]
+        5<Level>, [
             Improve2.anyAbilityBoost 4
             Ancestry.addAncestryFeat
             Skills.increase Skills.regularSkills
             Improve2.spell (3, 2)
-            ]
-        | 6<Level> -> c, [
+        ]
+        6<Level>, [
             addBardFeat
             Feats.addSkillFeat
             Improve2.spell (3, 1)
-            ]
-        | 7<Level> -> c, [
+        ]
+        7<Level>, [
             Feats.forceAdd expertSpellcaster
             Feats.addGeneralFeat
             Skills.increase Skills.regularSkills
             Improve2.spell (4, 2)
-            ]
-        | 8<Level> -> c, [
+        ]
+        8<Level>, [
             addBardFeat
             Feats.addSkillFeat
             Improve2.spell (4, 1)
-            ]
-        | 9<Level> -> c, [
+        ]
+        9<Level>, [
             Ancestry.addAncestryFeat
             Feats.forceAdd Feats.greatFortitude
             Feats.forceAdd Feats.resolve
             Skills.increase Skills.regularSkills
             Improve2.spell (5, 2)
-            ]
-        | 10<Level> -> c, [
+        ]
+        10<Level>, [
             Improve2.anyAbilityBoost 4
             addBardFeat
             Feats.addSkillFeat
             Improve2.spell (5, 1)
-            ]
-        | _ -> failwithf "Bad level: %d" c.Level
+        ]
+    ])
