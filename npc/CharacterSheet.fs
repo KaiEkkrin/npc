@@ -107,7 +107,7 @@ module CharacterSheet =
     let buildAbilities c = {
         Title = Some "Abilities"
         Items = [
-            for ab in Builder.AbilityOrder do
+            for ab in Build.abilityOrder do
                 let score = Map.find ab c.Abilities
                 yield one (ab.ToString (), sprintf "%4d (%+2d)" score (Derive.modifier score))
         ]

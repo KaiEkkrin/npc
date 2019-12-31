@@ -7,35 +7,48 @@ open System.IO
 open Npc
 open Npc.Attributes
 
-// A console interaction.
-type ConsoleInteract () = 
-    interface IInteraction with
-        member this.Prompt (prompt, choices) =
-            printfn "Choose %s:" prompt
+module Interactive =
+    // Prompts interactively for one choice out of many.
+    let showPrompt (prompt, choices) =
+        printfn "Choose %s:" prompt
 
-            // Number all the choices, starting at 1:
-            let numberedChoices = choices |> List.mapi (fun i ch -> i + 1, ch)
-            numberedChoices |> List.iter (fun (n, ch) -> printfn "%4d. %s" n ch)
+        // Number all the choices, starting at 1:
+        let numberedChoices = choices |> List.mapi (fun i ch -> i + 1, ch)
+        numberedChoices |> List.iter (fun (n, ch) -> printfn "%4d. %A" n ch)
 
-            // Read in the first intelligible number the user types that
-            // maps to a choice, and return that:
-            seq { while true do yield Console.ReadLine () }
-            |> Seq.choose (fun l -> match Int32.TryParse l with | true, n -> Some n | _ -> None)
-            |> Seq.pick (fun n -> List.tryPick (fun (n2, ch) -> if n2 = n then Some ch else None) numberedChoices)
+        // Read in the first intelligible number the user types that
+        // maps to a choice, and return that:
+        seq { while true do yield Console.ReadLine () }
+        |> Seq.choose (fun l -> match Int32.TryParse l with | true, n -> Some n | _ -> None)
+        |> Seq.pick (fun n -> List.tryPick (fun (n2, ch) -> if n2 = n then Some ch else None) numberedChoices)
 
-        member this.Show (f, c) =
-            let sheet = CharacterSheet.create c
+    // Builds a character interactively.
+    let rec build (chosen, c, imps) =
+        match Build.build (chosen, c, imps) with
+        | MakeChoice (p, chs, c, imps) -> prompt (p, chs, c, imps)
+        | BadChoice (p, chs, c, imps) ->
+            printfn "Bad choice, try again."
+            prompt (p, chs, c, imps)
+        | CompletedCharacter c -> c
 
-            // I'll right justify the names and left justify the values:
-            let maxNameLength =
-                sheet
-                |> List.collect (fun s -> s.Items)
-                |> List.fold (fun acc (n, _) -> max acc n.Length) 0
+    and prompt (p, chs, c, imps) =
+        let ch = showPrompt (p, chs)
+        build (Some ch, c, imps)
 
-            for s in sheet do
-                match s.Title with | Some t -> fprintfn f "%s" t | None -> ()
-                for (n, v) in s.Items do
-                    fprintfn f "%s : %s" (n.PadLeft maxNameLength) v
+    // Shows a character sheet in a text writer.
+    let showCharacter (f, c) =
+        let sheet = CharacterSheet.create c
+
+        // I'll right justify the names and left justify the values:
+        let maxNameLength =
+            sheet
+            |> List.collect (fun s -> s.Items)
+            |> List.fold (fun acc (n, _) -> max acc n.Length) 0
+
+        for s in sheet do
+            match s.Title with | Some t -> fprintfn f "%s" t | None -> ()
+            for (n, v) in s.Items do
+                fprintfn f "%s : %s" (n.PadLeft maxNameLength) v
 
 // Arguments
 type Args = {
@@ -83,14 +96,12 @@ module Program =
             else
                 // We create a base character, and then interact with the user to
                 // offer them options, thus
-                let interact = ConsoleInteract () :> IInteraction
-                let build = Builder interact
-                let start, imps = build.Start args.Name.Value (args.Level * 1<Level>)
-                let c = build.Build (start, imps)
+                let start, imps = Build.start args.Name.Value (args.Level * 1<Level>)
+                let c = Interactive.build (None, start, imps)
                 match args.Output with
                 | Some o ->
                     use f = new StreamWriter (o)
-                    interact.Show (f :> TextWriter, c)
+                    Interactive.showCharacter (f :> TextWriter, c)
                 | None ->
-                    interact.Show (Console.Out, c)
+                    Interactive.showCharacter (Console.Out, c)
                 0
