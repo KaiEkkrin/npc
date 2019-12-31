@@ -4,8 +4,20 @@ namespace NpcConsole
 
 open System
 open System.IO
+open System.Text.Json
+open System.Text.Json.Serialization
 open Npc
 open Npc.Attributes
+
+// I have no clue why this isn't in the standard library
+type ResultBuilder () =
+    member this.Bind (x, f) =
+        match x with
+        | Ok y -> f y
+        | Error e -> Error e
+
+    member this.Return x = Ok x
+    member this.ReturnFrom x = x
 
 module Interactive =
     // Prompts interactively for one choice out of many.
@@ -53,25 +65,33 @@ module Interactive =
 // Arguments
 type Args = {
     Name: string option
-    Level: int
+    Level: int<Level>
+    JsonIn: string option
+    JsonOut: string option
     Output: string option
 }
 
-type ArgParseResult = | Parsed of Args | Failed of string
-
 module Program =
+    let result = ResultBuilder ()
+    let serializerOptions =
+        let o = JsonSerializerOptions ()
+        o.Converters.Add (JsonFSharpConverter ())
+        o
+
     let parseArgs argv =
         let rec parse argv args =
             match argv with
-            | [] -> Parsed args
+            | [] -> Ok args
             | "--name"::name::argvs -> { args with Args.Name = Some name } |> parse argvs
             | "--level"::l::argvs -> // TODO custom pattern thingy?
                 match Int32.TryParse l with
-                | true, level -> { args with Args.Level = level } |> parse argvs
-                | _ -> Failed "--level"
+                | true, level -> { args with Args.Level = level * 1<Level> } |> parse argvs
+                | _ -> sprintf "Invalid option : --level %s" l |> Error
+            | "--json-in"::f::argvs -> { args with Args.JsonIn = Some f } |> parse argvs
+            | "--json-out"::f::argvs -> { args with Args.JsonOut = Some f } |> parse argvs
             | "--out"::o::argvs -> { args with Args.Output = Some o } |> parse argvs
-            | arg::_ -> Failed arg
-        parse (List.ofArray argv) { Name = None; Level = 1; Output = None }
+            | arg::_ -> sprintf "Invalid option : %s" arg |> Error
+        parse (List.ofArray argv) { Name = None; Level = 1<Level>; JsonIn = None; JsonOut = None; Output = None }
 
     let usage () =
         printfn "Usage:"
@@ -79,29 +99,70 @@ module Program =
         printfn "    Specify a character name."
         printfn "--level <level>"
         printfn "    Specify a character level (default 1)."
+        printfn "--json-in <filename>"
+        printfn "    Specify a JSON input filename (with character build output)."
+        printfn "--json-out <filename>"
+        printfn "    Specify a JSON output filename (we save character build output here)."
         printfn "--out <filename>"
         printfn "    Specify an output file (default none)."
         0
 
+    let readJsonIn (f: string) =
+        try
+            use sr = new StreamReader (f)
+            let json = sr.ReadToEnd ()
+            JsonSerializer.Deserialize<Character * Improvement2 list> (json, serializerOptions) |> Ok
+        with
+            | e -> sprintf "Error reading %s : %s" f e.Message |> Error
+
+    let writeJsonOut (f: string) o =
+        let json = JsonSerializer.Serialize<Character * Improvement2 list> (o, serializerOptions)
+        try
+            use sw = new StreamWriter (f)
+            sw.Write json
+            Ok ()
+        with
+            | e -> sprintf "Error writing %s : %s" f e.Message |> Error
+
+    let showCharacter args c =
+        match args.Output with
+        | Some o ->
+            use f = new StreamWriter (o)
+            Interactive.showCharacter (f :> TextWriter, c)
+        | None ->
+            Interactive.showCharacter (Console.Out, c)
+
+    let getStartingPoint args = result {
+        match args.JsonIn, args.Name, args.Level with
+        | Some f, _, lv ->
+            let! c, imps = readJsonIn f 
+            if lv > c.Level then
+                let levelUp = Build.levelUp lv c
+                return (c, List.append imps levelUp)
+            else return (c, imps)
+        | None, Some name, lv -> return Build.start name lv
+        | _ -> return! Error "Need a character name or a json input"
+    }
+
+    let run argv = result {
+        let! args = parseArgs argv
+        let! start, imps = getStartingPoint args
+        let c = Interactive.build (None, start, imps)
+
+        // Write out the output, if requested
+        let! written =
+            match args.JsonOut with
+            | Some f -> writeJsonOut f (c, [])
+            | None -> Ok ()
+
+        do showCharacter args c
+        return written
+    }
+
     [<EntryPoint>]
     let main argv =
-        match (parseArgs argv) with
-        | Failed str ->
-            printfn "Unrecognised argument: %s" str
+        match run argv with
+        | Ok _ -> 0
+        | Error e ->
+            printfn "%s" e
             usage ()
-        | Parsed args ->
-            if args.Name = None then
-                printfn "No name specified"
-                usage ()
-            else
-                // We create a base character, and then interact with the user to
-                // offer them options, thus
-                let start, imps = Build.start args.Name.Value (args.Level * 1<Level>)
-                let c = Interactive.build (None, start, imps)
-                match args.Output with
-                | Some o ->
-                    use f = new StreamWriter (o)
-                    Interactive.showCharacter (f :> TextWriter, c)
-                | None ->
-                    Interactive.showCharacter (Console.Out, c)
-                0

@@ -30,7 +30,10 @@ type Actions
 type Ability = Strength | Dexterity | Constitution | Intelligence | Wisdom | Charisma
 
 // We build character hit points out of a flat bonus and a per-level bonus
-type HitPointValue = { Flat: int; PerLevel: int }
+type HitPointValue = {
+    Flat: int
+    PerLevel: int
+}
 
 // Proficiency ranks are enumerated thus
 type ProficiencyRank = Untrained | Trained | Expert | Master | Legendary
