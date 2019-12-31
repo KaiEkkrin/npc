@@ -52,7 +52,7 @@ module Build =
     let levelUp newLv c =
         let oldLv = c.Level
         List.unfold (fun lv ->
-            if lv <= newLv then Some (Classes.All.classes, lv + 1<Level>)
+            if lv < newLv then Some (Classes.All.classes, lv + 1<Level>)
             else None) oldLv
 
     // Starts a character build, emitting (character, list of improvements
@@ -87,5 +87,5 @@ module Build =
             Improve2.single Weapons.addMeleeWeapon
             Improve2.single Weapons.addRangedWeapon
         ]
-        let otherLevels = c |> levelUp (level - 1<Level>)
+        let otherLevels = c |> levelUp level
         c, List.append firstLevel otherLevels
