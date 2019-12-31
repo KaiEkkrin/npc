@@ -86,8 +86,8 @@ module Rogue =
 
     let addRogueFeat = Improve2.feat "Rogue feat" rogueFeats 1
 
-    let rogue = AddClass (Rogue, [
-        1<Level>, [
+    let rogue = [
+        AddClass (Rogue, [
             Improve2.hitPointsPerLevel 8
             Improve2.skill Skills.perception Expert
             Improve2.skill Skills.fortitudeSave Trained
@@ -108,60 +108,60 @@ module Rogue =
             Feats.forceAdd surpriseAttack
             addRogueFeat
             Improve2.pool (sneakAttack, 1)
-        ]
-        2<Level>, [
+        ])
+        LevelUp (Rogue, 2<Level>, [
             addRogueFeat
             Feats.addSkillFeat
             Skills.increase Skills.regularSkills
-        ]
-        3<Level>, [
+        ])
+        LevelUp (Rogue, 3<Level>, [
             Feats.forceAdd denyAdvantage
             Feats.addGeneralFeat
             Feats.addSkillFeat
             Skills.increase Skills.regularSkills
-        ]
-        4<Level>, [
+        ])
+        LevelUp (Rogue, 4<Level>, [
             addRogueFeat
             Feats.addSkillFeat
             Skills.increase Skills.regularSkills
-        ]
-        5<Level>, [
+        ])
+        LevelUp (Rogue, 5<Level>, [
             Improve2.anyAbilityBoost 4
             Ancestry.addAncestryFeat
             Feats.addSkillFeat
             Skills.increase Skills.regularSkills
             Improve2.pool (sneakAttack, 1)
             Feats.forceAdd weaponTricks
-        ]
-        6<Level>, [
+        ])
+        LevelUp (Rogue, 6<Level>, [
             addRogueFeat
             Feats.addSkillFeat
             Skills.increase Skills.regularSkills
-        ]
-        7<Level>, [
+        ])
+        LevelUp (Rogue, 7<Level>, [
             Feats.forceAdd Feats.evasion
             Feats.addGeneralFeat
             Feats.addSkillFeat
             Skills.increase Skills.regularSkills
             Feats.forceAdd vigilantSenses
             Feats.forceAdd Feats.weaponSpecialization
-        ]
-        8<Level>, [
+        ])
+        LevelUp (Rogue, 8<Level>, [
             addRogueFeat
             Feats.addSkillFeat
             Skills.increase Skills.regularSkills
-        ]
-        9<Level>, [
+        ])
+        LevelUp (Rogue, 9<Level>, [
             Ancestry.addAncestryFeat
             Feats.forceAdd debilitatingStrike
             Feats.forceAdd Feats.greatFortitude
             Feats.addSkillFeat
             Skills.increase Skills.regularSkills
-        ]
-        10<Level>, [
+        ])
+        LevelUp (Rogue, 10<Level>, [
             Improve2.anyAbilityBoost 4
             addRogueFeat
             Feats.addSkillFeat
             Skills.increase Skills.regularSkills
-        ]
-    ])
+        ])
+    ]

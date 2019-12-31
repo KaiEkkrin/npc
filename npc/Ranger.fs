@@ -64,8 +64,8 @@ module Ranger =
 
     let addRangerFeat = Improve2.feat "Ranger feat" rangerFeats 1
 
-    let ranger = AddClass (Ranger, [
-        1<Level>, [
+    let ranger = [
+        AddClass (Ranger, [
             Improve2.feat "Ability boost" (classAbilityBoostFeats Ranger [Strength; Dexterity]) 1
             Improve2.hitPointsPerLevel 10
             Improve2.skill Skills.perception Expert
@@ -86,51 +86,51 @@ module Ranger =
             Feats.forceAdd huntPrey
             Feats.forceAdd huntersEdge
             addRangerFeat
-        ]
-        2<Level>, [
+        ])
+        LevelUp (Ranger, 2<Level>, [
             addRangerFeat
             Feats.addSkillFeat
-        ]
-        3<Level>, [
+        ])
+        LevelUp (Ranger, 3<Level>, [
             Feats.addGeneralFeat
             Feats.forceAdd Feats.ironWill
             Skills.increase Skills.regularSkills
-        ]
-        4<Level>, [
+        ])
+        LevelUp (Ranger, 4<Level>, [
             addRangerFeat
             Feats.addSkillFeat
-        ]
-        5<Level>, [
+        ])
+        LevelUp (Ranger, 5<Level>, [
             Improve2.anyAbilityBoost 4
             Ancestry.addAncestryFeat
             Skills.increase Skills.regularSkills
             Feats.forceAdd tracklessStep
             Feats.forceAdd weaponExpertise
-        ]
-        6<Level>, [
+        ])
+        LevelUp (Ranger, 6<Level>, [
             addRangerFeat
             Feats.addSkillFeat
-        ]
-        7<Level>, [
+        ])
+        LevelUp (Ranger, 7<Level>, [
             Feats.forceAdd Feats.evasion
             Feats.addGeneralFeat
             Skills.increase Skills.regularSkills
             Feats.forceAdd vigilantSenses
             Feats.forceAdd Feats.weaponSpecialization
-        ]
-        8<Level>, [
+        ])
+        LevelUp (Ranger, 8<Level>, [
             addRangerFeat
             Feats.addSkillFeat
-        ]
-        9<Level>, [
+        ])
+        LevelUp (Ranger, 9<Level>, [
             Ancestry.addAncestryFeat
             Feats.forceAdd naturesEdge
             Feats.forceAdd rangerExpertise
             Skills.increase Skills.regularSkills
-        ]
-        10<Level>, [
+        ])
+        LevelUp (Ranger, 10<Level>, [
             Improve2.anyAbilityBoost 4
             addRangerFeat
             Feats.addSkillFeat
-        ]
-    ])
+        ])
+    ]

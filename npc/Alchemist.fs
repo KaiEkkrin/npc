@@ -75,8 +75,8 @@ module Alchemist =
     let addAlchemistFeat = Improve2.feat "Alchemist feat" alchemistFeats 1
     let increaseFormulaPool = Improve2.pool ("Formulas", 2)
 
-    let alchemist = AddClass (Alchemist, [
-        1<Level>, [
+    let alchemist = [
+        AddClass (Alchemist, [
             Improve2.feat "Ability boost" (classAbilityBoostFeats Alchemist [Intelligence]) 1
             Improve2.hitPointsPerLevel 8
             Improve2.skill Skills.perception Trained
@@ -95,121 +95,121 @@ module Alchemist =
             Feats.forceAdd Feats.alchemicalCrafting
             Improve2.feat "Research field" alchemistResearchFields 1
             addAlchemistFeat
-        ]
-        2<Level>, [
+        ])
+        LevelUp (Alchemist, 2<Level>, [
             increaseFormulaPool
             addAlchemistFeat
             Feats.addSkillFeat
-        ]
-        3<Level>, [
+        ])
+        LevelUp (Alchemist, 3<Level>, [
             increaseFormulaPool
             Feats.addGeneralFeat
             Skills.increase Skills.regularSkills
-        ]
-        4<Level>, [
+        ])
+        LevelUp (Alchemist, 4<Level>, [
             increaseFormulaPool
             addAlchemistFeat
             Feats.addSkillFeat
-        ]
-        5<Level>, [
+        ])
+        LevelUp (Alchemist, 5<Level>, [
             increaseFormulaPool
             Improve2.anyAbilityBoost 4
             Ancestry.addAncestryFeat
             Feats.forceAdd fieldDiscovery
             Skills.increase Skills.regularSkills
-        ]
-        6<Level>, [
+        ])
+        LevelUp (Alchemist, 6<Level>, [
             increaseFormulaPool
             addAlchemistFeat
             Feats.addSkillFeat
-        ]
-        7<Level>, [
+        ])
+        LevelUp (Alchemist, 7<Level>, [
             increaseFormulaPool
             Feats.forceAdd alchemicalWeaponExpertise
             Feats.addGeneralFeat
             Feats.forceAdd Feats.ironWill
             Feats.forceAdd perpetualInfusions
             Skills.increase Skills.regularSkills
-        ]
-        8<Level>, [
+        ])
+        LevelUp (Alchemist, 8<Level>, [
             increaseFormulaPool
             addAlchemistFeat
             Feats.addSkillFeat
-        ]
-        9<Level>, [
+        ])
+        LevelUp (Alchemist, 9<Level>, [
             increaseFormulaPool
             Feats.forceAdd alchemicalExpertise
             Feats.forceAdd Feats.alertness
             Ancestry.addAncestryFeat
             Feats.forceAdd doubleBrew
             Skills.increase Skills.regularSkills
-        ]
-        10<Level>, [
+        ])
+        LevelUp (Alchemist, 10<Level>, [
             increaseFormulaPool
             Improve2.anyAbilityBoost 4
             addAlchemistFeat
             Feats.addSkillFeat
-        ]
-        11<Level>, [
+        ])
+        LevelUp (Alchemist, 11<Level>, [
             increaseFormulaPool
             Feats.addGeneralFeat
             Feats.forceAdd Feats.juggernaut
             Feats.forceAdd perpetualPotency
             Skills.increase Skills.regularSkills
-        ]
-        12<Level>, [
+        ])
+        LevelUp (Alchemist, 12<Level>, [
             increaseFormulaPool
             addAlchemistFeat
             Feats.addSkillFeat
-        ]
-        13<Level>, [
+        ])
+        LevelUp (Alchemist, 13<Level>, [
             increaseFormulaPool
             Ancestry.addAncestryFeat
             Feats.forceAdd greaterFieldDiscovery
             Feats.forceAdd Feats.lightArmorExpertise
             Skills.increase Skills.regularSkills
             Feats.forceAdd Feats.weaponSpecialization
-        ]
-        14<Level>, [
+        ])
+        LevelUp (Alchemist, 14<Level>, [
             increaseFormulaPool
             addAlchemistFeat
             Feats.addSkillFeat
-        ]
-        15<Level>, [
+        ])
+        LevelUp (Alchemist, 15<Level>, [
             increaseFormulaPool
             Improve2.anyAbilityBoost 4
             Feats.forceAdd alchemicalAlacrity
             Feats.forceAdd Feats.evasion
             Feats.addGeneralFeat
             Skills.increase Skills.regularSkills
-        ]
-        16<Level>, [
+        ])
+        LevelUp (Alchemist, 16<Level>, [
             increaseFormulaPool
             addAlchemistFeat
             Feats.addSkillFeat
-        ]
-        17<Level>, [
+        ])
+        LevelUp (Alchemist, 17<Level>, [
             increaseFormulaPool
             Feats.forceAdd alchemicalMastery
             Ancestry.addAncestryFeat
             Feats.forceAdd perpetualPerfection
             Skills.increase Skills.regularSkills
-        ]
-        18<Level>, [
+        ])
+        LevelUp (Alchemist, 18<Level>, [
             increaseFormulaPool
             addAlchemistFeat
             Feats.addSkillFeat
-        ]
-        19<Level>, [
+        ])
+        LevelUp (Alchemist, 19<Level>, [
             increaseFormulaPool
             Feats.addGeneralFeat
             Feats.forceAdd Feats.lightArmorMastery
             Skills.increase Skills.regularSkills
-        ]
-        20<Level>, [
+        ])
+        LevelUp (Alchemist, 20<Level>, [
             increaseFormulaPool
             Improve2.anyAbilityBoost 4
             addAlchemistFeat
             Feats.addSkillFeat
-        ]
-    ])
+        ])
+    ]

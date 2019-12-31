@@ -38,15 +38,17 @@ type Builder (interact: IInteraction) =
         | imp::left ->
             // Work out what choices we have
             let possible = imp.Choices |> List.filter (fun ch -> ch.CanApply c)
+            let possibleCount = List.length possible
 
             // Work out which one we will apply
             let chosen =
                 match imp.Count, possible with
                 | None, [] -> None
                 | None, ch::_ -> Some ch
-                | Some n, ch::chs when n = (List.length chs) -> Some ch
-                | Some n, chs when n > (List.length chs) ->
-                    failwithf "%s : Wanted %d, only %d possible" imp.Prompt n (List.length chs)
+                | Some 0, _ -> None
+                | Some n, ch::_ when n = possibleCount -> Some ch
+                | Some n, _ when n > possibleCount ->
+                    failwithf "%s : Wanted %d, only %d possible" imp.Prompt n possibleCount
                 | Some _, chs ->
                     // TODO I need to be able to split this into "show next prompt"
                     // and "apply given choice (from that prompt)"
@@ -63,7 +65,7 @@ type Builder (interact: IInteraction) =
                     Choices = imp.Choices |> List.filter (fun ch2 -> ch2 <> ch)
                     Count = match imp.Count with | Some n -> Some (n - 1) | None -> None
                 }
-                improve (List.concat [more; [continued]; imps]) updated
+                improve (List.concat [more; [continued]; left]) updated
 
     // The canonical ability order (useful for display)
     static member AbilityOrder = [Strength; Dexterity; Constitution; Intelligence; Wisdom; Charisma]
@@ -73,7 +75,7 @@ type Builder (interact: IInteraction) =
     member this.LevelUp newLv c =
         let oldLv = c.Level
         List.unfold (fun lv ->
-            if lv < newLv then Some (Classes.All.classes, lv + 1<Level>)
+            if lv <= newLv then Some (Classes.All.classes, lv + 1<Level>)
             else None) oldLv
 
     // Starts a character build, emitting (character, list of improvements
@@ -85,7 +87,7 @@ type Builder (interact: IInteraction) =
             Heritage = None
             Background = None
             Class = None
-            Level = 0<Level> // adding a class also adds 1 to level
+            Level = 1<Level>
             HitPoints = { Flat = 0; PerLevel = 0 }
             Size = None
             Speed = 0<Feet>

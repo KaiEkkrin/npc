@@ -67,8 +67,8 @@ module Bard =
 
     let addBardFeat = Improve2.feat "Bard feat" bardFeats 1
 
-    let bard = AddClass (Bard, [
-        1<Level>, [
+    let bard = [
+        AddClass (Bard, [
             Improve2.feat "Ability boost" (classAbilityBoostFeats Bard [Charisma]) 1
             Improve2.hitPointsPerLevel 8
             Improve2.skill Skills.perception Expert
@@ -93,57 +93,57 @@ module Bard =
             Improve2.spell (0, 5)
             Improve2.spell (1, 2)
             Improve2.feat "Muse" bardMuses 1
-        ]
-        2<Level>, [
+        ])
+        LevelUp (Bard, 2<Level>, [
             addBardFeat
             Feats.addSkillFeat
             Improve2.spell (1, 1)
-        ]
-        3<Level>, [
+        ])
+        LevelUp (Bard, 3<Level>, [
             Feats.addGeneralFeat
             Feats.forceAdd Feats.lightningReflexes
             Feats.forceAdd signatureSpells
             Skills.increase Skills.regularSkills
             Improve2.spell (2, 2)
-        ]
-        4<Level>, [
+        ])
+        LevelUp (Bard, 4<Level>, [
             addBardFeat
             Feats.addSkillFeat
             Improve2.spell (2, 1)
-        ]
-        5<Level>, [
+        ])
+        LevelUp (Bard, 5<Level>, [
             Improve2.anyAbilityBoost 4
             Ancestry.addAncestryFeat
             Skills.increase Skills.regularSkills
             Improve2.spell (3, 2)
-        ]
-        6<Level>, [
+        ])
+        LevelUp (Bard, 6<Level>, [
             addBardFeat
             Feats.addSkillFeat
             Improve2.spell (3, 1)
-        ]
-        7<Level>, [
+        ])
+        LevelUp (Bard, 7<Level>, [
             Feats.forceAdd expertSpellcaster
             Feats.addGeneralFeat
             Skills.increase Skills.regularSkills
             Improve2.spell (4, 2)
-        ]
-        8<Level>, [
+        ])
+        LevelUp (Bard, 8<Level>, [
             addBardFeat
             Feats.addSkillFeat
             Improve2.spell (4, 1)
-        ]
-        9<Level>, [
+        ])
+        LevelUp (Bard, 9<Level>, [
             Ancestry.addAncestryFeat
             Feats.forceAdd Feats.greatFortitude
             Feats.forceAdd Feats.resolve
             Skills.increase Skills.regularSkills
             Improve2.spell (5, 2)
-        ]
-        10<Level>, [
+        ])
+        LevelUp (Bard, 10<Level>, [
             Improve2.anyAbilityBoost 4
             addBardFeat
             Feats.addSkillFeat
             Improve2.spell (5, 1)
-        ]
-    ])
+        ])
+    ]

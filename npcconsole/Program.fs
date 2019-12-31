@@ -5,6 +5,7 @@ namespace NpcConsole
 open System
 open System.IO
 open Npc
+open Npc.Attributes
 
 // A console interaction.
 type ConsoleInteract () = 
@@ -84,7 +85,8 @@ module Program =
                 // offer them options, thus
                 let interact = ConsoleInteract () :> IInteraction
                 let build = Builder interact
-                let c = build.Build (args.Name.Value, args.Level)
+                let start, imps = build.Start args.Name.Value (args.Level * 1<Level>)
+                let c = build.Build (start, imps)
                 match args.Output with
                 | Some o ->
                     use f = new StreamWriter (o)

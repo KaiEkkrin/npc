@@ -5,7 +5,7 @@ open Npc
 module All =
     let classes = {
         Prompt = "Class"
-        Choices = [
+        Choices = List.concat [
             Alchemist.alchemist
             Bard.bard
             Druid.druid

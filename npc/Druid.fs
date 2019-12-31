@@ -87,8 +87,8 @@ module Druid =
 
     let addDruidFeat = Improve2.feat "Druid feat" druidFeats 1
 
-    let druid = AddClass (Druid, [
-        1<Level>, [
+    let druid = [
+        AddClass (Druid, [
             Improve2.feat "Ability boost" (classAbilityBoostFeats Druid [Wisdom]) 1
             Improve2.hitPointsPerLevel 8
             Improve2.skill Skills.perception Trained
@@ -110,75 +110,75 @@ module Druid =
             Improve2.feat "Order" druidOrders 1
             Feats.forceAdd Feats.shieldBlock
             Feats.forceAdd wildEmpathy
-        ]
-        2<Level>, [
+        ])
+        LevelUp (Druid, 2<Level>, [
             addDruidFeat
             Feats.addSkillFeat
             Improve2.spell (1, 1)
-        ]
-        3<Level>, [
+        ])
+        LevelUp (Druid, 3<Level>, [
             Feats.forceAdd Feats.alertness
             Feats.addGeneralFeat
             Feats.forceAdd Feats.greatFortitude
             Skills.increase Skills.regularSkills
             Improve2.spell (2, 2)
-        ]
-        4<Level>, [
+        ])
+        LevelUp (Druid, 4<Level>, [
             addDruidFeat
             Feats.addSkillFeat
             Improve2.spell (2, 1)
-        ]
-        5<Level>, [
+        ])
+        LevelUp (Druid, 5<Level>, [
             Improve2.anyAbilityBoost 4
             Ancestry.addAncestryFeat
             Feats.forceAdd Feats.lightningReflexes
             Skills.increase Skills.regularSkills
             Improve2.spell (3, 2)
-        ]
-        6<Level>, [
+        ])
+        LevelUp (Druid, 6<Level>, [
             addDruidFeat
             Feats.addSkillFeat
             Improve2.spell (3, 1)
-        ]
-        7<Level>, [
+        ])
+        LevelUp (Druid, 7<Level>, [
             Feats.forceAdd expertSpellcaster
             Feats.addGeneralFeat
             Skills.increase Skills.regularSkills
             Improve2.spell (4, 2)
-        ]
-        8<Level>, [
+        ])
+        LevelUp (Druid, 8<Level>, [
             addDruidFeat
             Feats.addSkillFeat
             Improve2.spell (4, 1)
-        ]
-        9<Level>, [
+        ])
+        LevelUp (Druid, 9<Level>, [
             Ancestry.addAncestryFeat
             Skills.increase Skills.regularSkills
             Improve2.spell (5, 2)
-        ]
-        10<Level>, [
+        ])
+        LevelUp (Druid, 10<Level>, [
             Improve2.anyAbilityBoost 4
             addDruidFeat
             Feats.addSkillFeat
             Improve2.spell (5, 1)
-        ]
-        11<Level>, [
+        ])
+        LevelUp (Druid, 11<Level>, [
             Feats.forceAdd druidWeaponExpertise
             Feats.addGeneralFeat
             Feats.forceAdd resolve
             Skills.increase Skills.regularSkills
             Improve2.spell (6, 2)
-        ]
-        12<Level>, [
+        ])
+        LevelUp (Druid, 12<Level>, [
             addDruidFeat
             Feats.addSkillFeat
             Improve2.spell (6, 1)
-        ]
-        13<Level>, [
+        ])
+        LevelUp (Druid, 13<Level>, [
             Ancestry.addAncestryFeat
             Feats.forceAdd Feats.mediumArmorExpertise
             Skills.increase Skills.regularSkills
             Feats.forceAdd Feats.weaponSpecialization
             Improve2.spell (7, 2)
-        ]
-    ])
+        ])
+    ]

@@ -4,19 +4,10 @@ open Npc.Attributes
 
 // How to build characters -- serializable version.
 module Char2 =
-    let canAddClass cl defs c =
-        let canLevelTo lv =
-            defs |> List.tryFind (fun (lv2, _) -> lv2 = lv) |> Option.isSome
-        if not (canLevelTo 1<Level>) then failwithf "No level 1 for %A" cl
-        match c.Level, c.Class with
-        | 0<Level>, None -> true
-        | oldLv, Some cl2 when cl2 = cl && canLevelTo (oldLv + 1<Level>) -> true
+    let canLevelUpTo cl lv c =
+        match c.Class, c.Level with
+        | Some cl2, lv2 when cl2 = cl && lv2 = lv - 1<Level> -> true
         | _ -> false
-
-    let addClass cl defs c =
-        let newLv = c.Level + 1<Level>
-        let (_, imps) = defs |> List.find (fun (lv2, _) -> lv2 = newLv)
-        { c with Class = Some cl; Level = newLv }, imps
 
     // Adds an ability boost.
     let abilityBoost ab c =
@@ -56,7 +47,8 @@ module Char2 =
         | Some Trained -> c.Level >= 3<Level>
         | Some Expert -> c.Level >= 7<Level>
         | Some Master -> c.Level >= 15<Level>
-        | _ -> false // can't increase skills that are Legendary (max) or Untrained (add them)
+        | Some Legendary -> false // can't increase skills that are Legendary (max)
+        | _ -> true // untrained
 
     let increaseSkill sk c =
         match Map.tryFind sk c.Skills with
@@ -64,7 +56,7 @@ module Char2 =
         | Some Master -> addSkill sk Legendary c
         | Some Expert -> addSkill sk Master c
         | Some Trained -> addSkill sk Expert c
-        | _ -> failwith "Cannot increase an untrained skill"
+        | _ -> addSkill sk Trained c
 
     let weaponSkill (w: Weapon) = {
         Name = sprintf "%s (%A)" w.Name w.Category
@@ -198,7 +190,8 @@ type Change2 =
     | AddAncestry of string * Improvement2 list
     | AddHeritage of string * Improvement2 list
     | AddBackground of string * Improvement2 list
-    | AddClass of Class * (int<Level> * Improvement2 list) list // levels up characters appropriately
+    | AddClass of Class * Improvement2 list // sets a class at level 1
+    | LevelUp of Class * int<Level> * Improvement2 list // levels up a class by 1 level
     | IncreaseHitPointsFlat of int
     | IncreaseHitPointsPerLevel of int
     | AddSize of Size
@@ -225,7 +218,8 @@ with
         | AddAncestry (n, _) -> n
         | AddHeritage (n, _) -> n
         | AddBackground (n, _) -> n
-        | AddClass (n, _) -> sprintf "%A" n
+        | AddClass (n, _) -> sprintf "%A level 1" n
+        | LevelUp (n, lv, _) -> sprintf "%A level %d" n lv
         | IncreaseHitPointsFlat p -> sprintf "Increase hit points by %d" p
         | IncreaseHitPointsPerLevel p -> sprintf "Increase hit points by %d per level" p
         | AddSize sz -> sprintf "%A size" sz
@@ -253,7 +247,8 @@ with
         | AddAncestry _ -> Option.isNone c.Ancestry
         | AddHeritage _ -> Option.isNone c.Heritage
         | AddBackground _ -> Option.isNone c.Background
-        | AddClass (cl, defs) -> Char2.canAddClass cl defs c
+        | AddClass _ -> Option.isNone c.Class && c.Level = 1<Level>
+        | LevelUp (cl, lv, _) -> Char2.canLevelUpTo cl lv c
         | AddSize _ -> Option.isNone c.Size
         | AddSkill (sk, prof) -> Char2.doesNotHaveSkill sk prof c
         | AddSkillOr (sk, sks, prof) -> Char2.hasAllSkills (sk::sks) prof c |> not
@@ -271,7 +266,8 @@ with
         | AddAncestry (a, imps) -> { c with Ancestry = Some a }, imps
         | AddHeritage (h, imps) -> { c with Heritage = Some h }, imps
         | AddBackground (b, imps) -> { c with Background = Some b }, imps
-        | AddClass (cl, defs) -> Char2.addClass cl defs c
+        | AddClass (cl, imps) -> { c with Class = Some cl }, imps
+        | LevelUp (_, lv, imps) -> { c with Level = lv }, imps
         | IncreaseHitPointsFlat p ->
             let hp = { c.HitPoints with Flat = c.HitPoints.Flat + p }
             { c with HitPoints = hp }, []
@@ -399,7 +395,7 @@ module Improve2 =
     }
 
     let feat prompt feats count = {
-        Prompt = sprintf "%s feat" prompt
+        Prompt = prompt
         Choices = feats
         Count = Some count
     }
