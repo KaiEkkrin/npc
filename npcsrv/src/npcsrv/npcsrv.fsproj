@@ -2,10 +2,12 @@
   <PropertyGroup>
     <AssemblyName>npcsrv</AssemblyName>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="WebInteract.fs" />
+    <ProjectReference Include="..\..\..\npc\npc.fsproj" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Program.fs" />
     <None Include="web.config" />
     <Content Include="WebRoot/**/*">
@@ -13,11 +15,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.*" />
-    <PackageReference Include="Giraffe" Version="3.4.*" />
-    <PackageReference Include="TaskBuilder.fs" Version="2.1.*" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\npc\npc.fsproj" />
+    <PackageReference Include="Giraffe" Version="4.0.1" />
+    <PackageReference Include="TaskBuilder.fs" Version="2.1.0" />
   </ItemGroup>
 </Project>
