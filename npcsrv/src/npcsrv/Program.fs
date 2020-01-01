@@ -1,50 +1,18 @@
-module npcsrv.App
+module Npcsrv.App
 
 open System
 open System.IO
+open FSharp.Control.Tasks.V2
+open Giraffe
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Cors.Infrastructure
 open Microsoft.AspNetCore.Hosting
+open Microsoft.AspNetCore.Http
 open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.Logging
 open Microsoft.Extensions.DependencyInjection
-open Giraffe
-
-// ---------------------------------
-// Models
-// ---------------------------------
-
-type Message =
-    {
-        Text : string
-    }
-
-// ---------------------------------
-// Views
-// ---------------------------------
-
-module Views =
-    open GiraffeViewEngine
-
-    let layout (content: XmlNode list) =
-        html [] [
-            head [] [
-                title []  [ encodedText "npcsrv" ]
-                link [ _rel  "stylesheet"
-                       _type "text/css"
-                       _href "/main.css" ]
-            ]
-            body [] content
-        ]
-
-    let partial () =
-        h1 [] [ encodedText "npcsrv" ]
-
-    let index (model : Message) =
-        [
-            partial()
-            p [] [ encodedText model.Text ]
-        ] |> layout
+open Npcsrv.Models
+open Npcsrv.Views
 
 // ---------------------------------
 // Web app
@@ -56,9 +24,12 @@ let indexHandler (name : string) =
     let view      = Views.index model
     htmlView view
 
-// TODO: returning some json like https://devblogs.microsoft.com/dotnet/build-a-web-service-with-f-and-net-core-2-0/
-let testHandler () =
-    json [| "Hello" |]
+let parsingError err = RequestErrors.BAD_REQUEST err
+
+let createHandler req =
+    let bld = CharacterBuild.Create req.Name req.Level
+    // TODO add that to the database
+    json bld
 
 let webApp =
     choose [
@@ -66,7 +37,11 @@ let webApp =
             choose [
                 route "/" >=> indexHandler "world"
                 routef "/hello/%s" indexHandler
-                route "/test.json" >=> testHandler ()
+            ]
+        POST >=>
+            choose [
+                route "/create"
+                >=> bindJson<CharacterBuildRequest> (validateModel createHandler)
             ]
         setStatusCode 404 >=> text "Not Found" ]
 
