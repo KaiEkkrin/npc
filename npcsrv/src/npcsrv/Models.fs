@@ -31,7 +31,7 @@ with
 
 // An in-progress character build.
 type CharacterBuild = {
-    Id: Guid
+    Id: string
     Character: Character
     Improvements: Improvement2 list
 }
@@ -39,7 +39,17 @@ with
     static member Create name level =
         let c, imps = Build.start name (level * 1<Level>)
         {
-            Id = Guid.NewGuid ()
+            Id = Guid.NewGuid().ToString()
             Character = c
             Improvements = imps
         }
+
+// Mongo query types.
+// See https://medium.com/@leocavalcante/rest-api-with-mongodb-and-f-on-net-core-605a2336f264
+// for how this kind of thing is done
+type CharacterBuildSave = CharacterBuild -> CharacterBuild
+
+[<CLIMutable>]
+type CharacterBuildCriteria = { Id: string }
+
+type CharacterBuildFind = CharacterBuildCriteria -> CharacterBuild []

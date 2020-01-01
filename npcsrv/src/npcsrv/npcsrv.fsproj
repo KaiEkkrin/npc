@@ -9,6 +9,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models.fs" />
+    <Compile Include="InMemory.fs" />
     <Compile Include="Views.fs" />
     <Compile Include="Program.fs" />
     <None Include="web.config" />
@@ -18,6 +19,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Giraffe" Version="4.0.1" />
+    <PackageReference Include="MongoDB.Driver" Version="2.10.0" />
     <PackageReference Include="TaskBuilder.fs" Version="2.1.0" />
   </ItemGroup>
 </Project>

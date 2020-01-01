@@ -1,6 +1,8 @@
 module Npcsrv.App
 
 open System
+open System.Collections
+open System.Globalization
 open System.IO
 open FSharp.Control.Tasks.V2
 open Giraffe
@@ -8,9 +10,9 @@ open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Cors.Infrastructure
 open Microsoft.AspNetCore.Hosting
 open Microsoft.AspNetCore.Http
+open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.Logging
-open Microsoft.Extensions.DependencyInjection
 open Npcsrv.Models
 open Npcsrv.Views
 
@@ -28,8 +30,16 @@ let parsingError err = RequestErrors.BAD_REQUEST err
 
 let createHandler req =
     let bld = CharacterBuild.Create req.Name req.Level
-    // TODO add that to the database
-    json bld
+    fun next (ctx: HttpContext) ->
+        let save = ctx.GetService<CharacterBuildSave>()
+        json (save bld) next ctx
+
+let findHandler req =
+    let doFind next (ctx: HttpContext) =
+        let find = ctx.GetService<CharacterBuildFind>()
+        let bld = find req
+        json bld next ctx
+    doFind
 
 let webApp =
     choose [
@@ -37,6 +47,7 @@ let webApp =
             choose [
                 route "/" >=> indexHandler "world"
                 routef "/hello/%s" indexHandler
+                route "/find" >=> bindQuery<CharacterBuildCriteria> (Some CultureInfo.InvariantCulture) findHandler
             ]
         POST >=>
             choose [
@@ -76,6 +87,10 @@ let configureApp (app : IApplicationBuilder) =
 let configureServices (services : IServiceCollection) =
     services.AddCors()    |> ignore
     services.AddGiraffe() |> ignore
+
+    let inMemory = Hashtable()
+    services.AddSingleton<CharacterBuildFind>(InMemory.find inMemory) |> ignore
+    services.AddSingleton<CharacterBuildSave>(InMemory.save inMemory) |> ignore
 
 let configureLogging (builder : ILoggingBuilder) =
     builder.AddFilter(fun l -> l.Equals LogLevel.Error)
