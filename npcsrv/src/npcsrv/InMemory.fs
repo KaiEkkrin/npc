@@ -13,5 +13,7 @@ let find (inMemory: Hashtable) (criteria: CharacterBuildCriteria) = [|
 |]
 
 let save (inMemory: Hashtable) (bld: CharacterBuild) =
-    inMemory.Add (bld.Id, bld)
+    if inMemory.ContainsKey bld.Id
+    then inMemory.[bld.Id] <- bld
+    else inMemory.Add (bld.Id, bld)
     bld

@@ -32,27 +32,52 @@ let createHandler req =
     let bld = CharacterBuild.Create req.Name req.Level
     fun next (ctx: HttpContext) ->
         let save = ctx.GetService<CharacterBuildSave>()
-        json (save bld) next ctx
+        let response = save bld |> CharacterBuildResponse.Of ""
+        json response next ctx
+
+let idHandler id =
+    let doFind next (ctx: HttpContext) =
+        let find = ctx.GetService<CharacterBuildFind>()
+        let bld = find { Id = id }
+        let responses = bld |> Array.map (CharacterBuildResponse.Of "")
+        match Array.length responses with
+        | 1 -> json responses next ctx
+        | _ -> (setStatusCode 404 >=> text "Not found") next ctx
+    doFind
+
+let improveHandler (req: CharacterImproveRequest) =
+    fun next (ctx: HttpContext) ->
+        let find = ctx.GetService<CharacterBuildFind>()
+        let bld = find { Id = req.Id }
+        match Array.length bld with
+        | 1 ->
+            let save = ctx.GetService<CharacterBuildSave>()
+            let _, updated = CharacterBuildResponse.Update (req.Choice) bld.[0]
+            let response = save updated |> (CharacterBuildResponse.Of "")
+            json response next ctx
+        | _ -> (setStatusCode 404 >=> text "Not found") next ctx
 
 let findHandler req =
     let doFind next (ctx: HttpContext) =
         let find = ctx.GetService<CharacterBuildFind>()
         let bld = find req
-        json bld next ctx
+        let responses = bld |> Array.map (CharacterBuildResponse.Of "")
+        json responses next ctx
     doFind
 
 let webApp =
     choose [
         GET >=>
             choose [
-                route "/" >=> indexHandler "world"
+                //route "/" >=> indexHandler "world"
+                routef "/%s" idHandler
                 routef "/hello/%s" indexHandler
                 route "/find" >=> bindQuery<CharacterBuildCriteria> (Some CultureInfo.InvariantCulture) findHandler
             ]
         POST >=>
             choose [
-                route "/create"
-                >=> bindJson<CharacterBuildRequest> (validateModel createHandler)
+                route "/create" >=> bindJson<CharacterBuildRequest> (validateModel createHandler)
+                route "/improve" >=> bindJson<CharacterImproveRequest> improveHandler
             ]
         setStatusCode 404 >=> text "Not Found" ]
 
