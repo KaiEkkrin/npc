@@ -102,6 +102,7 @@ with
 type CharacterBuildSave = CharacterBuild -> CharacterBuild
 
 [<CLIMutable>]
-type CharacterBuildCriteria = { Id: string }
+type CharacterBuildCriteria = { Id: string option; Name: string option }
 
 type CharacterBuildFind = CharacterBuildCriteria -> CharacterBuild []
+type CharacterBuildDelete = string -> bool
