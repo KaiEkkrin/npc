@@ -11,6 +11,12 @@ type BuildOutput =
     MakeChoice of string * Change2 list * Character * Improvement2 list // choose one of the changes
     | BadChoice of string * Change2 list * Character * Improvement2 list // try again
     | CompletedCharacter of Character
+with
+    member this.Character =
+        match this with
+        | MakeChoice (ch, chs, c, imps) -> c
+        | BadChoice (ch, chs, c, imps) -> c
+        | CompletedCharacter c -> c
 
 module Build =
     // Improves a character, taking the improvements in order until

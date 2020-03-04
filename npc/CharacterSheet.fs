@@ -7,7 +7,7 @@ open Npc.Attributes
 // items under sub-headings.
 // Should be good for various display UIs (?)
 type CharacterSubHeading = {
-    Title: string option
+    Title: string
     Items: (string * string) list
 }
 
@@ -93,7 +93,7 @@ module CharacterSheet =
     ]
 
     let buildBasics c = {
-        Title = None
+        Title = ""
         Items = [
             yield one ("Name", c.Name)
             yield printTitle c
@@ -105,7 +105,7 @@ module CharacterSheet =
     }
 
     let buildAbilities c = {
-        Title = Some "Abilities"
+        Title = "Abilities"
         Items = [
             for ab in Build.abilityOrder do
                 let score = Map.find ab c.Abilities
@@ -114,32 +114,32 @@ module CharacterSheet =
     }
 
     let buildArmor c = {
-        Title = Some "Armor"
+        Title = "Armor"
         Items = printArmorClass c
     }
 
     let buildMeleeWeapon c = {
-        Title = Some "Melee weapon"
+        Title = "Melee weapon"
         Items = printWeaponStats (c.MeleeWeapon, c)
     }
 
     let buildRangedWeapon c = {
-        Title = Some "Ranged weapon"
+        Title = "Ranged weapon"
         Items = printWeaponStats (c.RangedWeapon, c)
     }
 
     let buildDifficultyClasses c = {
-        Title = Some "Difficulty classes"
+        Title = "Difficulty classes"
         Items = printClassDC c
     }
 
     let buildSaves c = {
-        Title = Some "Saves"
+        Title = "Saves"
         Items = Skills.saves |> List.map (printSkill c)
     }
 
     let buildSkills c = {
-        Title = Some "Skills"
+        Title = "Skills"
         Items = [
             yield printSkill c Skills.perception
             yield! Skills.regularSkillsForCharacter c |> List.map (printSkill c)
@@ -150,7 +150,7 @@ module CharacterSheet =
         match c.SpellSkill with
         | Some sk ->
             yield {
-                Title = Some sk.Name
+                Title = sk.Name
                 Items = printSpells (c, sk)
             }
         | None -> ()
@@ -165,13 +165,13 @@ module CharacterSheet =
         if not (List.isEmpty entries)
         then
             yield {
-                Title = Some "Pools"
+                Title = "Pools"
                 Items = entries
             }
     ]
 
     let buildFeats c = {
-        Title = Some "Feats"
+        Title = "Feats"
         Items = c.Feats |> List.sortBy (fun f -> f.Name) |> List.map (fun f ->
                 one (f.Name, sprintf "page %3d" f.Page))
     }

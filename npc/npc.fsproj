@@ -20,5 +20,6 @@
     <Compile Include="Class.fs" />
     <Compile Include="Build.fs" />
     <Compile Include="CharacterSheet.fs" />
+    <Compile Include="Persistence.fs" />
   </ItemGroup>
 </Project>

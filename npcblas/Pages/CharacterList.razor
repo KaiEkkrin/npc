@@ -1,0 +1,44 @@
+@page "/characterlist"
+
+@using Npc
+@using Npc.Attributes
+@using npcblas.Models
+@inject IPersistence Persistence
+@inject NavigationManager NavigationManager
+
+<h1>New character</h1>
+
+<EditForm Model=@NewCharacterModel OnValidSubmit="OnValidSubmit">
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input @bind-value=@NewCharacterModel.Name class="form-control" id="name">
+        <label for="level">Level</label>
+        <input @bind-value=@NewCharacterModel.Level class="form-control" id="level">
+    </div>
+    <input class="btn btn-primary" type="submit" value="Create"/>
+</EditForm>
+
+<h1>Existing characters</h1>
+
+<div class="list-group">
+    @foreach (var c in Characters)
+    {
+        <p>@c</p>
+    }
+</div>
+
+@code {
+    private IEnumerable<string> Characters;
+    private NewCharacterModel NewCharacterModel = new NewCharacterModel();
+
+    protected override void OnInitialized()
+    {
+        Characters = Persistence.GetAll();
+    }
+
+    private void OnValidSubmit()
+    {
+        Persistence.Add(NewCharacterModel.Name, NewCharacterModel.Level);
+        NavigationManager.NavigateTo($"character/{WebUtility.UrlEncode(NewCharacterModel.Name)}");
+    }
+}

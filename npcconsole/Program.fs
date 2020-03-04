@@ -58,7 +58,7 @@ module Interactive =
             |> List.fold (fun acc (n, _) -> max acc n.Length) 0
 
         for s in sheet do
-            match s.Title with | Some t -> fprintfn f "%s" t | None -> ()
+            if s.Title.Length > 0 then fprintfn f "%s" s.Title
             for (n, v) in s.Items do
                 fprintfn f "%s : %s" (n.PadLeft maxNameLength) v
 

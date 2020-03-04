@@ -1,0 +1,46 @@
+@page "/character/{Name}"
+
+@using Npc
+@using Npc.Attributes
+@inject IPersistence Persistence
+
+<h1>@Name</h1>
+
+<!-- TODO Put two columns here, the current character sheet on the right and the
+build on the left; or stack them with the build above on small devices :) -->
+
+<table class="table table-condensed table-striped">
+    <tbody>
+        @foreach (var subHeading in GetSheet())
+        {
+            @if (!string.IsNullOrWhiteSpace(subHeading.Title))
+            {
+                <tr>
+                    <td aria-colspan="2"><strong>@subHeading.Title</strong></td>
+                </tr>
+            }
+
+            @foreach (var (name, value) in subHeading.Items)
+            {
+                <tr>
+                    <td class="text-right">@name</td>
+                    <td>@value</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter]
+    public string Name { get; set; }
+
+    private BuildOutput BuildOutput { get; set; }
+
+    protected override void OnInitialized()
+    {
+        BuildOutput = Persistence.Get(Name);
+    }
+
+    private IEnumerable<CharacterSubHeading> GetSheet() => CharacterSheet.create(BuildOutput.Character);
+}
