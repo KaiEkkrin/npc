@@ -1,54 +1,71 @@
 import React from 'react';
-import { AppBar, Toolbar, IconButton, Typography, TextField, Button, Container } from '@material-ui/core';
+import { AppBar, Toolbar, IconButton, Typography, Container } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import './App.css';
+import { Character } from './Character';
+import { NewCharacter } from './NewCharacter';
+import { NpcService } from './NpcService';
 
-// TODO move this somewhere else :)
-class NewCharacterEntry extends React.Component {
-  createCharacter() { // TODO parameters
-    fetch("https://localhost:5001/create", {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        Name: 'Qudp',
-        Level: 1
-      })
-    })
-    .then(r => r.json())
-    .then(j => alert(j.id));
-  }
-
+class Summary extends React.Component {
   render() {
     return (
-      <form>
-        <Typography>New character</Typography>
-        <TextField id="name" label="Name" />
-        <TextField id="level" label="Level" />
-        <Button onClick={() => this.createCharacter()}>Create</Button>
-      </form>
+      <Container maxWidth="lg">
+        <NewCharacter onCreateNew={() => this.props.onCreateNew()} />
+      </Container>
     );
   }
 }
 
-function App() {
-  return (
-    <div>
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton edge="start" color="inherit" aria-label="menu">
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6">npc</Typography>
-        </Toolbar>
-      </AppBar>
+class Detail extends React.Component {
+  render() {
+    return (
       <Container maxWidth="lg">
-        <NewCharacterEntry />
+        <Character data={this.props.data} />
       </Container>
-    </div>
-  );
+    )
+  }
 }
 
-export default App;
+export class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.npcService = new NpcService('https://localhost:5001');
+    this.state = { characterData: undefined };
+  }
+
+  getContent() {
+    if (this.state.characterData) {
+      return <Detail data={this.state.characterData} />;
+    } else {
+      return <Summary onCreateNew={() => this.handleCreateNew()} />;
+    }
+  }
+
+  handleCreateNew() {
+    // TODO parameterise with the name and level!
+    this.npcService.createCharacter()
+      .then(j => this.setState({ characterData: j }));
+  }
+
+  handleMenuClick() {
+    // For now, that'll navigate us back to the top level list
+    this.setState({ characterData: undefined });
+  }
+
+  render() {
+    return (
+      <div>
+        <AppBar position="static">
+          <Toolbar>
+            <IconButton edge="start" color="inherit" aria-label="menu"
+                        onClick={() => this.handleMenuClick()} >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6">npc</Typography>
+          </Toolbar>
+        </AppBar>
+        {this.getContent()}
+      </div>
+    );
+  }
+}
