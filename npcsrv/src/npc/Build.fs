@@ -1,7 +1,7 @@
 namespace Npc
 
 open System
-open System.Text
+open StringExpression
 open Npc.Attributes
 
 // We build characters out of a base character and a list of improvements
@@ -31,20 +31,17 @@ module Build =
             | 0 -> 0
             | _ -> imp.Choices |> List.map (sprintf "%A" >> String.length) |> List.max
 
-        let choiceFormat = sprintf "{0,%d} : {1}" choicePromptLength
-        let (>=>) (sb: StringBuilder) str = sb.AppendLine str
-        let toString (sb: StringBuilder) = sb.ToString()
-
-        StringBuilder()
-        >=> sprintf "%s : Wanted %A, only %d possible" imp.Prompt imp.Count possibleCount
-        |> List.foldBack (fun (ch: Change2) sb ->
-            let possibleStr = match ch.CanApply c with | true -> "(possible)" | false -> "(not possible)"
-            sb >=> String.Format (choiceFormat, sprintf "%A" ch, possibleStr)) imp.Choices
-        |> toString
+        let choiceFormat = sprintf "{0,%d} : {1}%s" choicePromptLength Environment.NewLine
+        string {
+            yield sprintf "%s : Wanted %A, only %d possible%s" imp.Prompt imp.Count possibleCount Environment.NewLine
+            for ch in imp.Choices do
+                let possibleStr = match ch.CanApply c with | true -> "(possible)" | false -> "(not possible)"
+                yield String.Format (choiceFormat, sprintf "%A" ch, possibleStr)
+        }
 
     let formatException (ex: Exception) =
         match ex with
-        | BuildException (c, imp) -> formatBuildException (c, imp)
+        | BuildException (c, imp) -> formatBuildException (c, imp) |> sprintf "%A"
         | _ -> ex.Message
 
     // Improves a character, taking the improvements in order until

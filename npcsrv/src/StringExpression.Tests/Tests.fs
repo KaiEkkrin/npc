@@ -87,6 +87,19 @@ type Tests() =
         Assert.Equal(expected, sprintf "%A" expr)
 
     [<Theory; MemberData("TestLists")>]
+    member this.``A list can be iterated over in an inner expression`` (strs: string list) =
+        let prefix = "start"
+        let expr = string {
+            yield prefix
+            yield! string {
+                for s in strs do
+                    yield s
+            }
+        }
+        let expected = strs |> List.fold (+) prefix
+        Assert.Equal(expected, sprintf "%A" expr)
+
+    [<Theory; MemberData("TestLists")>]
     member this.``A string expression can be unpacked and iterated over`` (strs: string list) =
         let expr1 = string {
             for s in strs do
@@ -101,12 +114,14 @@ type Tests() =
 
     [<Theory; MemberData("TestLists")>]
     member this.``A nested expression can be iterated over`` (strs: string list) =
+        let prefix = "start"
         let expr = string {
+            yield prefix
             let! inner = string {
                 for s in strs do
                     yield s
             }
             yield inner + ".1"
         }
-        let expected = strs |> List.map (fun s -> s + ".1") |> List.fold (+) ""
+        let expected = strs |> List.map (fun s -> s + ".1") |> List.fold (+) prefix
         Assert.Equal(expected, sprintf "%A" expr)

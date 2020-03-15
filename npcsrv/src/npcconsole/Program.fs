@@ -161,8 +161,13 @@ module Program =
 
     [<EntryPoint>]
     let main argv =
-        match run argv with
-        | Ok _ -> 0
-        | Error e ->
-            printfn "%s" e
-            usage ()
+        try
+            match run argv with
+            | Ok _ -> 0
+            | Error e ->
+                printfn "%s" e
+                usage ()
+        with
+        | BuildException (c, imp) ->
+            Build.formatBuildException (c, imp) |> fprintfn Console.Error "%A"
+            1
