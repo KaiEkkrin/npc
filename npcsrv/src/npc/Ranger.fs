@@ -21,7 +21,7 @@ module Ranger =
     ]
     let naturesEdge = classFeat Ranger 9 NoReq "Nature's Edge" 169 []
     let rangerExpertise = classFeatWith Ranger 9 NoReq "Ranger Expertise" 169 [
-        classSkill Ranger Expert
+        increaseClassSkill Ranger
     ]
 
     let rangerFeats = [

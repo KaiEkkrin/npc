@@ -1,0 +1,290 @@
+Choose Ancestry:
+   1. Dwarf
+   2. Elf
+   3. Gnome
+   4. Goblin
+   5. Halfling
+   6. Human
+1
+Choose Ability boost:
+   1. Strength boost
+   2. Dexterity boost
+   3. Intelligence boost
+   4. Charisma boost
+2
+Choose Heritage:
+   1. Ancient-Blooded
+   2. Death Warden
+   3. Forge
+   4. Rock
+   5. Strong-Blooded
+3
+Choose Ancestry:
+   1. Dwarven Lore
+   2. Dwarven Weapon Familiarity
+   3. Rock Runner
+   4. Stonecunning
+   5. Unburdened Iron
+   6. Vengeful Hatred
+4
+Choose Background:
+   1. Acolyte
+   2. Acrobat
+   3. Animal Whisperer
+   4. Barkeep
+   5. Barrister
+   6. Bounty Hunter
+   7. Charlatan
+   8. Criminal
+   9. Detective
+  10. Emissary
+  11. Entertainer
+  12. Farmhand
+  13. Field Medic
+  14. Fortune Teller
+  15. Gambler
+  16. Gladiator
+  17. Guard
+  18. Herbalist
+  19. Hermit
+  20. Hunter
+  21. Laborer
+  22. Martial Disciple
+  23. Merchant
+  24. Miner
+  25. Noble
+  26. Nomad
+  27. Prisoner
+  28. Sailor
+  29. Scholar
+  30. Scout
+  31. Street Urchin
+  32. Warrior
+5
+Choose Ability boost:
+   1. Intelligence boost
+   2. Charisma boost
+2
+Choose Ability boost:
+   1. Strength boost
+   2. Dexterity boost
+   3. Constitution boost
+   4. Intelligence boost
+   5. Wisdom boost
+   6. Charisma boost
+2
+Choose Class:
+   1. Alchemist level 1
+   2. Bard level 1
+   3. Druid level 1
+   4. Ranger level 1
+   5. Rogue level 1
+5
+Choose Racket:
+   1. Ruffian
+   2. Scoundrel
+   3. Thief
+2
+Choose Ability boost:
+   1. Rogue (Dexterity)
+   2. Rogue (Charisma)
+2
+Choose Trained skill:
+   1. Trained in Acrobatics
+   2. Trained in Arcana
+   3. Trained in Athletics
+   4. Trained in Crafting
+   5. Trained in Intimidation
+   6. Trained in Medicine
+   7. Trained in Nature
+   8. Trained in Occultism
+   9. Trained in Performance
+  10. Trained in Religion
+  11. Trained in Society
+  12. Trained in Survival
+  13. Trained in Thievery
+1
+Choose Trained skill:
+   1. Trained in Arcana
+   2. Trained in Athletics
+   3. Trained in Crafting
+   4. Trained in Intimidation
+   5. Trained in Medicine
+   6. Trained in Nature
+   7. Trained in Occultism
+   8. Trained in Performance
+   9. Trained in Religion
+  10. Trained in Society
+  11. Trained in Survival
+  12. Trained in Thievery
+3
+Choose Trained skill:
+   1. Trained in Arcana
+   2. Trained in Athletics
+   3. Trained in Intimidation
+   4. Trained in Medicine
+   5. Trained in Nature
+   6. Trained in Occultism
+   7. Trained in Performance
+   8. Trained in Religion
+   9. Trained in Society
+  10. Trained in Survival
+  11. Trained in Thievery
+5
+Choose Trained skill:
+   1. Trained in Arcana
+   2. Trained in Athletics
+   3. Trained in Intimidation
+   4. Trained in Medicine
+   5. Trained in Occultism
+   6. Trained in Performance
+   7. Trained in Religion
+   8. Trained in Society
+   9. Trained in Survival
+  10. Trained in Thievery
+3
+Choose Trained skill:
+   1. Trained in Arcana
+   2. Trained in Athletics
+   3. Trained in Medicine
+   4. Trained in Occultism
+   5. Trained in Performance
+   6. Trained in Religion
+   7. Trained in Society
+   8. Trained in Survival
+   9. Trained in Thievery
+4
+Choose Trained skill:
+   1. Trained in Arcana
+   2. Trained in Athletics
+   3. Trained in Medicine
+   4. Trained in Performance
+   5. Trained in Religion
+   6. Trained in Society
+   7. Trained in Survival
+   8. Trained in Thievery
+2
+Choose Trained skill:
+   1. Trained in Arcana
+   2. Trained in Medicine
+   3. Trained in Performance
+   4. Trained in Religion
+   5. Trained in Society
+   6. Trained in Survival
+   7. Trained in Thievery
+1
+Choose Rogue feat:
+   1. Nimble Dodge
+   2. Trap Finder
+   3. Twin Feint
+   4. You're Next
+2
+Choose Armor:
+   1. No armor
+   2. Explorer's clothing
+   3. Padded armor
+   4. Leather
+3
+Choose Melee weapon:
+   1. Rapier
+   2. Sap
+   3. Shortsword
+3
+Choose Rogue feat:
+   1. Nimble Dodge
+   2. Twin Feint
+   3. You're Next
+   4. Brutal Beating
+   5. Minor Magic
+   6. Mobility
+   7. Quick Draw
+1
+Choose Skill feat:
+   1. Alchemical Crafting
+   2. Arcane Sense
+   3. Bargain Hunter
+   4. Cat Fall
+   5. Charming Liar
+   6. Combat Climber
+   7. Dubious Knowledge
+   8. Experienced Professional
+   9. Experienced Smuggler
+  10. Group Coercion
+  11. Hefty Hauler
+  12. Hobnobber
+  13. Intimidating Glare
+  14. Lengthy Diversion
+  15. Lie to Me
+  16. Natural Medicine
+  17. Oddity Identification
+  18. Quick Coercion
+  19. Quick Identification
+  20. Quick Jump
+  21. Quick Repair
+  22. Quick Squeeze
+  23. Recognize Spell
+  24. Snare Crafting
+  25. Steady Balance
+  26. Titan Wrestler
+  27. Train Animal
+  28. Trick Magic Item
+  29. Underwater Marauder
+2
+Unhandled exception. System.Exception: Skill increase : Wanted 1, only 0 possible
+   at Microsoft.FSharp.Core.PrintfModule.PrintFormatToStringThenFail@1637.Invoke(String message) in E:\A\_work\130\s\src\fsharp\FSharp.Core\printf.fs:line 1637
+   at Npc.Build.build@39-3.Invoke(Int32 arg30) in C:\Users\alexh\Git\npc\npcsrv\src\npc\Build.fs:line 39
+   at Npc.Build.build(FSharpOption`1 choice, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npc\Build.fs:line 39
+   at Npc.Build.apply(Change2 ch, Character c, Improvement2 imp, FSharpList`1 left) in C:\Users\alexh\Git\npc\npcsrv\src\npc\Build.fs:line 51
+   at Npc.Build.build(FSharpOption`1 choice, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npc\Build.fs:line 27
+   at NpcConsole.Interactive.build(FSharpOption`1 chosen, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 39
+   at NpcConsole.Interactive.prompt(String p, FSharpList`1 chs, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 48
+   at NpcConsole.Interactive.build(FSharpOption`1 chosen, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 40
+   at NpcConsole.Interactive.prompt(String p, FSharpList`1 chs, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 48
+   at NpcConsole.Interactive.build(FSharpOption`1 chosen, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 40
+   at NpcConsole.Interactive.prompt(String p, FSharpList`1 chs, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 48
+   at NpcConsole.Interactive.build(FSharpOption`1 chosen, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 40
+   at NpcConsole.Interactive.prompt(String p, FSharpList`1 chs, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 48
+   at NpcConsole.Interactive.build(FSharpOption`1 chosen, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 40
+   at NpcConsole.Interactive.prompt(String p, FSharpList`1 chs, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 48
+   at NpcConsole.Interactive.build(FSharpOption`1 chosen, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 40
+   at NpcConsole.Interactive.prompt(String p, FSharpList`1 chs, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 48
+   at NpcConsole.Interactive.build(FSharpOption`1 chosen, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 40
+   at NpcConsole.Interactive.prompt(String p, FSharpList`1 chs, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 48
+   at NpcConsole.Interactive.build(FSharpOption`1 chosen, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 40
+   at NpcConsole.Interactive.prompt(String p, FSharpList`1 chs, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 48
+   at NpcConsole.Interactive.build(FSharpOption`1 chosen, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 40
+   at NpcConsole.Interactive.prompt(String p, FSharpList`1 chs, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 48
+   at NpcConsole.Interactive.build(FSharpOption`1 chosen, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 40
+   at NpcConsole.Interactive.prompt(String p, FSharpList`1 chs, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 48
+   at NpcConsole.Interactive.build(FSharpOption`1 chosen, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 40
+   at NpcConsole.Interactive.prompt(String p, FSharpList`1 chs, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 48
+   at NpcConsole.Interactive.build(FSharpOption`1 chosen, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 40
+   at NpcConsole.Interactive.prompt(String p, FSharpList`1 chs, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 48
+   at NpcConsole.Interactive.build(FSharpOption`1 chosen, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 40
+   at NpcConsole.Interactive.prompt(String p, FSharpList`1 chs, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 48
+   at NpcConsole.Interactive.build(FSharpOption`1 chosen, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 40
+   at NpcConsole.Interactive.prompt(String p, FSharpList`1 chs, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 48
+   at NpcConsole.Interactive.build(FSharpOption`1 chosen, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 40
+   at NpcConsole.Interactive.prompt(String p, FSharpList`1 chs, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 48
+   at NpcConsole.Interactive.build(FSharpOption`1 chosen, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 40
+   at NpcConsole.Interactive.prompt(String p, FSharpList`1 chs, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 48
+   at NpcConsole.Interactive.build(FSharpOption`1 chosen, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 40
+   at NpcConsole.Interactive.prompt(String p, FSharpList`1 chs, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 48
+   at NpcConsole.Interactive.build(FSharpOption`1 chosen, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 40
+   at NpcConsole.Interactive.prompt(String p, FSharpList`1 chs, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 48
+   at NpcConsole.Interactive.build(FSharpOption`1 chosen, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 40
+   at NpcConsole.Interactive.prompt(String p, FSharpList`1 chs, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 48
+   at NpcConsole.Interactive.build(FSharpOption`1 chosen, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 40
+   at NpcConsole.Interactive.prompt(String p, FSharpList`1 chs, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 48
+   at NpcConsole.Interactive.build(FSharpOption`1 chosen, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 40
+   at NpcConsole.Interactive.prompt(String p, FSharpList`1 chs, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 48
+   at NpcConsole.Interactive.build(FSharpOption`1 chosen, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 40
+   at NpcConsole.Interactive.prompt(String p, FSharpList`1 chs, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 48
+   at NpcConsole.Interactive.build(FSharpOption`1 chosen, Character c, FSharpList`1 imps) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 40
+   at NpcConsole.Program.run@150-1.Invoke(Tuple`2 _arg2) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 150
+   at NpcConsole.ResultBuilder.Bind[d,e,f](FSharpResult`2 x, FSharpFunc`2 f) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 16
+   at NpcConsole.Program.run@149.Invoke(Args _arg1) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 149
+   at NpcConsole.ResultBuilder.Bind[d,e,f](FSharpResult`2 x, FSharpFunc`2 f) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 16
+   at NpcConsole.Program.run(String[] argv) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 147
+   at NpcConsole.Program.main(String[] argv) in C:\Users\alexh\Git\npc\npcsrv\src\npcconsole\Program.fs:line 164
+C:\Users\alexh\Git\npc\npcsrv\src [master ≡ +1 ~8 -0 ~]> 

@@ -7,8 +7,6 @@ open Npc.FeatReq
 
 module Bard =
 
-    let bardSpellSkill = Skills.spellSkill (Occult, Charisma)
-
     let bardicLoreSkill = { Name = "Bardic Lore"; KeyAbility = Intelligence }
     let bardicLore = classFeatWith Bard 1 (FeatReq "Enigma") "Bardic Lore" 99 [
         Improve2.skill bardicLoreSkill Trained // TODO make it expert upon Legendary proficiency in Occultism
@@ -17,8 +15,8 @@ module Bard =
         Feats.forceAdd bardicLore // TODO also add to spell repertoire
     ]
     let expertSpellcaster = classFeatWith Bard 7 NoReq "Expert Spellcaster" 98 [
-        classSkill Bard Expert
-        Improve2.skill bardSpellSkill Expert
+        increaseClassSkill Bard
+        increaseSpellSkill Occult
     ]
     let lingeringComposition = classFeatWith Bard 1 (FeatReq "Maestro") "Lingering Composition" 99 [
         Improve2.pool ("Focus", 1)
@@ -69,7 +67,7 @@ module Bard =
 
     let bard = [
         AddClass (Bard, [
-            Improve2.feat "Ability boost" (classAbilityBoostFeats Bard [Charisma]) 1
+            Improve2.feat "Ability boost" (spellcastingClassAbilityBoostFeats Bard Occult [Charisma]) 1
             Improve2.hitPointsPerLevel 8
             Improve2.skill Skills.perception Expert
             Improve2.skill Skills.fortitudeSave Trained
@@ -88,7 +86,6 @@ module Bard =
             Improve2.skill (Char2.weaponSkill Weapons.whip) Trained
             Improve2.skill (Char2.armorSkill LightArmor) Trained
             Improve2.skill (Char2.armorSkill Unarmored) Trained
-            Improve2.spellSkill (Skills.spellSkill (Occult, Charisma))
             Improve2.pool ("Focus", 1)
             Improve2.spell (0, 5)
             Improve2.spell (1, 2)

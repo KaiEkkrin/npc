@@ -14,6 +14,7 @@
     <Compile Include="ClassBasics.fs" />
     <Compile Include="Alchemist.fs" />
     <Compile Include="Bard.fs" />
+    <Compile Include="Champion.fs" />
     <Compile Include="Druid.fs" />
     <Compile Include="Ranger.fs" />
     <Compile Include="Rogue.fs" />

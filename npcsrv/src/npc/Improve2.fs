@@ -48,7 +48,7 @@ module Char2 =
         | Some Expert -> c.Level >= 7<Level>
         | Some Master -> c.Level >= 15<Level>
         | Some Legendary -> false // can't increase skills that are Legendary (max)
-        | _ -> true // untrained
+        | _ -> false // untrained -- need to add it instead
 
     let increaseSkill sk c =
         match Map.tryFind sk c.Skills with
@@ -56,7 +56,7 @@ module Char2 =
         | Some Master -> addSkill sk Legendary c
         | Some Expert -> addSkill sk Master c
         | Some Trained -> addSkill sk Expert c
-        | _ -> addSkill sk Trained c
+        | _ -> failwith "Cannot increase an untrained skill"
 
     let weaponSkill (w: Weapon) = {
         Name = sprintf "%s (%A)" w.Name w.Category

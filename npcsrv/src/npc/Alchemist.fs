@@ -14,10 +14,10 @@ module Alchemist =
 
     let alchemicalAlacrity = classFeat Alchemist 15 NoReq "Alchemical Alacrity" 75 []
     let alchemicalExpertise = classFeatWith Alchemist 9 NoReq "Alchemical Expertise" 75 [
-        classSkill Alchemist Expert
+        increaseClassSkill Alchemist
     ]
     let alchemicalMastery = classFeatWith Alchemist 17 NoReq "Alchemical Mastery" 76 [
-        classSkill Alchemist Master
+        increaseClassSkill Alchemist
     ]
     let alchemicalWeaponExpertise = classFeatWith Alchemist 7 NoReq "Alchemical Weapon Expertise" 74 [
         Weapons.improveSkill (SimpleWeapon, Melee) Expert

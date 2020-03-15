@@ -1,5 +1,7 @@
 namespace Npc
 
+open System
+open System.Text
 open Npc.Attributes
 
 // We build characters out of a base character and a list of improvements
@@ -18,7 +20,33 @@ with
         | BadChoice (ch, chs, c, imps) -> c
         | CompletedCharacter c -> c
 
+// Describes a build error that occurs at a particular point in the character build process.
+exception BuildException of Character * Improvement2
+
 module Build =
+    let formatBuildException (c, imp) =
+        let possibleCount = imp.Choices |> List.filter (fun ch -> ch.CanApply c) |> List.length
+        let choicePromptLength =
+            match (List.length imp.Choices) with
+            | 0 -> 0
+            | _ -> imp.Choices |> List.map (sprintf "%A" >> String.length) |> List.max
+
+        let choiceFormat = sprintf "{0,%d} : {1}" choicePromptLength
+        let (>=>) (sb: StringBuilder) str = sb.AppendLine str
+        let toString (sb: StringBuilder) = sb.ToString()
+
+        StringBuilder()
+        >=> sprintf "%s : Wanted %A, only %d possible" imp.Prompt imp.Count possibleCount
+        |> List.foldBack (fun (ch: Change2) sb ->
+            let possibleStr = match ch.CanApply c with | true -> "(possible)" | false -> "(not possible)"
+            sb >=> String.Format (choiceFormat, sprintf "%A" ch, possibleStr)) imp.Choices
+        |> toString
+
+    let formatException (ex: Exception) =
+        match ex with
+        | BuildException (c, imp) -> formatBuildException (c, imp)
+        | _ -> ex.Message
+
     // Improves a character, taking the improvements in order until
     // we run out.  `choice` is the latest user input.
     let rec build (choice, c, imps) =
@@ -36,7 +64,7 @@ module Build =
             | Some 0, _ -> build (None, c, left)
             | Some n, ch::_ when n = possibleCount -> apply (ch, c, imp, left)
             | Some n, _ when n > possibleCount ->
-                failwithf "%s : Wanted %d, only %d possible" imp.Prompt n possibleCount
+                raise <| BuildException (c, imp)
             | Some _, chs ->
                 let choiceResult = if Option.isSome choice then BadChoice else MakeChoice
                 choiceResult (imp.Prompt, chs, c, imps)

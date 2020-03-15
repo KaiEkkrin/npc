@@ -71,7 +71,7 @@ module Skills =
         |> List.sortBy (fun sk -> sk.Name)
 
     let classSkill ((cl: Class), ab) = {
-        Name = sprintf "%A class" cl
+        Name = sprintf "%A Class" cl
         KeyAbility = ab
     }
 

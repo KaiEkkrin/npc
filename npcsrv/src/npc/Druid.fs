@@ -7,8 +7,6 @@ open Npc.FeatReq
 
 module Druid =
 
-    let druidSpellSkill = Skills.spellSkill (Primal, Wisdom)
-
     let animalCompanion = classFeat Druid 1 (FeatReq "Animal") "Animal Companion" 133 []
     let druidWeaponExpertise = classFeatWith Druid 11 NoReq "Druid Weapon Expertise" 133 [
         Weapons.improveSkill (SimpleWeapon, Melee) Expert
@@ -16,8 +14,8 @@ module Druid =
         Weapons.improveSkill (Unarmed, Melee) Expert
     ]
     let expertSpellcaster = classFeatWith Druid 7 NoReq "Expert Spellcaster" 98 [
-        classSkill Druid Expert
-        Improve2.skill druidSpellSkill Expert
+        increaseClassSkill Druid
+        increaseSpellSkill Primal
     ]
     let leshyFamiliar = classFeat Druid 1 (FeatReq "Leaf") "Leshy Familiar" 133 []
     let resolve = classFeat Druid 11 NoReq "Resolve" 133 []
@@ -89,7 +87,7 @@ module Druid =
 
     let druid = [
         AddClass (Druid, [
-            Improve2.feat "Ability boost" (classAbilityBoostFeats Druid [Wisdom]) 1
+            Improve2.feat "Ability boost" (spellcastingClassAbilityBoostFeats Druid Primal [Wisdom]) 1
             Improve2.hitPointsPerLevel 8
             Improve2.skill Skills.perception Trained
             Improve2.skill Skills.fortitudeSave Trained
@@ -103,7 +101,6 @@ module Druid =
             Improve2.skill (Char2.armorSkill LightArmor) Trained
             Improve2.skill (Char2.armorSkill MediumArmor) Trained
             Improve2.skill (Char2.armorSkill Unarmored) Trained
-            Improve2.spellSkill (Skills.spellSkill (Primal, Wisdom))
             Improve2.pool ("Focus", 1)
             Improve2.spell (0, 4)
             Improve2.spell (1, 2)
