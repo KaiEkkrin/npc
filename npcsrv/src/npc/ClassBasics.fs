@@ -41,10 +41,10 @@ module ClassBasics =
 
     // Increases the character's class skill, whatever it is (there should only be the one) --
     // only for Expert and higher
-    let increaseClassSkill cl =
+    let increaseClassSkill cl prof =
         let choices =
             [Strength; Dexterity; Constitution; Intelligence; Wisdom; Charisma]
-            |> List.map (fun ab -> IncreaseSkill (Skills.classSkill (cl, ab)))
+            |> List.map (fun ab -> IncreaseSkill (Skills.classSkill (cl, ab), prof))
         {
             Prompt = "Class skill increase"
             Choices = choices
@@ -53,10 +53,10 @@ module ClassBasics =
 
     // Increases the character's spell skill, whatever it is (again there should only be the one) --
     // also only for Expert and higher
-    let increaseSpellSkill tr =
+    let increaseSpellSkill tr prof =
         let choices =
             [Strength; Dexterity; Constitution; Intelligence; Wisdom; Charisma]
-            |> List.map (fun ab -> IncreaseSkill (Skills.spellSkill (tr, ab)))
+            |> List.map (fun ab -> IncreaseSkill (Skills.spellSkill (tr, ab), prof))
         {
             Prompt = "Spell skill increase"
             Choices = choices

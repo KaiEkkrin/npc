@@ -87,9 +87,9 @@ module Skills =
         Count = Some count
     }
 
-    // How to increase one skill out of a list
+    // How to increase one skill out of a list, from any rank to any other
     let increase (skills: Skill list) = {
         Prompt = "Skill increase"
-        Choices = skills |> List.map IncreaseSkill
+        Choices = skills |> List.collect (fun sk -> Derive.ranks |> List.map (fun prof -> IncreaseSkill (sk, prof)))
         Count = Some 1
     }

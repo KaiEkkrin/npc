@@ -183,6 +183,9 @@ module Derive =
     // Convert a modifier to a DC:
     let dc m = 10<DC> + m * 1<DC> / 1<Modifier>
 
+    // A list of proficiency ranks, not including Untrained (useful)
+    let ranks = [Trained; Expert; Master; Legendary]
+
     // Gets a character's skill rank
     let rank sk c = match Map.tryFind sk c.Skills with | Some p -> p | None -> ProficiencyRank.Untrained
 

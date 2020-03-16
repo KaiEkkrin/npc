@@ -14,8 +14,8 @@ module Druid =
         Weapons.improveSkill (Unarmed, Melee) Expert
     ]
     let expertSpellcaster = classFeatWith Druid 7 NoReq "Expert Spellcaster" 98 [
-        increaseClassSkill Druid
-        increaseSpellSkill Primal
+        increaseClassSkill Druid Expert
+        increaseSpellSkill Primal Expert
     ]
     let leshyFamiliar = classFeat Druid 1 (FeatReq "Leaf") "Leshy Familiar" 133 []
     let resolve = classFeat Druid 11 NoReq "Resolve" 133 []

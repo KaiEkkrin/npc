@@ -15,8 +15,8 @@ module Bard =
         Feats.forceAdd bardicLore // TODO also add to spell repertoire
     ]
     let expertSpellcaster = classFeatWith Bard 7 NoReq "Expert Spellcaster" 98 [
-        increaseClassSkill Bard
-        increaseSpellSkill Occult
+        increaseClassSkill Bard Expert
+        increaseSpellSkill Occult Expert
     ]
     let lingeringComposition = classFeatWith Bard 1 (FeatReq "Maestro") "Lingering Composition" 99 [
         Improve2.pool ("Focus", 1)

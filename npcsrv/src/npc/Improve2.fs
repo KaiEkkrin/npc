@@ -42,21 +42,14 @@ module Char2 =
         sks |> List.fold (fun all sk -> all && hasSkill sk prof c) true
 
     // Increases a skill.  How high depends on level:
-    let canIncreaseSkill sk c =
-        match Map.tryFind sk c.Skills with
-        | Some Trained -> c.Level >= 3<Level>
-        | Some Expert -> c.Level >= 7<Level>
-        | Some Master -> c.Level >= 15<Level>
-        | Some Legendary -> false // can't increase skills that are Legendary (max)
-        | _ -> false // untrained -- need to add it instead
-
-    let increaseSkill sk c =
-        match Map.tryFind sk c.Skills with
-        | Some Legendary -> failwith "Cannot increase a legendary skill"
-        | Some Master -> addSkill sk Legendary c
-        | Some Expert -> addSkill sk Master c
-        | Some Trained -> addSkill sk Expert c
-        | _ -> failwith "Cannot increase an untrained skill"
+    let canIncreaseSkill sk prof c =
+        match prof, Map.tryFind sk c.Skills with
+        | Trained, None -> true // can always gain a new Trained skill
+        | Trained, Some Untrained -> true // likewise
+        | Expert, Some Trained -> c.Level >= 3<Level>
+        | Master, Some Expert -> c.Level >= 7<Level>
+        | Legendary, Some Master -> c.Level >= 15<Level>
+        | _, _ -> false // can't gain more than one rank at once or anything like that
 
     let weaponSkill (w: Weapon) = {
         Name = sprintf "%s (%A)" w.Name w.Category
@@ -198,10 +191,10 @@ type Change2 =
     | IncreaseSpeed of int<Feet>
     | AbilityBoost of Ability
     | AbilityFlaw of Ability
-    | AddSkill of Skill * ProficiencyRank
+    | AddSkill of Skill * ProficiencyRank // requires the rank below
     | AddSkillOr of Skill * Skill list * ProficiencyRank // adds the first skill or one of the others if the character has it already
     | AddSkillsBasedOnInt of int * Skill list // adds n + Int Trained skills
-    | IncreaseSkill of Skill // only if the character has it at Trained or greater already
+    | IncreaseSkill of Skill * ProficiencyRank // requires the rank below and the qualifying level
     | AddWeaponSkills of WeaponCategory * WeaponType * ProficiencyRank
     | AddWeapon of Weapon
     | AddWeaponOfType of WeaponType
@@ -229,7 +222,7 @@ with
         | AddSkill (sk, prof) -> sprintf "%A in %s" prof sk.Name
         | AddSkillOr (sk, _, prof) -> sprintf "%A in %s (or another)" prof sk.Name
         | AddSkillsBasedOnInt (n, _) -> sprintf "Add (%d + Int modifier) trained skills" n
-        | IncreaseSkill sk -> sk.Name
+        | IncreaseSkill (sk, prof) -> sprintf "%A in %s" prof sk.Name
         | AddWeaponSkills (cat, ty, prof) -> sprintf "%A %A to %A" cat ty prof
         | AddWeapon w -> w.Name
         | AddWeaponOfType ty -> sprintf "%A weapon" ty
@@ -252,7 +245,7 @@ with
         | AddSize _ -> Option.isNone c.Size
         | AddSkill (sk, prof) -> Char2.doesNotHaveSkill sk prof c
         | AddSkillOr (sk, sks, prof) -> Char2.hasAllSkills (sk::sks) prof c |> not
-        | IncreaseSkill sk -> Char2.canIncreaseSkill sk c
+        | IncreaseSkill (sk, prof) -> Char2.canIncreaseSkill sk prof c
         | AddWeapon w -> Option.isNone (match w.Type with | Melee -> c.MeleeWeapon | Ranged -> c.RangedWeapon)
         | AddWeaponOfType ty -> Option.isNone (match ty with | Melee -> c.MeleeWeapon | Ranged -> c.RangedWeapon)
         | AddArmor a -> Char2.canAddArmor a c
@@ -295,7 +288,7 @@ with
                 Choices = sks |> List.map (fun sk -> AddSkill (sk, Trained))
                 Count = Some count
             }]
-        | IncreaseSkill sk -> Char2.increaseSkill sk c, []
+        | IncreaseSkill (sk, prof) -> Char2.addSkill sk prof c, []
         | AddWeaponSkills (cat, ty, prof) ->
             c, c.Weapons
             |> List.filter (fun w -> w.Category = cat && w.Type = ty)
