@@ -9,6 +9,7 @@ module All =
             Alchemist.alchemist
             Bard.bard
             Champion.champion
+            Cleric.cleric
             Druid.druid
             Ranger.ranger
             Rogue.rogue

@@ -3,6 +3,9 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\StringExpression\StringExpression.fsproj" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Attributes.fs" />
     <Compile Include="Improve2.fs" />
     <Compile Include="Skills.fs" />
@@ -15,6 +18,7 @@
     <Compile Include="Alchemist.fs" />
     <Compile Include="Bard.fs" />
     <Compile Include="Champion.fs" />
+    <Compile Include="Cleric.fs" />
     <Compile Include="Druid.fs" />
     <Compile Include="Ranger.fs" />
     <Compile Include="Rogue.fs" />
@@ -22,8 +26,5 @@
     <Compile Include="Build.fs" />
     <Compile Include="CharacterSheet.fs" />
     <Compile Include="Persistence.fs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\StringExpression\StringExpression.fsproj" />
   </ItemGroup>
 </Project>
