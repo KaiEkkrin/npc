@@ -53,6 +53,12 @@ module Feats =
     let greatFortitude = feat 9 NoReq "Great Fortitude" 0 [
         AddSkill (Skills.fortitudeSave, Expert)
     ]
+    let heavyArmorExpertise = feat 13 NoReq "Heavy Armor Expertise" 0 [
+        AddSkill ((Char2.armorSkill Unarmored), Expert)
+        AddSkill ((Char2.armorSkill LightArmor), Expert)
+        AddSkill ((Char2.armorSkill MediumArmor), Expert)
+        AddSkill ((Char2.armorSkill HeavyArmor), Expert)
+    ]
     let ironWill = feat 7 NoReq "Iron Will" 0 [
         AddSkill (Skills.willSave, Expert)
     ]

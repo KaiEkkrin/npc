@@ -30,6 +30,13 @@ module Champion =
 
     let divineAllies = [bladeAlly; shieldAlly; steedAlly]
 
+    let weaponExpertise = classFeatWith Champion 5 NoReq "Weapon Expertise" 169 [
+        Weapons.improveSkill (SimpleWeapon, Melee) Expert
+        Weapons.improveSkill (SimpleWeapon, Ranged) Expert
+        Weapons.improveSkill (MartialWeapon, Melee) Expert
+        Weapons.improveSkill (MartialWeapon, Ranged) Expert
+    ]
+
     let championExpertise = classFeatWith Champion 9 NoReq "Champion Expertise" 108 [
         increaseClassSkill Champion Expert
         increaseSpellSkill Divine Expert
@@ -106,5 +113,51 @@ module Champion =
             Improve2.spellSkill (Skills.spellSkill (Divine, Charisma)) // different from the class skill
             Feats.forceAdd Feats.shieldBlock
             addChampionFeat
+        ])
+        LevelUp (Champion, 2<Level>, [
+            addChampionFeat
+            Feats.addSkillFeat
+        ])
+        LevelUp (Champion, 3<Level>, [
+            Improve2.feat "Divine Ally" divineAllies 1
+            Feats.addGeneralFeat
+            Skills.increase Skills.regularSkills
+        ])
+        LevelUp (Champion, 4<Level>, [
+            addChampionFeat
+            Feats.addSkillFeat
+        ])
+        LevelUp (Champion, 5<Level>, [
+            Improve2.anyAbilityBoost 4
+            Ancestry.addAncestryFeat
+            Skills.increase Skills.regularSkills
+            Feats.forceAdd weaponExpertise
+        ])
+        LevelUp (Champion, 6<Level>, [
+            addChampionFeat
+            Feats.addSkillFeat
+        ])
+        LevelUp (Champion, 7<Level>, [
+            Feats.forceAdd Feats.heavyArmorExpertise // TODO also specializations
+            Feats.addGeneralFeat
+            Skills.increase Skills.regularSkills
+            Feats.forceAdd Feats.weaponSpecialization
+        ])
+        LevelUp (Champion, 8<Level>, [
+            addChampionFeat
+            Feats.addSkillFeat
+        ])
+        LevelUp (Champion, 9<Level>, [
+            Ancestry.addAncestryFeat
+            Feats.forceAdd championExpertise
+            Feats.forceAdd divineSmite
+            Feats.forceAdd juggernaut
+            Feats.forceAdd Feats.lightningReflexes
+            Skills.increase Skills.regularSkills
+        ])
+        LevelUp (Champion, 10<Level>, [
+            Improve2.anyAbilityBoost 4
+            addChampionFeat
+            Feats.addSkillFeat
         ])
     ]
