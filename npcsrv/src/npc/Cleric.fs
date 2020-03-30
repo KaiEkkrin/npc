@@ -68,7 +68,7 @@ module Cleric =
     let cloisteredCleric2 = classFeatWith Cleric 3 (FeatReq "Cloistered Cleric") "Cloistered Cleric 2" 119 [
         Improve2.skill Skills.fortitudeSave Expert
     ]
-    let cloisteredCleric3 = classFeatWith Cleric 7 (FeatReq "Cloistered Cleric 2") "Cloistered Cleric 2" 119 [
+    let cloisteredCleric3 = classFeatWith Cleric 7 (FeatReq "Cloistered Cleric 2") "Cloistered Cleric 3" 119 [
         increaseSpellSkill Divine Expert
     ]
 

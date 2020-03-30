@@ -13,6 +13,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "StringExpression", "StringE
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "StringExpression.Tests", "StringExpression.Tests\StringExpression.Tests.fsproj", "{ED84E0FC-7908-4EB1-BCA7-6E624A593512}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "npc.Tests", "npc.Tests\npc.Tests.fsproj", "{BEE8FFD2-4EDA-43E4-9CC0-D091C2417FB7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -86,5 +88,17 @@ Global
 		{ED84E0FC-7908-4EB1-BCA7-6E624A593512}.Release|x64.Build.0 = Release|Any CPU
 		{ED84E0FC-7908-4EB1-BCA7-6E624A593512}.Release|x86.ActiveCfg = Release|Any CPU
 		{ED84E0FC-7908-4EB1-BCA7-6E624A593512}.Release|x86.Build.0 = Release|Any CPU
+		{BEE8FFD2-4EDA-43E4-9CC0-D091C2417FB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEE8FFD2-4EDA-43E4-9CC0-D091C2417FB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEE8FFD2-4EDA-43E4-9CC0-D091C2417FB7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BEE8FFD2-4EDA-43E4-9CC0-D091C2417FB7}.Debug|x64.Build.0 = Debug|Any CPU
+		{BEE8FFD2-4EDA-43E4-9CC0-D091C2417FB7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BEE8FFD2-4EDA-43E4-9CC0-D091C2417FB7}.Debug|x86.Build.0 = Debug|Any CPU
+		{BEE8FFD2-4EDA-43E4-9CC0-D091C2417FB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEE8FFD2-4EDA-43E4-9CC0-D091C2417FB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEE8FFD2-4EDA-43E4-9CC0-D091C2417FB7}.Release|x64.ActiveCfg = Release|Any CPU
+		{BEE8FFD2-4EDA-43E4-9CC0-D091C2417FB7}.Release|x64.Build.0 = Release|Any CPU
+		{BEE8FFD2-4EDA-43E4-9CC0-D091C2417FB7}.Release|x86.ActiveCfg = Release|Any CPU
+		{BEE8FFD2-4EDA-43E4-9CC0-D091C2417FB7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
