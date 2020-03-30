@@ -1,0 +1,15 @@
+@using Npc
+
+<a href="#" class="list-group-item"
+   @onclick="OnClick"
+   @onclick:preventDefault>@Model.Choice</a>
+
+@code {
+    [Parameter]
+    public ChoiceModel Model { get; set; } 
+
+    [Parameter]
+    public EventCallback<int> OnChosen { get; set; }
+
+    private void OnClick() => OnChosen.InvokeAsync(Model.Index);
+}

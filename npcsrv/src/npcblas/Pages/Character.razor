@@ -4,23 +4,57 @@
 @using Npc.Attributes
 @inject IPersistence Persistence
 
-<h1>@Name</h1>
-
-<!-- TODO Put two columns here, the current character sheet on the right and the
-build on the left; or stack them with the build above on small devices :) -->
-
-<CharacterSheetView Sheet=@GetSheet() />
+<div class="container">
+    <div class="row">
+        <h1>@Name</h1>
+    </div>
+    <div class="row">
+        @if (Prompt != null)
+        {
+            <div class="col col-md-6">
+                <p><strong>@Prompt.Prompt</strong></p>
+                <ul class="list-group">
+                    @foreach (var choice in Prompt.Choices)
+                    {
+                        <ChoiceView Model=@choice OnChosen=@OnChosen />
+                    }
+                </ul>
+            </div>
+            <div class="col col-md-6">
+                <CharacterSheetView Sheet=@Sheet />
+            </div>
+        }
+        else
+        {
+            <CharacterSheetView Sheet=@Sheet />
+        }
+    </div>
+</div>
 
 @code {
     [Parameter]
     public string Name { get; set; }
 
-    private BuildOutput BuildOutput { get; set; }
+    private PromptModel Prompt { get; set; }
 
-    protected override void OnInitialized()
+    private IEnumerable<CharacterSubHeading> Sheet { get; set; }
+
+    protected override Task OnInitializedAsync()
     {
-        BuildOutput = Persistence.Get(Name);
+        var buildOutput = Persistence.Get(Name);
+        return Update(buildOutput);
     }
 
-    private IEnumerable<CharacterSubHeading> GetSheet() => CharacterSheet.create(BuildOutput.Character);
+    private Task OnChosen(int index)
+    {
+        var buildOutput = Persistence.Build(Name, index);
+        return Update(buildOutput);
+    }
+
+    private Task Update(BuildOutput buildOutput)
+    {
+        Prompt = PromptModel.CanCreate(buildOutput) ? PromptModel.Create(buildOutput) : null;
+        Sheet = CharacterSheet.create(buildOutput.Character);
+        return Task.CompletedTask;
+    }
 }

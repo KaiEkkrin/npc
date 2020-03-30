@@ -14,6 +14,9 @@ type BuildOutput =
     | BadChoice of string * Change2 list * Character * Improvement2 list // try again
     | CompletedCharacter of Character
 with
+    // A helper for C# functions accessing this object
+    member this.IsComplete = match this with | CompletedCharacter _ -> true | _ -> false
+
     member this.Character =
         match this with
         | MakeChoice (ch, chs, c, imps) -> c
