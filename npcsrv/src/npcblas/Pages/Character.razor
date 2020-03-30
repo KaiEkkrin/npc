@@ -6,7 +6,7 @@
 
 <div class="container">
     <div class="row">
-        <h1>@Name</h1>
+        <h2>@Name</h2>
     </div>
     <div class="row">
         @if (Prompt != null)
@@ -39,22 +39,21 @@
 
     private IEnumerable<CharacterSubHeading> Sheet { get; set; }
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        var buildOutput = Persistence.Get(Name);
-        return Update(buildOutput);
+        var buildOutput = await Persistence.GetAsync(Name);
+        Update(buildOutput);
     }
 
-    private Task OnChosen(int index)
+    private async Task OnChosen(int index)
     {
-        var buildOutput = Persistence.Build(Name, index);
-        return Update(buildOutput);
+        var buildOutput = await Persistence.BuildAsync(Name, index);
+        Update(buildOutput);
     }
 
-    private Task Update(BuildOutput buildOutput)
+    private void Update(BuildOutput buildOutput)
     {
         Prompt = PromptModel.CanCreate(buildOutput) ? PromptModel.Create(buildOutput) : null;
         Sheet = CharacterSheet.create(buildOutput.Character);
-        return Task.CompletedTask;
     }
 }

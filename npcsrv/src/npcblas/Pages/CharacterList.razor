@@ -38,16 +38,16 @@
     private IEnumerable<string> Characters;
     private NewCharacterModel NewCharacterModel = new NewCharacterModel();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        Characters = Persistence.GetAll();
+        Characters = await Persistence.GetAllAsync();
     }
 
     private string GetLink(string name) => $"/character/{name}";
 
-    private void OnValidSubmit()
+    private async Task OnValidSubmit()
     {
-        Persistence.Add(NewCharacterModel.Name, NewCharacterModel.Level);
+        await Persistence.AddAsync(NewCharacterModel.Name, NewCharacterModel.Level);
         NavigationManager.NavigateTo($"character/{WebUtility.UrlEncode(NewCharacterModel.Name)}");
     }
 }
