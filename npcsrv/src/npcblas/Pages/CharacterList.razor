@@ -6,25 +6,32 @@
 @inject IPersistence Persistence
 @inject NavigationManager NavigationManager
 
-<h1>New character</h1>
+<div class="container">
+    <div class="row">
+        <div class="col col-md-6">
+            <h2>New character</h2>
 
-<EditForm Model=@NewCharacterModel OnValidSubmit="OnValidSubmit">
-    <div class="form-group">
-        <label for="name">Name</label>
-        <input @bind-value=@NewCharacterModel.Name class="form-control" id="name">
-        <label for="level">Level</label>
-        <input @bind-value=@NewCharacterModel.Level class="form-control" id="level">
+            <EditForm Model=@NewCharacterModel OnValidSubmit="OnValidSubmit">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input @bind-value=@NewCharacterModel.Name class="form-control" id="name">
+                    <label for="level">Level</label>
+                    <input @bind-value=@NewCharacterModel.Level class="form-control" id="level">
+                </div>
+                <input class="btn btn-primary" type="submit" value="Create"/>
+            </EditForm>
+        </div>
+        <div class="col col-md-6">
+            <h2>My characters</h2>
+
+            <ul class="list-group">
+                @foreach (var c in Characters)
+                {
+                    <a href=@GetLink(c) class="list-group-item">@c</a>
+                }
+            </ul>
+        </div>
     </div>
-    <input class="btn btn-primary" type="submit" value="Create"/>
-</EditForm>
-
-<h1>Existing characters</h1>
-
-<div class="list-group">
-    @foreach (var c in Characters)
-    {
-        <p>@c</p>
-    }
 </div>
 
 @code {
@@ -35,6 +42,8 @@
     {
         Characters = Persistence.GetAll();
     }
+
+    private string GetLink(string name) => $"/character/{name}";
 
     private void OnValidSubmit()
     {
