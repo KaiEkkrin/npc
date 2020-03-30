@@ -1,17 +1,10 @@
-@page "/character/{Name}"
-
 @using Npc
 @using Npc.Attributes
 @inject IPersistence Persistence
 
-<h1>@Name</h1>
-
-<!-- TODO Put two columns here, the current character sheet on the right and the
-build on the left; or stack them with the build above on small devices :) -->
-
 <table class="table table-condensed table-striped">
     <tbody>
-        @foreach (var subHeading in GetSheet())
+        @foreach (var subHeading in Sheet)
         {
             @if (!string.IsNullOrWhiteSpace(subHeading.Title))
             {
@@ -33,14 +26,5 @@ build on the left; or stack them with the build above on small devices :) -->
 
 @code {
     [Parameter]
-    public string Name { get; set; }
-
-    private BuildOutput BuildOutput { get; set; }
-
-    protected override void OnInitialized()
-    {
-        BuildOutput = Persistence.Get(Name);
-    }
-
-    private IEnumerable<CharacterSubHeading> GetSheet() => CharacterSheet.create(BuildOutput.Character);
+    public IEnumerable<CharacterSubHeading> Sheet { get; set; }
 }

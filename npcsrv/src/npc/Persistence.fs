@@ -13,8 +13,8 @@ type IPersistence =
     // Adds a new character (with identifier and level) and returns the current state of the build.
     abstract member Add : string * int -> BuildOutput
 
-    // Makes a choice for a character and returns the subsequent state of the build.
-    abstract member Build : string * Change2 -> BuildOutput
+    // Makes a choice for a character by index and returns the subsequent state of the build.
+    abstract member Build : string * int -> BuildOutput
 
     // Retrieves an existing character by identifier and returns the current state of the build.
     abstract member Get : string -> BuildOutput
@@ -44,10 +44,10 @@ type InMemoryPersistence () =
 
             dict.GetOrAdd (name, create)
 
-        member this.Build (name: string, choice: Change2) =
+        member this.Build (name: string, index: int) =
             let update = function
-                | MakeChoice (ch, chs, c, imps) -> Build.build (Some choice, c, imps)
-                | BadChoice (ch, chs, c, imps) -> Build.build (Some choice, c, imps)
+                | MakeChoice (_, chs, c, imps) -> Build.build (Some chs.[index], c, imps)
+                | BadChoice (_, chs, c, imps) -> Build.build (Some chs.[index], c, imps)
                 | _ -> raise <| InvalidOperationException ("Character already completed")
 
             // It's weird that ConcurrentDictionary has AddOrUpdate but no simple Update
