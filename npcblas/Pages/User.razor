@@ -1,0 +1,9 @@
+@using System.Security.Claims
+
+@page "/user"
+
+<p>You are currently logged in as @Username.</p>
+
+@code {
+    private string Username => ClaimsPrincipal.Current?.Identity?.Name ?? "nobody";
+}
