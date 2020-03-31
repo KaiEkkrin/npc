@@ -1,4 +1,6 @@
 bin/
 obj/
-.ionide/
-.vscode/
+
+.fake
+.ionide
+.vscode
