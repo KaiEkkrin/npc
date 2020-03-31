@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -17,7 +18,6 @@ using Microsoft.Extensions.Logging;
 using Npc;
 using npcblas2.Areas.Identity;
 using npcblas2.Data;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 namespace npcblas2
 {
@@ -34,22 +34,12 @@ namespace npcblas2
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            // In the Azure app service, we use MySQL In App.
-            // Otherwise, we use a local SQLite db:
-            var connStr = Environment.GetEnvironmentVariable("MYSQLCONNSTR_localdb");
-            if (!string.IsNullOrWhiteSpace(connStr))
-            {
-                services.AddDbContext<ApplicationDbContext>(options =>
-                    options.UseMySql(connStr, mySqlOptions =>
-                        mySqlOptions.ServerVersion(new Version(5, 7, 9), ServerType.MySql)
-                        .EnableRetryOnFailure()));
-            }
-            else
-            {
-                services.AddDbContext<ApplicationDbContext>(options =>
-                    options.UseSqlite(
-                        Configuration.GetConnectionString("DefaultConnection")));
-            }
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseCosmos(
+                    accountEndpoint: Configuration["Cosmos:Uri"],
+                    accountKey: Configuration["Cosmos:Key"],
+                    databaseName: Configuration["Cosmos:DatabaseName"]
+                ));
 
             services.AddAuthentication().AddGoogle(options =>
             {
@@ -68,8 +58,14 @@ namespace npcblas2
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> log)
         {
-            var connStr = Environment.GetEnvironmentVariable("MYSQLCONNSTR_localdb");
-            log.LogInformation($"Connecting to database at {connStr}");
+            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                // Note that the Cosmos DB connection doesn't support Migrate()
+                // We will have to be careful to support old format records :)
+                var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                context.Database.EnsureCreated();
+            }
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
