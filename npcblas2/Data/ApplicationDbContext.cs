@@ -12,5 +12,13 @@ namespace npcblas2.Data
             : base(options)
         {
         }
+
+        public DbSet<CharacterBuild> CharacterBuilds { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            builder.Entity<CharacterBuild>().ToContainer("CharacterBuild");
+        }
     }
 }

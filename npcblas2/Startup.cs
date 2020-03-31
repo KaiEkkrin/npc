@@ -18,6 +18,7 @@ using Microsoft.Extensions.Logging;
 using Npc;
 using npcblas2.Areas.Identity;
 using npcblas2.Data;
+using npcblas2.Services;
 
 namespace npcblas2
 {
@@ -51,7 +52,8 @@ namespace npcblas2
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
-            services.AddSingleton<IPersistence, InMemoryPersistence>();
+            services.AddSingleton<IBuildDriver, BuildDriver>();
+            services.AddScoped<ICharacterBuildService, CharacterBuildService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

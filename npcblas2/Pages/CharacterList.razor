@@ -1,9 +1,10 @@
 @page "/characterlist"
+@attribute [Authorize]
 
 @using Npc
 @using Npc.Attributes
-@using npcblas.Models
-@inject IPersistence Persistence
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ICharacterBuildService BuildService
 @inject NavigationManager NavigationManager
 
 <div class="container">
@@ -25,9 +26,12 @@
             <h2>My characters</h2>
 
             <ul class="list-group">
-                @foreach (var c in Characters)
+                @if (Characters != null)
                 {
-                    <a href=@GetLink(c) class="list-group-item">@c</a>
+                    @foreach (var c in Characters)
+                    {
+                        <a href=@GetLink(c) class="list-group-item">@c</a>
+                    }
                 }
             </ul>
         </div>
@@ -35,19 +39,21 @@
 </div>
 
 @code {
-    private IEnumerable<string> Characters;
+    private IEnumerable<CharacterBuildModel> Characters { get; set; }
     private NewCharacterModel NewCharacterModel = new NewCharacterModel();
 
     protected override async Task OnInitializedAsync()
     {
-        Characters = await Persistence.GetAllAsync();
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        Characters = await BuildService.GetAllAsync(authState.User);
     }
 
-    private string GetLink(string name) => $"/character/{name}";
+    private string GetLink(CharacterBuildModel model) => $"/character/{model.Id}";
 
     private async Task OnValidSubmit()
     {
-        await Persistence.AddAsync(NewCharacterModel.Name, NewCharacterModel.Level);
-        NavigationManager.NavigateTo($"character/{WebUtility.UrlEncode(NewCharacterModel.Name)}");
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var model = await BuildService.AddAsync(authState.User, NewCharacterModel);
+        NavigationManager.NavigateTo($"character/{WebUtility.UrlEncode(model.Id)}");
     }
 }

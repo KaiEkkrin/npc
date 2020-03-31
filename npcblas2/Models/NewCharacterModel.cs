@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace npcblas.Models
+namespace npcblas2.Models
 {
     public class NewCharacterModel
     {

@@ -1,12 +1,14 @@
-@page "/character/{Name}"
+@page "/character/{Id}"
+@attribute [Authorize]
 
 @using Npc
 @using Npc.Attributes
-@inject IPersistence Persistence
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ICharacterBuildService BuildService
 
 <div class="container">
     <div class="row">
-        <h2>@Name</h2>
+        <h2>@Model.Name</h2>
     </div>
     <div class="row">
         @if (Prompt != null)
@@ -33,7 +35,9 @@
 
 @code {
     [Parameter]
-    public string Name { get; set; }
+    public string Id { get; set; }
+
+    public CharacterBuildModel Model { get; set; }
 
     private PromptModel Prompt { get; set; }
 
@@ -41,19 +45,22 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var buildOutput = await Persistence.GetAsync(Name);
-        Update(buildOutput);
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var model = await BuildService.GetAsync(authState.User, Id);
+        Update(model);
     }
 
     private async Task OnChosen(int index)
     {
-        var buildOutput = await Persistence.BuildAsync(Name, index);
-        Update(buildOutput);
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var model = await BuildService.BuildAsync(authState.User, Model, index);
+        Update(model);
     }
 
-    private void Update(BuildOutput buildOutput)
+    private void Update(CharacterBuildModel model)
     {
-        Prompt = PromptModel.CanCreate(buildOutput) ? PromptModel.Create(buildOutput) : null;
-        Sheet = CharacterSheet.create(buildOutput.Character);
+        Model = model;
+        Prompt = PromptModel.CanCreate(Model.BuildOutput) ? PromptModel.Create(Model.BuildOutput) : null;
+        Sheet = CharacterSheet.create(Model.BuildOutput.Character);
     }
 }
