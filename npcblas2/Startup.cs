@@ -13,9 +13,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Npc;
 using npcblas2.Areas.Identity;
 using npcblas2.Data;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 namespace npcblas2
 {
@@ -32,9 +34,23 @@ namespace npcblas2
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(
-                    Configuration.GetConnectionString("DefaultConnection")));
+            // In the Azure app service, we use MySQL In App.
+            // Otherwise, we use a local SQLite db:
+            var connStr = Environment.GetEnvironmentVariable("MYSQLCONNSTR_localdb");
+            if (!string.IsNullOrWhiteSpace(connStr))
+            {
+                services.AddDbContext<ApplicationDbContext>(options =>
+                    options.UseMySql(connStr, mySqlOptions =>
+                        mySqlOptions.ServerVersion(new Version(5, 7, 9), ServerType.MySql)
+                        .EnableRetryOnFailure()));
+            }
+            else
+            {
+                services.AddDbContext<ApplicationDbContext>(options =>
+                    options.UseSqlite(
+                        Configuration.GetConnectionString("DefaultConnection")));
+            }
+
             services.AddAuthentication().AddGoogle(options =>
             {
                 options.ClientId = Configuration["Authentication:Google:ClientId"];
@@ -50,8 +66,10 @@ namespace npcblas2
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> log)
         {
+            var connStr = Environment.GetEnvironmentVariable("MYSQLCONNSTR_localdb");
+            log.LogInformation($"Connecting to database at {connStr}");
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
