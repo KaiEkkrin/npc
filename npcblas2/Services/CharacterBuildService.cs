@@ -79,7 +79,7 @@ namespace npcblas2.Services
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<CharacterBuild>> GetAllAsync(ClaimsPrincipal user)
+        public async Task<List<CharacterBuild>> GetAllAsync(ClaimsPrincipal user)
         {
             try
             {
@@ -90,7 +90,7 @@ namespace npcblas2.Services
             {
                 logger.LogError(ex, $"Failed to get all for {user?.Identity?.Name} : {ex.Message}");
                 toastService.ShowError(ex.Message);
-                return Enumerable.Empty<CharacterBuild>();
+                return null;
             }
         }
 
@@ -119,19 +119,19 @@ namespace npcblas2.Services
         }
 
         /// <inheritdoc />
-        public async Task RemoveAsync(ClaimsPrincipal user, CharacterBuild model)
+        public async Task<bool> RemoveAsync(ClaimsPrincipal user, CharacterBuild model)
         {
             try
             {
                 var userId = GetUserId(user);
-                var build = new CharacterBuild { Id = model.Id, UserId = userId };
-                context.Remove(build);
-                await context.SaveChangesAsync();
+                context.Remove(model);
+                return (await context.SaveChangesAsync()) > 0;
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, $"Failed to remove {model?.Name} ({model?.Id}) for {user?.Identity?.Name} : {ex.Message}");
                 toastService.ShowError(ex.Message);
+                return false;
             }
         }
 

@@ -1,0 +1,19 @@
+<div class="simple-form">
+    <p>This action cannot be undone.</p>
+    <div class="btn-group" role="group">
+        <button @onclick="RemoveClick" class="btn btn-primary">Remove</button>
+        <button @onclick="CancelClick" class="btn btn-secondary">Cancel</button>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public CharacterBuild Build { get; set; }
+
+    [CascadingParameter]
+    public BlazoredModalInstance Modal { get; set; }
+
+    private void RemoveClick() => Modal.Close(ModalResult.Ok(Build));
+
+    private void CancelClick() => Modal.Cancel();
+}

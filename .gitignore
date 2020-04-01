@@ -4,5 +4,3 @@ obj/
 .fake
 .ionide
 .vscode
-
-app.db

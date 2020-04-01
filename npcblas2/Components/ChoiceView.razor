@@ -11,5 +11,5 @@
     [Parameter]
     public EventCallback<string> OnChosen { get; set; }
 
-    private void OnClick() => OnChosen.InvokeAsync(Choice);
+    private Task OnClick() => OnChosen.InvokeAsync(Choice);
 }

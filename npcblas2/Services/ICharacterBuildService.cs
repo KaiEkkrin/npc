@@ -25,7 +25,7 @@ namespace npcblas2.Services
         /// Gets all builds for the given user.
         /// The build output won't be populated.
         /// </summary>
-        Task<IEnumerable<CharacterBuild>> GetAllAsync(ClaimsPrincipal user);
+        Task<List<CharacterBuild>> GetAllAsync(ClaimsPrincipal user);
 
         /// <summary>
         /// Gets a character build.
@@ -35,6 +35,6 @@ namespace npcblas2.Services
         /// <summary>
         /// Removes the given character build.
         /// </summary>
-        Task RemoveAsync(ClaimsPrincipal user, CharacterBuild model);
+        Task<bool> RemoveAsync(ClaimsPrincipal user, CharacterBuild model);
     }
 }

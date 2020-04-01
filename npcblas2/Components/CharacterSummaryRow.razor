@@ -1,4 +1,5 @@
-@inject NavigationManager NavigationManager
+@inject ICharacterBuildService BuildService
+@inject IModalService ModalService
 
 @if (Build != null)
 {
@@ -6,6 +7,11 @@
         <td><a style="display: block" href=@Link>@Build.Name</a></td>
         <td>@Build.Level</td>
         <td>@Build.CreationDateTime.ToShortDateString()</td>
+        <td>
+            <a class="btn btn-danger" href="#" @onclick="OnRemoveClick" @onclick:preventDefault>
+                <span class="fa fa-times"></span>
+            </a>
+        </td>
     </tr>
 }
 
@@ -13,5 +19,26 @@
     [Parameter]
     public CharacterBuild Build { get; set; }
 
+    [Parameter]
+    public EventCallback<CharacterBuild> OnRemove { get; set; }
+
     public string Link => $"/character/{Build?.Id}";
+
+    public async Task OnRemoveClick()
+    {
+        var build = Build;
+        if (build == null)
+        {
+            return;
+        }
+
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(RemoveConfirmation.Build), build);
+        var confirmModal = ModalService.Show<RemoveConfirmation>($"Remove {build.Name}", parameters);
+        var result = await confirmModal.Result;
+        if (!result.Cancelled && result.Data is CharacterBuild toRemove)
+        {
+            await OnRemove.InvokeAsync(toRemove);
+        }
+    }
 }

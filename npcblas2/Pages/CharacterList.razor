@@ -31,16 +31,18 @@
             <table class="table table-condensed table-hover table-striped">
                 <thead>
                     <tr>
-                        <!-- These headings should match the rows in CharacterSummaryRow.razor -->
                         <th scope="col">Name</th>
                         <th scope="col">Level</th>
                         <th scope="col">Created on</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var c in Characters ?? Enumerable.Empty<CharacterBuild>())
+                    @if (Characters != null)
                     {
-                        <CharacterSummaryRow Build=@c />
+                        @foreach (var c in Characters)
+                        {
+                            <CharacterSummaryRow Build=@c OnRemove=@OnRemove />
+                        }
                     }
                 </tbody>
             </table>
@@ -49,7 +51,7 @@
 </div>
 
 @code {
-    private IEnumerable<CharacterBuild> Characters { get; set; }
+    private List<CharacterBuild> Characters { get; set; }
     private NewCharacterModel NewCharacterModel = new NewCharacterModel();
 
     protected override async Task OnInitializedAsync()
@@ -57,8 +59,6 @@
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         Characters = await BuildService.GetAllAsync(authState.User);
     }
-
-    private string GetLink(CharacterBuild build) => $"/character/{build.Id}";
 
     private async Task OnValidSubmit()
     {
@@ -68,6 +68,15 @@
         {
             var stringId = $"{model.Build.Id}";
             NavigationManager.NavigateTo($"character/{WebUtility.UrlEncode(stringId)}");
+        }
+    }
+
+    private async Task OnRemove(CharacterBuild build)
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        if (await BuildService.RemoveAsync(authState.User, build))
+        {
+            Characters.Remove(build);
         }
     }
 }
