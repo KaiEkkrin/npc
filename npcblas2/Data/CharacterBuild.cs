@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace npcblas2.Data
 {
@@ -16,7 +17,7 @@ namespace npcblas2.Data
         /// <summary>
         /// Uniquely identifies the character.
         /// </summary>
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// The id of the user who made this character.
@@ -45,8 +46,9 @@ namespace npcblas2.Data
         public int Version { get; set; }
 
         /// <summary>
-        /// A serialized build output representing the point in the build we've reached.
+        /// The choices that we made to create this build, first to last.
+        /// (The character can be reconstructed from it.)
         /// </summary>
-        public string BuildOutput { get; set; }
+        public List<Choice> Choices { get; set; }
     }
 }

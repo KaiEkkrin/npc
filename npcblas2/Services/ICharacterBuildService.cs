@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using npcblas2.Data;
 using npcblas2.Models;
 
 namespace npcblas2.Services
@@ -16,15 +17,15 @@ namespace npcblas2.Services
         Task<CharacterBuildModel> AddAsync(ClaimsPrincipal user, NewCharacterModel model);
 
         /// <summary>
-        /// Continues the build of the given character by choosing the option at the given index.
+        /// Continues the build of the given character by choosing the given option.
         /// </summary>
-        Task<CharacterBuildModel> BuildAsync(ClaimsPrincipal user, CharacterBuildModel model, int choice);
+        Task<CharacterBuildModel> BuildAsync(ClaimsPrincipal user, CharacterBuildModel model, string choice);
 
         /// <summary>
         /// Gets all builds for the given user.
         /// The build output won't be populated.
         /// </summary>
-        Task<IEnumerable<CharacterBuildModel>> GetAllAsync(ClaimsPrincipal user);
+        Task<IEnumerable<CharacterBuild>> GetAllAsync(ClaimsPrincipal user);
 
         /// <summary>
         /// Gets a character build.
@@ -34,6 +35,6 @@ namespace npcblas2.Services
         /// <summary>
         /// Removes the given character build.
         /// </summary>
-        Task RemoveAsync(ClaimsPrincipal user, CharacterBuildModel model);
+        Task RemoveAsync(ClaimsPrincipal user, CharacterBuild model);
     }
 }

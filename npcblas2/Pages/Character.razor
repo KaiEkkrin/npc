@@ -8,7 +8,7 @@
 
 <div class="container">
     <div class="row">
-        <h2>@Model.Name</h2>
+        <h2>@Model?.Build?.Name</h2>
     </div>
     <div class="row">
         @if (Prompt != null)
@@ -18,7 +18,7 @@
                 <ul class="list-group">
                     @foreach (var choice in Prompt.Choices)
                     {
-                        <ChoiceView Model=@choice OnChosen=@OnChosen />
+                        <ChoiceView Choice=@choice OnChosen=@OnChosen />
                     }
                 </ul>
             </div>
@@ -39,28 +39,19 @@
 
     public CharacterBuildModel Model { get; set; }
 
-    private PromptModel Prompt { get; set; }
+    private PromptModel Prompt => Model?.BuildOutput != null && PromptModel.CanCreate(Model.BuildOutput) ? PromptModel.Create(Model.BuildOutput) : null;
 
-    private IEnumerable<CharacterSubHeading> Sheet { get; set; }
+    private IEnumerable<CharacterSubHeading> Sheet => Model?.BuildOutput != null ? CharacterSheet.create(Model.BuildOutput.Character) : Enumerable.Empty<CharacterSubHeading>();
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var model = await BuildService.GetAsync(authState.User, Id);
-        Update(model);
+        Model = await BuildService.GetAsync(authState.User, Id);
     }
 
-    private async Task OnChosen(int index)
+    private async Task OnChosen(string choice)
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var model = await BuildService.BuildAsync(authState.User, Model, index);
-        Update(model);
-    }
-
-    private void Update(CharacterBuildModel model)
-    {
-        Model = model;
-        Prompt = PromptModel.CanCreate(Model.BuildOutput) ? PromptModel.Create(Model.BuildOutput) : null;
-        Sheet = CharacterSheet.create(Model.BuildOutput.Character);
+        Model = await BuildService.BuildAsync(authState.User, Model, choice);
     }
 }

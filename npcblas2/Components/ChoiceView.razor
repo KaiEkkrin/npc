@@ -2,14 +2,14 @@
 
 <a href="#" class="list-group-item"
    @onclick="OnClick"
-   @onclick:preventDefault>@Model.Choice</a>
+   @onclick:preventDefault>@Choice</a>
 
 @code {
     [Parameter]
-    public ChoiceModel Model { get; set; } 
+    public string Choice { get; set; } 
 
     [Parameter]
-    public EventCallback<int> OnChosen { get; set; }
+    public EventCallback<string> OnChosen { get; set; }
 
-    private void OnClick() => OnChosen.InvokeAsync(Model.Index);
+    private void OnClick() => OnChosen.InvokeAsync(Choice);
 }

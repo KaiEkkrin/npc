@@ -26,12 +26,9 @@
             <h2>My characters</h2>
 
             <ul class="list-group">
-                @if (Characters != null)
+                @foreach (var c in Characters ?? Enumerable.Empty<CharacterBuild>())
                 {
-                    @foreach (var c in Characters)
-                    {
-                        <a href=@GetLink(c) class="list-group-item">@c</a>
-                    }
+                    <a href=@GetLink(c) class="list-group-item">@c.Name</a>
                 }
             </ul>
         </div>
@@ -39,7 +36,7 @@
 </div>
 
 @code {
-    private IEnumerable<CharacterBuildModel> Characters { get; set; }
+    private IEnumerable<CharacterBuild> Characters { get; set; }
     private NewCharacterModel NewCharacterModel = new NewCharacterModel();
 
     protected override async Task OnInitializedAsync()
@@ -48,12 +45,13 @@
         Characters = await BuildService.GetAllAsync(authState.User);
     }
 
-    private string GetLink(CharacterBuildModel model) => $"/character/{model.Id}";
+    private string GetLink(CharacterBuild build) => $"/character/{build.Id}";
 
     private async Task OnValidSubmit()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var model = await BuildService.AddAsync(authState.User, NewCharacterModel);
-        NavigationManager.NavigateTo($"character/{WebUtility.UrlEncode(model.Id)}");
+        var stringId = $"{model.Build.Id}";
+        NavigationManager.NavigateTo($"character/{WebUtility.UrlEncode(stringId)}");
     }
 }
