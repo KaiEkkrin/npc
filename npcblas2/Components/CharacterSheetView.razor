@@ -3,7 +3,7 @@
 
 <table class="table table-condensed table-striped">
     <tbody>
-        @foreach (var subHeading in Sheet)
+        @foreach (var subHeading in Sheet ?? Enumerable.Empty<CharacterSubHeading>())
         {
             @if (!string.IsNullOrWhiteSpace(subHeading.Title))
             {

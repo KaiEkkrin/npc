@@ -13,6 +13,9 @@
             <h2>New character</h2>
 
             <EditForm Model=@NewCharacterModel OnValidSubmit="OnValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
                 <div class="form-group">
                     <label for="name">Name</label>
                     <input @bind-value=@NewCharacterModel.Name class="form-control" id="name">
@@ -51,7 +54,10 @@
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var model = await BuildService.AddAsync(authState.User, NewCharacterModel);
-        var stringId = $"{model.Build.Id}";
-        NavigationManager.NavigateTo($"character/{WebUtility.UrlEncode(stringId)}");
+        if (model != null)
+        {
+            var stringId = $"{model.Build.Id}";
+            NavigationManager.NavigateTo($"character/{WebUtility.UrlEncode(stringId)}");
+        }
     }
 }
