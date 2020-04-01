@@ -28,12 +28,22 @@
         <div class="col col-md-6">
             <h2>My characters</h2>
 
-            <ul class="list-group">
-                @foreach (var c in Characters ?? Enumerable.Empty<CharacterBuild>())
-                {
-                    <a href=@GetLink(c) class="list-group-item">@c.Name</a>
-                }
-            </ul>
+            <table class="table table-condensed table-hover table-striped">
+                <thead>
+                    <tr>
+                        <!-- These headings should match the rows in CharacterSummaryRow.razor -->
+                        <th scope="col">Name</th>
+                        <th scope="col">Level</th>
+                        <th scope="col">Created on</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var c in Characters ?? Enumerable.Empty<CharacterBuild>())
+                    {
+                        <CharacterSummaryRow Build=@c />
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

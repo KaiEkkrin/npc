@@ -1,0 +1,17 @@
+@inject NavigationManager NavigationManager
+
+@if (Build != null)
+{
+    <tr>
+        <td><a style="display: block" href=@Link>@Build.Name</a></td>
+        <td>@Build.Level</td>
+        <td>@Build.CreationDateTime.ToShortDateString()</td>
+    </tr>
+}
+
+@code {
+    [Parameter]
+    public CharacterBuild Build { get; set; }
+
+    public string Link => $"/character/{Build?.Id}";
+}
