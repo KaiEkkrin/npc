@@ -122,4 +122,4 @@ module Build =
             Improve2.single Weapons.addRangedWeapon
         ]
         let otherLevels = c |> levelUp level
-        c, List.append firstLevel otherLevels
+        c, firstLevel @ otherLevels

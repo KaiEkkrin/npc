@@ -161,7 +161,7 @@ module FeatReq =
     // Composes requirements together by OR:
     let (>||) r r2 =
         match r, r2 with
-        | OneOfReq reqs, OneOfReq reqs2 -> OneOfReq (List.append reqs reqs2)
+        | OneOfReq reqs, OneOfReq reqs2 -> OneOfReq (reqs @ reqs2)
         | OneOfReq reqs, _ -> OneOfReq (r2::reqs)
         | _, OneOfReq reqs -> OneOfReq (r::reqs)
         | _, _ -> OneOfReq [r; r2]
@@ -169,7 +169,7 @@ module FeatReq =
     // Composes requirements together by AND:
     let (>&&) r r2 =
         match r, r2 with
-        | AllOfReq reqs, AllOfReq reqs2 -> AllOfReq (List.append reqs reqs2)
+        | AllOfReq reqs, AllOfReq reqs2 -> AllOfReq (reqs @ reqs2)
         | AllOfReq reqs, _ -> AllOfReq (r2::reqs)
         | _, AllOfReq reqs -> AllOfReq (r::reqs)
         | _, _ -> AllOfReq [r; r2]

@@ -46,6 +46,7 @@ module Feats =
     let alertness = feat 9 NoReq "Alertness" 0 [
         AddSkill (Skills.perception, Expert)
     ]
+    let attackOfOpportunity = feat 1 NoReq "Attack of Opportunity" 0 []
     let darkvision = feat 1 NoReq "Darkvision" 0 []
     let evasion = feat 15 NoReq "Evasion" 0 [
         AddSkill (Skills.reflexSave, Master)
@@ -63,7 +64,7 @@ module Feats =
         AddSkill (Skills.willSave, Expert)
     ]
     let juggernaut = feat 11 NoReq "Juggernaut" 0 [
-        AddSkill (Skills.fortitudeSave, Master)
+        AddSkill (Skills.fortitudeSave, Master) // TODO successes become criticals
     ]
     let keenEyes = feat 1 NoReq "Keen Eyes" 0 []
     let lightArmorExpertise = feat 13 NoReq "Light Armor Expertise" 0 [

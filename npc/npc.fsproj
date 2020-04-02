@@ -20,6 +20,7 @@
     <Compile Include="Champion.fs" />
     <Compile Include="Cleric.fs" />
     <Compile Include="Druid.fs" />
+    <Compile Include="Fighter.fs" />
     <Compile Include="Ranger.fs" />
     <Compile Include="Rogue.fs" />
     <Compile Include="Class.fs" />

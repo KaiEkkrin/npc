@@ -13,6 +13,7 @@ module All =
             Druid.druid
             Ranger.ranger
             Rogue.rogue
+            Fighter.fighter
         ]
         Count = Some 1
     }

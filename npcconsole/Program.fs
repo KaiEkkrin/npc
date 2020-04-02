@@ -138,7 +138,7 @@ module Program =
             let! c, imps = readJsonIn f 
             if lv > c.Level then
                 let levelUp = Build.levelUp lv c
-                return (c, List.append imps levelUp)
+                return (c, imps @ levelUp)
             else return (c, imps)
         | None, Some name, lv -> return Build.start name lv
         | _ -> return! Error "Need a character name or a json input"

@@ -18,7 +18,7 @@ type StringExpression() =
     member this.Bind (m: Stringified<'a>, f) = this.For (m.Items, f)
 
     member this.Combine (a: Stringified<'a>, b: Stringified<'a>) = {
-        Items = List.append a.Items b.Items
+        Items = a.Items @ b.Items
         MakeString = a.MakeString >> b.MakeString
     }
 

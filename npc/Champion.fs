@@ -43,9 +43,6 @@ module Champion =
     ]
 
     let divineSmite = classFeat Champion 9 NoReq "Divine Smite" 109 []
-    let juggernaut = classFeatWith Champion 9 NoReq "Juggernaut" 109 [
-        Improve2.skill Skills.fortitudeSave Master // TODO successes become criticals
-    ]
 
     let championFeats = [
         classFeat Champion 1 NoReq "Deity's Domain" 109 [] // TODO implement deities etc
@@ -151,7 +148,7 @@ module Champion =
             Ancestry.addAncestryFeat
             Feats.forceAdd championExpertise
             Feats.forceAdd divineSmite
-            Feats.forceAdd juggernaut
+            Feats.forceAdd Feats.juggernaut
             Feats.forceAdd Feats.lightningReflexes
             Skills.increase Skills.regularSkills
         ])
