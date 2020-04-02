@@ -11,9 +11,9 @@ module All =
             Champion.champion
             Cleric.cleric
             Druid.druid
+            Fighter.fighter
             Ranger.ranger
             Rogue.rogue
-            Fighter.fighter
         ]
         Count = Some 1
     }
