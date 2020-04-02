@@ -14,6 +14,8 @@ namespace npcblas2.Services
 {
     public class CharacterBuildService : ICharacterBuildService
     {
+        private const int MaximumNumberOfCharactersPerUser = 100;
+
         private readonly IBuildDriver buildDriver;
         private readonly ApplicationDbContext context;
         private readonly ILogger<CharacterBuildService> logger;
@@ -27,11 +29,14 @@ namespace npcblas2.Services
         {
             try
             {
+                var userId = GetUserId(user);
+                await EnsureNotOverCharacterCountCap(userId);
+
                 var buildOutput = buildDriver.Create(model.Name, model.Level);
                 var build = new CharacterBuild
                 {
                     Id = Guid.NewGuid(),
-                    UserId = GetUserId(user),
+                    UserId = userId,
                     CreationDateTime = DateTime.UtcNow,
                     Name = model.Name,
                     Level = model.Level,
@@ -42,6 +47,11 @@ namespace npcblas2.Services
                 await context.CharacterBuilds.AddAsync(build);
                 await context.SaveChangesAsync();
                 return new CharacterBuildModel { Build = build, BuildOutput = buildOutput };
+            }
+            catch (CharacterBuildException cbe)
+            {
+                toastService.ShowError(cbe.Message);
+                return null;
             }
             catch (Exception ex)
             {
@@ -70,6 +80,11 @@ namespace npcblas2.Services
                 await context.SaveChangesAsync();
                 return model;
             }
+            catch (CharacterBuildException cbe)
+            {
+                toastService.ShowError(cbe.Message);
+                return null;
+            }
             catch (Exception ex)
             {
                 logger.LogError(ex, $"Failed to build {model?.Build?.Name} ({model?.Build?.Id}) for {user?.Identity?.Name} : {ex.Message}");
@@ -85,6 +100,11 @@ namespace npcblas2.Services
             {
                 var userId = GetUserId(user);
                 return await context.CharacterBuilds.Where(b => b.UserId == userId).ToListAsync();
+            }
+            catch (CharacterBuildException cbe)
+            {
+                toastService.ShowError(cbe.Message);
+                return null;
             }
             catch (Exception ex)
             {
@@ -110,6 +130,11 @@ namespace npcblas2.Services
                 var buildOutput = buildDriver.Construct(start, build.Choices.OrderBy(ch => ch.Order).Select(ch => ch.Value));
                 return new CharacterBuildModel { Build = build, BuildOutput = buildOutput };
             }
+            catch (CharacterBuildException cbe)
+            {
+                toastService.ShowError(cbe.Message);
+                return null;
+            }
             catch (Exception ex)
             {
                 logger.LogError(ex, $"Failed to get {id} for {user?.Identity?.Name} : {ex.Message}");
@@ -127,6 +152,11 @@ namespace npcblas2.Services
                 context.Remove(model);
                 return (await context.SaveChangesAsync()) > 0;
             }
+            catch (CharacterBuildException cbe)
+            {
+                toastService.ShowError(cbe.Message);
+                return false;
+            }
             catch (Exception ex)
             {
                 logger.LogError(ex, $"Failed to remove {model?.Name} ({model?.Id}) for {user?.Identity?.Name} : {ex.Message}");
@@ -136,5 +166,14 @@ namespace npcblas2.Services
         }
 
         private static string GetUserId(ClaimsPrincipal user) => user.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+
+        private async Task EnsureNotOverCharacterCountCap(string userId)
+        {
+            var characterCount = await context.CharacterBuilds.Where(b => b.UserId == userId).CountAsync();
+            if (characterCount >= MaximumNumberOfCharactersPerUser)
+            {
+                throw new CharacterBuildException("You have too many characters.");
+            }
+        }
     }
 }
