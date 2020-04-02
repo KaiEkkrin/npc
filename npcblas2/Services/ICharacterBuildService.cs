@@ -33,6 +33,16 @@ namespace npcblas2.Services
         Task<CharacterBuildModel> GetAsync(ClaimsPrincipal user, string id);
 
         /// <summary>
+        /// Gets the number of characters a user has.
+        /// </summary>
+        Task<int> GetCountAsync(ClaimsPrincipal user);
+
+        /// <summary>
+        /// Gets the maximum number of characters you're allowed.
+        /// </summary>
+        int GetMaximumCount();
+
+        /// <summary>
         /// Removes the given character build.
         /// </summary>
         Task<bool> RemoveAsync(ClaimsPrincipal user, CharacterBuild model);

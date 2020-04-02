@@ -1,6 +1,31 @@
 ﻿@page "/"
 
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ICharacterBuildService BuildService
+
 <h1>pf2npc</h1>
 
-Log in to view and edit characters.
+<AuthorizeView>
+    <Authorized>
+        <p>You currently have @CurrentCount characters out of a possible @MaximumCount.</p>
+    </Authorized>
+    <NotAuthorized>
+        <p>Log in to view and edit characters.</p>
+    </NotAuthorized>
+</AuthorizeView>
 
+@code {
+    private int CurrentCount { get; set; }
+
+    private int MaximumCount { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        if (authState.User?.Identity?.IsAuthenticated == true)
+        {
+            CurrentCount = await BuildService.GetCountAsync(authState.User);
+            MaximumCount = BuildService.GetMaximumCount();
+        }
+    }
+}

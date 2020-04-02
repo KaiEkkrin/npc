@@ -144,6 +144,30 @@ namespace npcblas2.Services
         }
 
         /// <inheritdoc />
+        public async Task<int> GetCountAsync(ClaimsPrincipal user)
+        {
+            try
+            {
+                var userId = GetUserId(user);
+                return await GetCountAsync(userId);
+            }
+            catch (CharacterBuildException cbe)
+            {
+                toastService.ShowError(cbe.Message);
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, $"Failed to get character count for {user?.Identity?.Name} : {ex.Message}");
+                toastService.ShowError(ex.Message);
+                return 0;
+            }
+        }
+
+        /// <inheritdoc />
+        public int GetMaximumCount() => MaximumNumberOfCharactersPerUser;
+
+        /// <inheritdoc />
         public async Task<bool> RemoveAsync(ClaimsPrincipal user, CharacterBuild model)
         {
             try
@@ -167,9 +191,11 @@ namespace npcblas2.Services
 
         private static string GetUserId(ClaimsPrincipal user) => user.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
 
+        private Task<int> GetCountAsync(string userId) => context.CharacterBuilds.Where(b => b.UserId == userId).CountAsync();
+
         private async Task EnsureNotOverCharacterCountCap(string userId)
         {
-            var characterCount = await context.CharacterBuilds.Where(b => b.UserId == userId).CountAsync();
+            var characterCount = await GetCountAsync(userId);
             if (characterCount >= MaximumNumberOfCharactersPerUser)
             {
                 throw new CharacterBuildException("You have too many characters.");

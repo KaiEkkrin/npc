@@ -71,7 +71,7 @@ namespace npcblas2.Areas.Identity.Pages.Account
             ReturnUrl = returnUrl;
         }
 
-        public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+        public Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl = returnUrl ?? Url.Content("~/");
 
@@ -80,7 +80,7 @@ namespace npcblas2.Areas.Identity.Pages.Account
             // via the instructions at https://docs.microsoft.com/en-us/aspnet/core/security/authentication/scaffold-identity?view=aspnetcore-2.2&tabs=netcore-cli
 
             // If we got this far, something failed, redisplay form
-            return Page();
+            return Task.FromResult((IActionResult)Page());
         }
     }
 }
