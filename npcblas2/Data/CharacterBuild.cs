@@ -45,6 +45,11 @@ namespace npcblas2.Data
         public string Summary { get; set; }
 
         /// <summary>
+        /// True if this character can be viewed by other users, else false.
+        /// </summary>
+        public bool? IsPublic { get; set; }
+
+        /// <summary>
         /// The version of this record (at a mismatching version, we shouldn't expect to
         /// be able to interpret the build output correctly.)
         /// </summary>

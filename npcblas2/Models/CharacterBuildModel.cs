@@ -11,5 +11,7 @@ namespace npcblas2.Models
         public CharacterBuild Build { get; set; }
 
         public BuildOutput BuildOutput { get; set; }
+
+        public bool CanEdit { get; set; }
     }
 }

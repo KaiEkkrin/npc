@@ -47,7 +47,7 @@ namespace npcblas2.Services
 
                 await context.CharacterBuilds.AddAsync(build);
                 await context.SaveChangesAsync();
-                return new CharacterBuildModel { Build = build, BuildOutput = buildOutput };
+                return new CharacterBuildModel { Build = build, BuildOutput = buildOutput, CanEdit = true };
             }
             catch (CharacterBuildException cbe)
             {
@@ -122,13 +122,17 @@ namespace npcblas2.Services
             {
                 var guid = Guid.Parse(id);
                 var userId = GetUserId(user);
-                var build = await context.CharacterBuilds.Where(b => b.UserId == userId && b.Id == guid)
+                var build = await context.CharacterBuilds.Where(b => b.Id == guid && (b.UserId == userId || b.IsPublic == true))
                     .Include(b => b.Choices)
-                    .FirstAsync();
+                    .FirstOrDefaultAsync();
+                if (build == null)
+                {
+                    return null;
+                }
 
                 var start = buildDriver.Create(build.Name, build.Level);
                 var buildOutput = buildDriver.Construct(start, build.Choices.OrderBy(ch => ch.Order).Select(ch => ch.Value));
-                return new CharacterBuildModel { Build = build, BuildOutput = buildOutput };
+                return new CharacterBuildModel { Build = build, BuildOutput = buildOutput, CanEdit = build.UserId == userId };
             }
             catch (CharacterBuildException cbe)
             {
@@ -168,12 +172,17 @@ namespace npcblas2.Services
         public int GetMaximumCount() => MaximumNumberOfCharactersPerUser;
 
         /// <inheritdoc />
-        public async Task<bool> RemoveAsync(ClaimsPrincipal user, CharacterBuild model)
+        public async Task<bool> RemoveAsync(ClaimsPrincipal user, CharacterBuild build)
         {
             try
             {
                 var userId = GetUserId(user);
-                context.Remove(model);
+                if (userId != build.UserId)
+                {
+                    return false;
+                }
+
+                context.Remove(build);
                 return (await context.SaveChangesAsync()) > 0;
             }
             catch (CharacterBuildException cbe)
@@ -183,13 +192,39 @@ namespace npcblas2.Services
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, $"Failed to remove {model?.Name} ({model?.Id}) for {user?.Identity?.Name} : {ex.Message}");
+                logger.LogError(ex, $"Failed to remove {build?.Name} ({build?.Id}) for {user?.Identity?.Name} : {ex.Message}");
                 toastService.ShowError(ex.Message);
                 return false;
             }
         }
 
-        private static string GetUserId(ClaimsPrincipal user) => user.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+        /// <inheritdoc />
+        public async Task<bool> UpdateAsync(ClaimsPrincipal user, CharacterBuild build)
+        {
+            try
+            {
+                var userId = GetUserId(user);
+                if (userId != build.UserId)
+                {
+                    return false;
+                }
+
+                return (await context.SaveChangesAsync()) > 0;
+            }
+            catch (CharacterBuildException cbe)
+            {
+                toastService.ShowError(cbe.Message);
+                return false;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, $"Failed to update {build?.Name} ({build?.Id}) for {user?.Identity?.Name} : {ex.Message}");
+                toastService.ShowError(ex.Message);
+                return false;
+            }
+        }
+
+        private static string GetUserId(ClaimsPrincipal user) => user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
         private Task<int> GetCountAsync(string userId) => context.CharacterBuilds.Where(b => b.UserId == userId).CountAsync();
 

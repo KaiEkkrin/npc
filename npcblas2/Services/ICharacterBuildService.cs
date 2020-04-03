@@ -45,6 +45,11 @@ namespace npcblas2.Services
         /// <summary>
         /// Removes the given character build.
         /// </summary>
-        Task<bool> RemoveAsync(ClaimsPrincipal user, CharacterBuild model);
+        Task<bool> RemoveAsync(ClaimsPrincipal user, CharacterBuild build);
+
+        /// <summary>
+        /// Updates the database with any changes to the build record.  (For setting the public flag, etc.)
+        /// </summary>
+        Task<bool> UpdateAsync(ClaimsPrincipal user, CharacterBuild build);
     }
 }

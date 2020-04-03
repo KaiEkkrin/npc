@@ -1,0 +1,31 @@
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ICharacterBuildService BuildService
+@inject NavigationManager NavigationManager
+
+<EditForm Model=@NewCharacterModel OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input @bind-value=@NewCharacterModel.Name class="form-control" id="name">
+        <label for="level">Level</label>
+        <input @bind-value=@NewCharacterModel.Level class="form-control" id="level">
+    </div>
+    <input class="btn btn-primary" type="submit" value="Create"/>
+</EditForm>
+
+@code {
+    private NewCharacterModel NewCharacterModel = new NewCharacterModel();
+
+    private async Task OnValidSubmit()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var model = await BuildService.AddAsync(authState.User, NewCharacterModel);
+        if (model != null)
+        {
+            var stringId = $"{model.Build.Id}";
+            NavigationManager.NavigateTo($"character/{WebUtility.UrlEncode(stringId)}");
+        }
+    }
+}

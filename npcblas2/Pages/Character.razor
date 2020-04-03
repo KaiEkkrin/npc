@@ -1,5 +1,4 @@
 @page "/character/{Id}"
-@attribute [Authorize]
 
 @using Npc
 @using Npc.Attributes
@@ -7,30 +6,37 @@
 @inject ICharacterBuildService BuildService
 
 <div class="container">
-    <div class="row">
-        <h2>@Model?.Build?.Name</h2>
-    </div>
-    <div class="row">
-        @if (Prompt != null)
-        {
-            <div class="col col-md-6">
-                <p><strong>@Prompt.Prompt</strong></p>
-                <ul class="list-group">
-                    @foreach (var choice in Prompt.Choices)
-                    {
-                        <ChoiceView Choice=@choice OnChosen=@OnChosen />
-                    }
-                </ul>
-            </div>
-            <div class="col col-md-6">
+    @if (Model != null)
+    {
+        <div class="row">
+            <h2>@Model?.Build?.Name</h2>
+        </div>
+        <div class="row">
+            @if (Prompt != null)
+            {
+                <div class="col col-md-6">
+                    <p><strong>@Prompt.Prompt</strong></p>
+                    <ul class="list-group">
+                        @foreach (var choice in Prompt.Choices)
+                        {
+                            <ChoiceView Choice=@choice OnChosen=@OnChosen />
+                        }
+                    </ul>
+                </div>
+                <div class="col col-md-6">
+                    <CharacterSheetView Sheet=@Sheet />
+                </div>
+            }
+            else
+            {
                 <CharacterSheetView Sheet=@Sheet />
-            </div>
-        }
-        else
-        {
-            <CharacterSheetView Sheet=@Sheet />
-        }
-    </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="row"><p>No character found</p></div>
+    }
 </div>
 
 @code {
@@ -39,7 +45,7 @@
 
     public CharacterBuildModel Model { get; set; }
 
-    private PromptModel Prompt => Model?.BuildOutput != null && PromptModel.CanCreate(Model.BuildOutput) ? PromptModel.Create(Model.BuildOutput) : null;
+    private PromptModel Prompt => Model?.BuildOutput != null && Model.CanEdit && PromptModel.CanCreate(Model.BuildOutput) ? PromptModel.Create(Model.BuildOutput) : null;
 
     private IEnumerable<CharacterSubHeading> Sheet => Model?.BuildOutput != null ? CharacterSheet.create(Model.BuildOutput.Character) : Enumerable.Empty<CharacterSubHeading>();
 

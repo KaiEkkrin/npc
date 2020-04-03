@@ -1,17 +1,42 @@
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ICharacterBuildService BuildService
 @inject IModalService ModalService
 
 @if (Build != null)
 {
     <tr>
-        <td><a style="display: block" href=@Link>@Build.Name</a></td>
+        <td>
+            <div style="display: block">
+                @if (Build.IsPublic == true)
+                {
+                    <a href=@Link title="Public link">
+                        <span class="fa fa-link"></span>
+                    </a>
+                }
+                <a href=@Link>@Build.Name</a>
+            </div>
+        </td>
         <td>@Build.Level</td>
         <td>@Build.Summary</td>
         <td>@Build.CreationDateTime.ToShortDateString()</td>
         <td>
-            <a class="btn btn-danger" href="#" @onclick="OnRemoveClick" @onclick:preventDefault>
-                <span class="fa fa-times"></span>
-            </a>
+            <div class="btn-group" role="group" aria-label="Actions">
+                @if (Build.IsPublic == true)
+                {
+                    <a class="btn btn-primary" href="#" title="Make private" @onclick="OnMakePrivateClick" @onclick:preventDefault>
+                        <span class="fa fa-minus-circle"></span>
+                    </a>
+                }
+                else
+                {
+                    <a class="btn btn-primary" href="#" title="Make public" @onclick="OnMakePublicClick" @onclick:preventDefault>
+                        <span class="fa fa-share"></span>
+                    </a>
+                }
+                <a class="btn btn-danger" href="#" title="Remove" @onclick="OnRemoveClick" @onclick:preventDefault>
+                    <span class="fa fa-times"></span>
+                </a>
+            </div>
         </td>
     </tr>
 }
@@ -24,6 +49,23 @@
     public EventCallback<CharacterBuild> OnRemove { get; set; }
 
     public string Link => $"/character/{Build?.Id}";
+
+    public Task OnMakePublicClick() => SetPublic(true);
+
+    public Task OnMakePrivateClick() => SetPublic(false);
+
+    private async Task SetPublic(bool isPublic)
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var build = Build;
+        if (build == null)
+        {
+            return;
+        }
+
+        build.IsPublic = isPublic;
+        await BuildService.UpdateAsync(authState.User, build);
+    }
 
     public async Task OnRemoveClick()
     {
