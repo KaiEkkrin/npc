@@ -35,9 +35,14 @@ namespace npcblas2.Data
         public string Name { get; set; }
 
         /// <summary>
-        /// Summary info: the character level.
+        /// Summary info: the character's level.
         /// </summary>
         public int Level { get; set; }
+
+        /// <summary>
+        /// A textual summary of the character, if available.
+        /// </summary>
+        public string Summary { get; set; }
 
         /// <summary>
         /// The version of this record (at a mismatching version, we shouldn't expect to

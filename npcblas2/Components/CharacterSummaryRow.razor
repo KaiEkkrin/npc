@@ -6,6 +6,7 @@
     <tr>
         <td><a style="display: block" href=@Link>@Build.Name</a></td>
         <td>@Build.Level</td>
+        <td>@Build.Summary</td>
         <td>@Build.CreationDateTime.ToShortDateString()</td>
         <td>
             <a class="btn btn-danger" href="#" @onclick="OnRemoveClick" @onclick:preventDefault>

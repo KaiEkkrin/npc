@@ -14,6 +14,9 @@ type IBuildDriver =
     // Constructs a character by applying the array of choices in order.
     abstract member Construct : BuildOutput * string seq -> BuildOutput
 
+    // Creates the summary text to store in a build record.
+    abstract member Summarise : BuildOutput -> string
+
 type BuildDriver() =
     let build bo choice =
         let choose (chs: Change2 list) = chs |> List.find (fun ch -> ch.AsString = choice) |> Some
@@ -31,3 +34,9 @@ type BuildDriver() =
 
         member this.Continue(bo: BuildOutput, choice: string) = build bo choice
         member this.Construct(bo: BuildOutput, choices: string seq) = choices |> Seq.fold build bo
+
+        member this.Summarise(bo: BuildOutput) =
+            match bo with
+            | MakeChoice (_, _, c, _) -> CharacterSheet.printSummary c |> snd
+            | BadChoice (_, _, c, _) -> CharacterSheet.printSummary c |> snd
+            | CompletedCharacter c -> CharacterSheet.printSummary c |> snd

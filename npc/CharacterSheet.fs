@@ -24,6 +24,12 @@ module CharacterSheet =
             |> List.choose id
         many ("Is a", elements)
 
+    let printSummary c =
+        let elements =
+            [c.Heritage; c.Ancestry; formatClass c]
+            |> List.choose id
+        many ("", elements)
+
     let printSkill c sk =
         let rank = (Derive.rank sk c).ToString ()
         let bonus = Derive.bonus sk c

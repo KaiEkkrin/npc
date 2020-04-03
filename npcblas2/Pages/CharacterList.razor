@@ -9,7 +9,7 @@
 
 <div class="container">
     <div class="row">
-        <div class="col col-md-6">
+        <div class="col col-lg-4">
             <h2>New character</h2>
 
             <EditForm Model=@NewCharacterModel OnValidSubmit="OnValidSubmit">
@@ -25,7 +25,7 @@
                 <input class="btn btn-primary" type="submit" value="Create"/>
             </EditForm>
         </div>
-        <div class="col col-md-6">
+        <div class="col col-lg-8">
             <h2>My characters</h2>
 
             <table class="table table-condensed table-hover table-striped">
@@ -33,6 +33,7 @@
                     <tr>
                         <th scope="col">Name</th>
                         <th scope="col">Level</th>
+                        <th scope="col">Summary</th>
                         <th scope="col">Created on</th>
                     </tr>
                 </thead>

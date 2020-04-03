@@ -40,6 +40,7 @@ namespace npcblas2.Services
                     CreationDateTime = DateTime.UtcNow,
                     Name = model.Name,
                     Level = model.Level,
+                    Summary = buildDriver.Summarise(buildOutput),
                     Version = CharacterBuild.CurrentVersion,
                     Choices = new List<Choice>()
                 };
@@ -77,6 +78,7 @@ namespace npcblas2.Services
                 var lastChoice = model.Build.Choices.OrderByDescending(ch => ch.Order).FirstOrDefault();
                 var thisChoice = new Choice { CharacterBuildId = model.Build.Id, Order = lastChoice?.Order + 1 ?? 0, Value = choice };
                 model.Build.Choices.Add(thisChoice);
+                model.Build.Summary = buildDriver.Summarise(model.BuildOutput);
                 await context.SaveChangesAsync();
                 return model;
             }
