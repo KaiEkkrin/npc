@@ -12,6 +12,7 @@ module All =
             Cleric.cleric
             Druid.druid
             Fighter.fighter
+            Monk.monk
             Ranger.ranger
             Rogue.rogue
         ]

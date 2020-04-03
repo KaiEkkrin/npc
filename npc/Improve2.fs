@@ -102,6 +102,11 @@ module Char2 =
         | Some already -> { c with Spells = Map.add lv (ct + already) c.Spells }
         | None -> { c with Spells = Map.add lv ct c.Spells }
 
+    let hasPool p n c =
+        match Map.tryFind p c.Pools with
+        | Some already when already >= n -> true
+        | _ -> false
+
     let increasePool p n c =
         match Map.tryFind p c.Pools with
         | Some already -> { c with Pools = Map.add p (already + n) c.Pools }
@@ -119,6 +124,7 @@ type FeatRequirement =
     | SkillReq of Skill * ProficiencyRank
     | LoreReq of ProficiencyRank // any lore skill at least this high
     | FeatReq of string
+    | PoolReq of string * int // must have at least this many points in the pool
     | NotReq of FeatRequirement
     | OneOfReq of FeatRequirement list // at least one of these
     | AllOfReq of FeatRequirement list
@@ -148,6 +154,7 @@ module FeatReq =
             match c.Feats |> List.tryFind (fun f -> f.Name = feat) with
             | Some _ -> true
             | None -> false
+        | PoolReq (pool, count) -> Char2.hasPool pool count c
         | NotReq req -> not (fulfils c req)
         | OneOfReq reqs -> reqs |> List.fold (fun ok req -> ok || (fulfils c req)) false
         | AllOfReq reqs -> reqs |> List.fold (fun ok req -> ok && (fulfils c req)) true
