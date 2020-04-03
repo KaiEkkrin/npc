@@ -1,0 +1,42 @@
+<th scope="col">
+    @ChildContent
+    <a href="#" style="display: block" class="float-right" @onclick="OnClick" @onclick:preventDefault>
+        <span class=@SortIconClass></span>
+    </a>
+</th>
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public string PropertyName { get; set; }
+
+    [Parameter]
+    public Order DefaultOrder { get; set; }
+
+    [Parameter]
+    public Order? CurrentOrder { get; set; }
+
+    [Parameter]
+    public EventCallback<(string name, Order order)> OnChanged { get; set; }
+
+    private string SortIconClass => "float-right fa fa-fw " + CurrentOrder switch
+    {
+        Order.Ascending => "fa-sort-down",
+        Order.Descending => "fa-sort-up",
+        _ => "fa-sort"
+    };
+
+    private Task OnClick()
+    {
+        var newOrder = CurrentOrder switch
+        {
+            Order.Ascending => Order.Descending,
+            Order.Descending => Order.Ascending,
+            _ => DefaultOrder
+        };
+
+        return OnChanged.InvokeAsync((PropertyName, newOrder));
+    }
+}

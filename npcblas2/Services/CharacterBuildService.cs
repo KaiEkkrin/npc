@@ -67,7 +67,6 @@ namespace npcblas2.Services
         {
             try
             {
-                // TODO Cache this build output here
                 model.BuildOutput = buildDriver.Continue(model.BuildOutput, choice);
 
                 if (model.Build.UserId != GetUserId(user))
@@ -127,7 +126,6 @@ namespace npcblas2.Services
                     .Include(b => b.Choices)
                     .FirstAsync();
 
-                // TODO Retrieve the build output from a cache here if possible
                 var start = buildDriver.Create(build.Name, build.Level);
                 var buildOutput = buildDriver.Construct(start, build.Choices.OrderBy(ch => ch.Order).Select(ch => ch.Value));
                 return new CharacterBuildModel { Build = build, BuildOutput = buildOutput };

@@ -31,10 +31,20 @@
             <table class="table table-condensed table-hover table-striped">
                 <thead>
                     <tr>
-                        <th scope="col">Name</th>
-                        <th scope="col">Level</th>
+                        <SortableColumnHeading PropertyName=@NameColumn
+                                               DefaultOrder=@Order.Ascending
+                                               CurrentOrder=@GetColumnOrder(NameColumn)
+                                               OnChanged=@OnSortOrderChanged>Name</SortableColumnHeading>
+                        <SortableColumnHeading PropertyName=@LevelColumn
+                                               DefaultOrder=@Order.Ascending
+                                               CurrentOrder=@GetColumnOrder(LevelColumn)
+                                               OnChanged=@OnSortOrderChanged>Level</SortableColumnHeading>
                         <th scope="col">Summary</th>
-                        <th scope="col">Created on</th>
+                        <SortableColumnHeading PropertyName=@CreationDateColumn
+                                               DefaultOrder=@Order.Descending
+                                               CurrentOrder=@GetColumnOrder(CreationDateColumn)
+                                               OnChanged=@OnSortOrderChanged>Created on</SortableColumnHeading>
+                        <th scope="col"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -52,13 +62,46 @@
 </div>
 
 @code {
+    private const string NameColumn = "name";
+    private const string LevelColumn = "level";
+    private const string CreationDateColumn = "creationDate";
+
     private List<CharacterBuild> Characters { get; set; }
     private NewCharacterModel NewCharacterModel = new NewCharacterModel();
+
+    private string SortProperty { get; set; } = CreationDateColumn;
+
+    private Order SortOrder { get; set; } = Order.Descending;
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         Characters = await BuildService.GetAllAsync(authState.User);
+        Characters.Sort(Compare);
+    }
+
+    private Order? GetColumnOrder(string name) => name == SortProperty ? (Order?)SortOrder : null;
+
+    private void OnSortOrderChanged((string name, Order order) x)
+    {
+        (SortProperty, SortOrder) = x;
+        Characters.Sort(Compare);
+    }
+
+    private int CompareByProperty(CharacterBuild a, CharacterBuild b)
+    {
+        switch (SortProperty)
+        {
+            case NameColumn: return a.Name.CompareTo(b.Name);
+            case LevelColumn: return a.Level.CompareTo(b.Level);
+            default: return a.CreationDateTime.CompareTo(b.CreationDateTime);
+        }
+    }
+
+    private int Compare(CharacterBuild a, CharacterBuild b)
+    {
+        var comparison = CompareByProperty(a, b);
+        return SortOrder == Order.Descending ? -comparison : comparison;
     }
 
     private async Task OnValidSubmit()
