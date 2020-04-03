@@ -88,15 +88,12 @@
         Characters.Sort(Compare);
     }
 
-    private int CompareByProperty(CharacterBuild a, CharacterBuild b)
+    private int CompareByProperty(CharacterBuild a, CharacterBuild b) => SortProperty switch
     {
-        switch (SortProperty)
-        {
-            case NameColumn: return a.Name.CompareTo(b.Name);
-            case LevelColumn: return a.Level.CompareTo(b.Level);
-            default: return a.CreationDateTime.CompareTo(b.CreationDateTime);
-        }
-    }
+        NameColumn => a.Name.CompareTo(b.Name),
+        LevelColumn => a.Level.CompareTo(b.Level),
+        _ => a.CreationDateTime.CompareTo(b.CreationDateTime)
+    };
 
     private int Compare(CharacterBuild a, CharacterBuild b)
     {
