@@ -23,9 +23,14 @@ namespace npcblas2.Services
 
         /// <summary>
         /// Gets all builds for the given user.
-        /// The build output won't be populated.
+        /// The user name fields will be empty.
         /// </summary>
-        Task<List<CharacterBuild>> GetAllAsync(ClaimsPrincipal user);
+        Task<List<CharacterBuildSummary>> GetAllAsync(ClaimsPrincipal user);
+
+        /// <summary>
+        /// Gets the public builds.
+        /// </summary>
+        Task<List<CharacterBuildSummary>> GetPublicAsync();
 
         /// <summary>
         /// Gets a character build.

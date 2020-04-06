@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Blazored.Toast.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Npc;
@@ -20,9 +21,10 @@ namespace npcblas2.Services
         private readonly ApplicationDbContext context;
         private readonly ILogger<CharacterBuildService> logger;
         private readonly IToastService toastService;
+        private readonly UserManager<IdentityUser> userManager;
 
-        public CharacterBuildService(IBuildDriver buildDriver, ApplicationDbContext context, ILogger<CharacterBuildService> logger, IToastService toastService)
-            => (this.buildDriver, this.context, this.logger, this.toastService) = (buildDriver, context, logger, toastService);
+        public CharacterBuildService(IBuildDriver buildDriver, ApplicationDbContext context, ILogger<CharacterBuildService> logger, IToastService toastService, UserManager<IdentityUser> userManager)
+            => (this.buildDriver, this.context, this.logger, this.toastService, this.userManager) = (buildDriver, context, logger, toastService, userManager);
 
         /// <inheritdoc />
         public async Task<CharacterBuildModel> AddAsync(ClaimsPrincipal user, NewCharacterModel model)
@@ -95,12 +97,14 @@ namespace npcblas2.Services
         }
 
         /// <inheritdoc />
-        public async Task<List<CharacterBuild>> GetAllAsync(ClaimsPrincipal user)
+        public async Task<List<CharacterBuildSummary>> GetAllAsync(ClaimsPrincipal user)
         {
             try
             {
                 var userId = GetUserId(user);
-                return await context.CharacterBuilds.Where(b => b.UserId == userId).ToListAsync();
+                return await context.CharacterBuilds.Where(b => b.UserId == userId)
+                    .Select(b => new CharacterBuildSummary { Build = b, UserName = string.Empty })
+                    .ToListAsync();
             }
             catch (CharacterBuildException cbe)
             {
@@ -110,6 +114,39 @@ namespace npcblas2.Services
             catch (Exception ex)
             {
                 logger.LogError(ex, $"Failed to get all for {user?.Identity?.Name} : {ex.Message}");
+                toastService.ShowError(ex.Message);
+                return null;
+            }
+        }
+
+        /// <inheritdoc />
+        public async Task<List<CharacterBuildSummary>> GetPublicAsync()
+        {
+            try
+            {
+                var builds = await context.CharacterBuilds.Where(b => b.IsPublic == true).ToListAsync();
+
+                // Associate each build with the username that created it -- we can't do this
+                // via relations, because we're not actually using a relational database :)
+                // We need to be careful here to not write in any null values
+                string GetUserId(CharacterBuild build) => build.UserId ?? string.Empty;
+                var userNameById = new Dictionary<string, string>();
+                foreach (var g in builds.GroupBy(b => GetUserId(b)))
+                {
+                    var user = await userManager.FindByIdAsync(g.Key);
+                    userNameById[g.Key] = user?.UserName ?? string.Empty;
+                }
+
+                return builds.Select(b => new CharacterBuildSummary { Build = b, UserName = userNameById[GetUserId(b)] }).ToList();
+            }
+            catch (CharacterBuildException cbe)
+            {
+                toastService.ShowError(cbe.Message);
+                return null;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, $"Failed to get public : {ex.Message}");
                 toastService.ShowError(ex.Message);
                 return null;
             }

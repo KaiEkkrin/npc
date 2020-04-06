@@ -17,7 +17,17 @@
                                    DefaultOrder=@Order.Descending
                                    CurrentOrder=@GetColumnOrder(CreationDateColumn)
                                    OnChanged=@OnSortOrderChanged>Created on</SortableColumnHeading>
-            <th scope="col"></th>
+            @if (ShowPublic)
+            {
+                <SortableColumnHeading PropertyName=@UserNameColumn
+                                       DefaultOrder=@Order.Ascending
+                                       CurrentOrder=@GetColumnOrder(UserNameColumn)
+                                       OnChanged=@OnSortOrderChanged>User</SortableColumnHeading>
+            }
+            else
+            {
+                <th scope="col"></th>
+            }
         </tr>
     </thead>
     <tbody>
@@ -25,7 +35,7 @@
         {
             @foreach (var c in Characters)
             {
-                <CharacterSummaryRow Build=@c OnRemove=@OnRemove />
+                <CharacterSummaryRow Build=@c ShowPublic=@ShowPublic OnRemove=@OnRemove />
             }
         }
     </tbody>
@@ -35,8 +45,12 @@
     private const string NameColumn = "name";
     private const string LevelColumn = "level";
     private const string CreationDateColumn = "creationDate";
+    private const string UserNameColumn = "userName";
 
-    private List<CharacterBuild> Characters { get; set; }
+    [Parameter]
+    public bool ShowPublic { get; set; }
+
+    private List<CharacterBuildSummary> Characters { get; set; }
 
     private string SortProperty { get; set; } = CreationDateColumn;
 
@@ -45,7 +59,8 @@
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        Characters = await BuildService.GetAllAsync(authState.User);
+        Characters = ShowPublic ? await BuildService.GetPublicAsync() :
+            await BuildService.GetAllAsync(authState.User);
         Characters.Sort(Compare);
     }
 
@@ -57,23 +72,24 @@
         Characters.Sort(Compare);
     }
 
-    private int CompareByProperty(CharacterBuild a, CharacterBuild b) => SortProperty switch
+    private int CompareByProperty(CharacterBuildSummary a, CharacterBuildSummary b) => SortProperty switch
     {
-        NameColumn => a.Name.CompareTo(b.Name),
-        LevelColumn => a.Level.CompareTo(b.Level),
-        _ => a.CreationDateTime.CompareTo(b.CreationDateTime)
+        NameColumn => a.Build.Name.CompareTo(b.Build.Name),
+        LevelColumn => a.Build.Level.CompareTo(b.Build.Level),
+        CreationDateColumn => a.Build.CreationDateTime.CompareTo(b.Build.CreationDateTime),
+        _ => a.UserName.CompareTo(b.UserName)
     };
 
-    private int Compare(CharacterBuild a, CharacterBuild b)
+    private int Compare(CharacterBuildSummary a, CharacterBuildSummary b)
     {
         var comparison = CompareByProperty(a, b);
         return SortOrder == Order.Descending ? -comparison : comparison;
     }
 
-    private async Task OnRemove(CharacterBuild build)
+    private async Task OnRemove(CharacterBuildSummary build)
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        if (await BuildService.RemoveAsync(authState.User, build))
+        if (await BuildService.RemoveAsync(authState.User, build.Build))
         {
             Characters.Remove(build);
         }

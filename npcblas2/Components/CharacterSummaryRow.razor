@@ -7,48 +7,58 @@
     <tr>
         <td>
             <div style="display: block">
-                @if (Build.IsPublic == true)
+                @if (Build.Build.IsPublic == true)
                 {
                     <a href=@Link title="Public link">
                         <span class="fa fa-link"></span>
                     </a>
                 }
-                <a href=@Link>@Build.Name</a>
+                <a href=@Link>@Build.Build.Name</a>
             </div>
         </td>
-        <td>@Build.Level</td>
-        <td>@Build.Summary</td>
-        <td>@Build.CreationDateTime.ToShortDateString()</td>
-        <td>
-            <div class="btn-group" role="group" aria-label="Actions">
-                @if (Build.IsPublic == true)
-                {
-                    <a class="btn btn-primary" href="#" title="Make private" @onclick="OnMakePrivateClick" @onclick:preventDefault>
-                        <span class="fa fa-minus-circle"></span>
+        <td>@Build.Build.Level</td>
+        <td>@Build.Build.Summary</td>
+        <td>@Build.Build.CreationDateTime.ToShortDateString()</td>
+        @if (ShowPublic)
+        {
+            <td>@Build.UserName</td>
+        }
+        else
+        {
+            <td>
+                <div class="btn-group" role="group" aria-label="Actions">
+                    @if (Build.Build.IsPublic == true)
+                    {
+                        <a class="btn btn-primary" href="#" title="Make private" @onclick="OnMakePrivateClick" @onclick:preventDefault>
+                            <span class="fa fa-minus-circle"></span>
+                        </a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary" href="#" title="Make public" @onclick="OnMakePublicClick" @onclick:preventDefault>
+                            <span class="fa fa-share"></span>
+                        </a>
+                    }
+                    <a class="btn btn-danger" href="#" title="Remove" @onclick="OnRemoveClick" @onclick:preventDefault>
+                        <span class="fa fa-times"></span>
                     </a>
-                }
-                else
-                {
-                    <a class="btn btn-primary" href="#" title="Make public" @onclick="OnMakePublicClick" @onclick:preventDefault>
-                        <span class="fa fa-share"></span>
-                    </a>
-                }
-                <a class="btn btn-danger" href="#" title="Remove" @onclick="OnRemoveClick" @onclick:preventDefault>
-                    <span class="fa fa-times"></span>
-                </a>
-            </div>
-        </td>
+                </div>
+            </td>
+        }
     </tr>
 }
 
 @code {
     [Parameter]
-    public CharacterBuild Build { get; set; }
+    public bool ShowPublic { get; set; }
 
     [Parameter]
-    public EventCallback<CharacterBuild> OnRemove { get; set; }
+    public CharacterBuildSummary Build { get; set; }
 
-    public string Link => $"/character/{Build?.Id}";
+    [Parameter]
+    public EventCallback<CharacterBuildSummary> OnRemove { get; set; }
+
+    public string Link => $"/character/{Build?.Build.Id}";
 
     public Task OnMakePublicClick() => SetPublic(true);
 
@@ -57,7 +67,7 @@
     private async Task SetPublic(bool isPublic)
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var build = Build;
+        var build = Build?.Build;
         if (build == null)
         {
             return;
@@ -77,9 +87,9 @@
 
         var parameters = new ModalParameters();
         parameters.Add(nameof(RemoveConfirmation.Build), build);
-        var confirmModal = ModalService.Show<RemoveConfirmation>($"Remove {build.Name}", parameters);
+        var confirmModal = ModalService.Show<RemoveConfirmation>($"Remove {build.Build.Name}", parameters);
         var result = await confirmModal.Result;
-        if (!result.Cancelled && result.Data is CharacterBuild toRemove)
+        if (!result.Cancelled && result.Data is CharacterBuildSummary toRemove)
         {
             await OnRemove.InvokeAsync(toRemove);
         }
