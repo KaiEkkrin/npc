@@ -21,9 +21,9 @@ namespace npcblas2.Services
         private readonly ApplicationDbContext context;
         private readonly ILogger<CharacterBuildService> logger;
         private readonly IToastService toastService;
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly UserManager<ApplicationUser> userManager;
 
-        public CharacterBuildService(IBuildDriver buildDriver, ApplicationDbContext context, ILogger<CharacterBuildService> logger, IToastService toastService, UserManager<IdentityUser> userManager)
+        public CharacterBuildService(IBuildDriver buildDriver, ApplicationDbContext context, ILogger<CharacterBuildService> logger, IToastService toastService, UserManager<ApplicationUser> userManager)
             => (this.buildDriver, this.context, this.logger, this.toastService, this.userManager) = (buildDriver, context, logger, toastService, userManager);
 
         /// <inheritdoc />
