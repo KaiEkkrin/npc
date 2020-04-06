@@ -50,11 +50,10 @@ namespace npcblas2
                 options.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
             });
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
-                //.AddRoles<IdentityRole>()
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddMvc();
 
             services.AddBlazoredModal();
             services.AddBlazoredToast();
