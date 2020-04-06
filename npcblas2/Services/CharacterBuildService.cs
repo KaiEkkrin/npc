@@ -31,7 +31,7 @@ namespace npcblas2.Services
         {
             try
             {
-                var userId = GetUserId(user);
+                var userId = user.GetUserId();
                 await EnsureNotOverCharacterCountCap(userId);
 
                 var buildOutput = buildDriver.Create(model.Name, model.Level);
@@ -71,7 +71,7 @@ namespace npcblas2.Services
             {
                 model.BuildOutput = buildDriver.Continue(model.BuildOutput, choice);
 
-                if (model.Build.UserId != GetUserId(user))
+                if (model.Build.UserId != user.GetUserId())
                 {
                     throw new InvalidOperationException("User id doesn't match");
                 }
@@ -101,9 +101,9 @@ namespace npcblas2.Services
         {
             try
             {
-                var userId = GetUserId(user);
+                var userId = user.GetUserId();
                 return await context.CharacterBuilds.Where(b => b.UserId == userId)
-                    .Select(b => new CharacterBuildSummary { Build = b, UserName = string.Empty })
+                    .Select(b => new CharacterBuildSummary { Build = b, Handle = string.Empty })
                     .ToListAsync();
             }
             catch (CharacterBuildException cbe)
@@ -126,18 +126,18 @@ namespace npcblas2.Services
             {
                 var builds = await context.CharacterBuilds.Where(b => b.IsPublic == true).ToListAsync();
 
-                // Associate each build with the username that created it -- we can't do this
+                // Associate each build with the handle that created it -- we can't do this
                 // via relations, because we're not actually using a relational database :)
                 // We need to be careful here to not write in any null values
                 string GetUserId(CharacterBuild build) => build.UserId ?? string.Empty;
-                var userNameById = new Dictionary<string, string>();
+                var handleById = new Dictionary<string, string>();
                 foreach (var g in builds.GroupBy(b => GetUserId(b)))
                 {
                     var user = await userManager.FindByIdAsync(g.Key);
-                    userNameById[g.Key] = user?.UserName ?? string.Empty;
+                    handleById[g.Key] = user?.Handle ?? string.Empty;
                 }
 
-                return builds.Select(b => new CharacterBuildSummary { Build = b, UserName = userNameById[GetUserId(b)] }).ToList();
+                return builds.Select(b => new CharacterBuildSummary { Build = b, Handle = handleById[GetUserId(b)] }).ToList();
             }
             catch (CharacterBuildException cbe)
             {
@@ -158,7 +158,7 @@ namespace npcblas2.Services
             try
             {
                 var guid = Guid.Parse(id);
-                var userId = GetUserId(user);
+                var userId = user.GetUserId();
                 var build = await context.CharacterBuilds.Where(b => b.Id == guid && (b.UserId == userId || b.IsPublic == true))
                     .Include(b => b.Choices)
                     .FirstOrDefaultAsync();
@@ -189,7 +189,7 @@ namespace npcblas2.Services
         {
             try
             {
-                var userId = GetUserId(user);
+                var userId = user.GetUserId();
                 return await GetCountAsync(userId);
             }
             catch (CharacterBuildException cbe)
@@ -213,7 +213,7 @@ namespace npcblas2.Services
         {
             try
             {
-                var userId = GetUserId(user);
+                var userId = user.GetUserId();
                 if (userId != build.UserId)
                 {
                     return false;
@@ -240,7 +240,7 @@ namespace npcblas2.Services
         {
             try
             {
-                var userId = GetUserId(user);
+                var userId = user.GetUserId();
                 if (userId != build.UserId)
                 {
                     return false;
@@ -260,8 +260,6 @@ namespace npcblas2.Services
                 return false;
             }
         }
-
-        private static string GetUserId(ClaimsPrincipal user) => user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
         private Task<int> GetCountAsync(string userId) => context.CharacterBuilds.Where(b => b.UserId == userId).CountAsync();
 

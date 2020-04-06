@@ -1,18 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Blazored.Modal;
 using Blazored.Toast;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -50,8 +46,8 @@ namespace npcblas2
                 options.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
             });
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
-                .AddRoles<IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddClaimsPrincipalFactory<ApplicationUserClaimsPrincipalFactory>();
             services.AddRazorPages();
             services.AddServerSideBlazor();
 
@@ -61,6 +57,7 @@ namespace npcblas2
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<ApplicationUser>>();
             services.AddSingleton<IBuildDriver, BuildDriver>();
             services.AddScoped<ICharacterBuildService, CharacterBuildService>();
+            services.AddSingleton<RandomNumberGenerator, RNGCryptoServiceProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -72,6 +69,7 @@ namespace npcblas2
                 // We will have to be careful to support old format records :)
                 var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 context.Database.EnsureCreated();
+                SeedAdminPermission(context);
             }
 
             if (env.IsDevelopment())
@@ -100,6 +98,22 @@ namespace npcblas2
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
+        }
+
+        private void SeedAdminPermission(ApplicationDbContext context)
+        {
+            var adminUser = Configuration["Authentication:AdminUser"];
+            if (string.IsNullOrWhiteSpace(adminUser))
+            {
+                return;
+            }
+
+            var possibleAdmins = context.Users.Where(u => u.IsAdmin == true || u.UserName == adminUser).ToList();
+            if (possibleAdmins.Count == 1 && possibleAdmins[0].IsAdmin != true)
+            {
+                possibleAdmins[0].IsAdmin = true;
+                context.SaveChanges();
+            }
         }
     }
 }

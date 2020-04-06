@@ -1,0 +1,6 @@
+@page "/admin"
+@attribute [Authorize]
+
+<WithPermission Value=@ApplicationClaimValue.Admin>
+    <p>This is the admin page.</p>
+</WithPermission>

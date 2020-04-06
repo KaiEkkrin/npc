@@ -19,9 +19,9 @@
                                    OnChanged=@OnSortOrderChanged>Created on</SortableColumnHeading>
             @if (ShowPublic)
             {
-                <SortableColumnHeading PropertyName=@UserNameColumn
+                <SortableColumnHeading PropertyName=@HandleColumn
                                        DefaultOrder=@Order.Ascending
-                                       CurrentOrder=@GetColumnOrder(UserNameColumn)
+                                       CurrentOrder=@GetColumnOrder(HandleColumn)
                                        OnChanged=@OnSortOrderChanged>User</SortableColumnHeading>
             }
             else
@@ -45,7 +45,7 @@
     private const string NameColumn = "name";
     private const string LevelColumn = "level";
     private const string CreationDateColumn = "creationDate";
-    private const string UserNameColumn = "userName";
+    private const string HandleColumn = "handle";
 
     [Parameter]
     public bool ShowPublic { get; set; }
@@ -77,7 +77,7 @@
         NameColumn => a.Build.Name.CompareTo(b.Build.Name),
         LevelColumn => a.Build.Level.CompareTo(b.Build.Level),
         CreationDateColumn => a.Build.CreationDateTime.CompareTo(b.Build.CreationDateTime),
-        _ => a.UserName.CompareTo(b.UserName)
+        _ => a.Handle.CompareTo(b.Handle)
     };
 
     private int Compare(CharacterBuildSummary a, CharacterBuildSummary b)

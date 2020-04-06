@@ -13,8 +13,8 @@ namespace npcblas2.Models
         public CharacterBuild Build { get; set; }
 
         /// <summary>
-        /// The name of the user that created it.  (Mustn't be null.)
+        /// The handle of the user that created it.  (Mustn't be null.)
         /// </summary>
-        public string UserName { get; set; }
+        public string Handle { get; set; }
     }
 }

@@ -1,6 +1,13 @@
 ﻿<AuthorizeView>
     <Authorized>
-        <a href="Identity/Account/Manage">Hello, @context.User.Identity.Name!</a>
+        @if (context.User.HasValidHandle())
+        {
+            <a href="Identity/Account/Manage">Hello, @context.User.GetHandle()</a>
+        }
+        else
+        {
+            <a href="Identity/Account/Manage">Hello, @context.User.Identity.Name, create your handle here</a>
+        }
         <form method="post" action="Identity/Account/LogOut">
             <button type="submit" class="nav-link btn btn-link">Log out</button>
         </form>
