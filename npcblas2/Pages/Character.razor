@@ -6,7 +6,7 @@
 @inject ICharacterBuildService BuildService
 
 <div class="container">
-    @if (Model != null)
+    @if (IsFound == true && Model != null)
     {
         <div class="row">
             <h2>@Model?.Build?.Name</h2>
@@ -33,7 +33,7 @@
             }
         </div>
     }
-    else
+    else if (IsFound == false)
     {
         <div class="row"><p>No character found</p></div>
     }
@@ -42,6 +42,8 @@
 @code {
     [Parameter]
     public string Id { get; set; }
+
+    public bool? IsFound { get; set; }
 
     public CharacterBuildModel Model { get; set; }
 
@@ -53,11 +55,13 @@
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         Model = await BuildService.GetAsync(authState.User, Id);
+        IsFound = Model != null;
     }
 
     private async Task OnChosen(string choice)
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         Model = await BuildService.BuildAsync(authState.User, Model, choice);
+        IsFound = Model != null;
     }
 }
