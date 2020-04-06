@@ -69,10 +69,13 @@ module Weapons =
         Traits = traits
     }
 
+    let club = simpleMelee ("Club", D6, Bludgeoning, Heavy 1, OneHanded, groups.club, [thrown 10<Feet>])
+    let dagger = simpleMelee ("Dagger", D4, Piercing, Light, OneHanded, groups.knife, [agile; finesse; thrown 10<Feet>; Versatile Slashing])
+    let staff = simpleMelee ("Staff", D4, Bludgeoning, Heavy 1, OneHanded, groups.club, [twoHand D8])
+
     let simpleMeleeWeapons = [
-        simpleMelee ("Club", D6, Bludgeoning, Heavy 1, OneHanded, groups.club, [thrown 10<Feet>])
-        simpleMelee ("Dagger", D4, Piercing, Light, OneHanded, groups.knife, [agile; finesse; thrown 10<Feet>; Versatile Slashing])
-        simpleMelee ("Gauntlet", D4, Bludgeoning, Light, OneHanded, groups.brawling, [agile; freeHand])
+        club
+        dagger
         simpleMelee ("Light mace", D4, Bludgeoning, Light, OneHanded, groups.club, [agile; finesse; shove])
         simpleMelee ("Longspear", D8, Piercing, Heavy 2, TwoHanded, groups.spear, [reach])
         simpleMelee ("Mace", D6, Bludgeoning, Heavy 1, OneHanded, groups.club, [shove])
@@ -80,7 +83,7 @@ module Weapons =
         simpleMelee ("Sickle", D4, Slashing, Light, OneHanded, groups.knife, [agile; finesse; trip])
         simpleMelee ("Spear", D6, Piercing, Heavy 1, OneHanded, groups.spear, [thrown 20<Feet>])
         simpleMelee ("Spiked gauntlet", D4, Piercing, Light, OneHanded, groups.brawling, [agile; freeHand])
-        simpleMelee ("Staff", D4, Bludgeoning, Heavy 1, OneHanded, groups.club, [twoHand D8])
+        staff
     ]
 
     let uncommonSimpleMelee x = { (simpleMelee x) with Rarity = Uncommon }
@@ -105,14 +108,16 @@ module Weapons =
         Traits = traits
     }
 
+    let crossbow = simpleRanged ("Crossbow", D8, Piercing, 120, 1, Heavy 1, TwoHanded, groups.bow, [])
+    let heavyCrossbow = simpleRanged ("Heavy crossbow", D10, Piercing, 120, 2, Heavy 2, TwoHanded, groups.bow, [])
     let sling = simpleRanged ("Sling", D6, Bludgeoning, 50, 1, Light, OneHanded, groups.sling, [propulsive])
 
     let simpleRangedWeapons = [
         simpleRanged ("Blowgun", D1, Piercing, 20, 1, Light, OneHanded, groups.dart, [agile; nonlethal])
-        simpleRanged ("Crossbow", D8, Piercing, 120, 1, Heavy 1, TwoHanded, groups.bow, [])
+        crossbow
         simpleRanged ("Dart", D4, Piercing, 20, 0, Light, OneHanded, groups.dart, [agile; thrown 20<Feet>])
         simpleRanged ("Hand crossbow", D6, Piercing, 60, 1, Light, OneHanded, groups.bow, [])
-        simpleRanged ("Heavy crossbow", D10, Piercing, 120, 2, Heavy 2, TwoHanded, groups.bow, [])
+        heavyCrossbow
         simpleRanged ("Javelin", D6, Piercing, 30, 0, Light, OneHanded, groups.dart, [thrown 30<Feet>])
         sling
     ]

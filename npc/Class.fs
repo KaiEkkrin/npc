@@ -16,6 +16,7 @@ module All =
             Ranger.ranger
             Rogue.rogue
             Sorcerer.sorcerer
+            Wizard.wizard
         ]
         Count = Some 1
     }

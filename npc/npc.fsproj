@@ -25,6 +25,7 @@
     <Compile Include="Ranger.fs" />
     <Compile Include="Rogue.fs" />
     <Compile Include="Sorcerer.fs" />
+    <Compile Include="Wizard.fs" />
     <Compile Include="Class.fs" />
     <Compile Include="Build.fs" />
     <Compile Include="CharacterSheet.fs" />
