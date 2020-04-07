@@ -16,6 +16,7 @@
     <Compile Include="Background.fs" />
     <Compile Include="ClassBasics.fs" />
     <Compile Include="Alchemist.fs" />
+    <Compile Include="Barbarian.fs" />
     <Compile Include="Bard.fs" />
     <Compile Include="Champion.fs" />
     <Compile Include="Cleric.fs" />
