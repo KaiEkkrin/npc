@@ -7,6 +7,7 @@ module All =
         Prompt = "Class"
         Choices = List.concat [
             Alchemist.alchemist
+            Barbarian.barbarian
             Bard.bard
             Champion.champion
             Cleric.cleric
