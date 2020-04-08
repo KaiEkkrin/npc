@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using AutoMapper;
 using Blazored.Modal;
 using Blazored.Toast;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -61,6 +63,11 @@ namespace npcblas2
                 {
                     options.ClientId = microsoftClientId;
                     options.ClientSecret = microsoftClientSecret;
+
+                    // For OneDrive access:
+                    options.SaveTokens = true;
+                    options.Scope.Add("Files.ReadWrite");
+                    options.Scope.Add("offline_access");
                 });
             }
 
@@ -70,12 +77,17 @@ namespace npcblas2
             services.AddRazorPages();
             services.AddServerSideBlazor();
 
+            var mappingConfig = new MapperConfiguration(mc => mc.AddProfile(new MappingProfile()));
+            services.AddSingleton<IMapper>(_ => mappingConfig.CreateMapper());
+
             services.AddBlazoredModal();
             services.AddBlazoredToast();
 
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<ApplicationUser>>();
             services.AddSingleton<IBuildDriver, BuildDriver>();
             services.AddScoped<ICharacterBuildService, CharacterBuildService>();
+            services.AddScoped<IFileStorageService, OneDriveFileStorageService>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<RandomNumberGenerator, RNGCryptoServiceProvider>();
         }
 

@@ -6,6 +6,7 @@ namespace npcblas2.Data
     /// <summary>
     /// Represents a character that might be done or still in process of being built,
     /// along with metadata.
+    /// When updating this also remember to update CharacterBuildDto.
     /// </summary>
     public class CharacterBuild
     {

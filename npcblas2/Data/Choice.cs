@@ -4,6 +4,7 @@ namespace npcblas2.Data
 {
     /// <summary>
     /// Represents a choice made during character build.
+    /// When updating this also remember to update ChoiceDto.
     /// </summary>
     public class Choice
     {

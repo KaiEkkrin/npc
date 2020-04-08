@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using npcblas2.Data;
@@ -56,5 +57,16 @@ namespace npcblas2.Services
         /// Updates the database with any changes to the build record.  (For setting the public flag, etc.)
         /// </summary>
         Task<bool> UpdateAsync(ClaimsPrincipal user, CharacterBuild build);
+
+        /// <summary>
+        /// Exports the user's characters (or all characters for an admin) as JSON to the given stream.
+        /// </summary>
+        Task ExportJsonAsync(ClaimsPrincipal user, Stream stream);
+
+        /// <summary>
+        /// Imports characters from the given stream as JSON.
+        /// </summary>
+        /// <returns>An object describing what was imported or null if the import failed.</returns>
+        Task<ImportResult> ImportJsonAsync(ClaimsPrincipal user, Stream stream);
     }
 }

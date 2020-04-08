@@ -1,0 +1,31 @@
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ICharacterBuildService CharacterBuildService
+@inject IFileStorageService FileStorageService
+
+<EditForm Model=@ExportModel OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="fileName">File Name</label>
+        <input @bind-value=@ExportModel.FileName class="form-control" id="fileName">.json
+    </div>
+    <input class="btn btn-primary" type="submit" value="Export"/>
+</EditForm>
+@if (ExportComplete)
+{
+    <p>Export complete.</p>
+}
+
+@code {
+    private ExportModel ExportModel = new ExportModel();
+
+    private bool ExportComplete { get; set; }
+
+    private async Task OnValidSubmit()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        await CharacterBuildService.ExportToFileAsync(authState.User, FileStorageService, ExportModel.FileName + ".json");
+        ExportComplete = true;
+    }
+}
