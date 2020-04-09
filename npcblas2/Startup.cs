@@ -133,6 +133,23 @@ namespace npcblas2
 
         private void SeedAdminPermission(ApplicationDbContext context)
         {
+            // Set this on a temporary basis only to replace the admin user, if you're sure
+            // you have the correct name!
+            var forceAdminUser = Configuration["Authentication:ForceAdminUser"];
+            if (!string.IsNullOrWhiteSpace(forceAdminUser))
+            {
+                var toChange = context.Users.Where(u => u.IsAdmin == true || u.UserName == forceAdminUser).ToList();
+                foreach (var u in toChange)
+                {
+                    u.IsAdmin = u.UserName == forceAdminUser;
+                }
+
+                context.SaveChanges();
+                return;
+            }
+
+            // This code creates a default admin user if there isn't one already and is safe to
+            // leave enabled all the time
             var adminUser = Configuration["Authentication:AdminUser"];
             if (string.IsNullOrWhiteSpace(adminUser))
             {
