@@ -1,21 +1,31 @@
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ICharacterBuildService CharacterBuildService
 @inject IFileStorageService FileStorageService
 
 <table class="table table-condensed table-striped">
     <tbody>
         @foreach (var f in Files)
         {
-            <tr>
-                <td>@f.Name</td>
-            </tr>
+            <ImportableFileRow File=@f OnImport=@OnImport />
         }
     </tbody>
 </table>
 
-@code {
-    private List<StoredFile> Files = new List<StoredFile>();
+@if (Result != null)
+{
+    <p>Import completed with @Result.NumberAdded characters added, @Result.NumberUpdated characters updated, @Result.NumberRejected records rejected.</p>
+}
 
-    protected override async Task OnInitializedAsync()
+@code {
+    [Parameter]
+    public List<StoredFile> Files { get; set; }
+
+    private ImportResult Result { get; set; }
+
+    private async Task OnImport(StoredFile file)
     {
-        Files.AddRange(await FileStorageService.GetFilesAsync());
+        Result = null;
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        Result = await CharacterBuildService.ImportFromFileAsync(authState.User, FileStorageService, file);
     }
 }

@@ -1,15 +1,46 @@
 @page "/exportimport"
 @attribute [Authorize]
 
-<div class="container">
-    <div class="row">
-        <div class="col">
-            <ExportView />
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IFileStorageService FileStorageService
+
+@if (Files != null)
+{
+    <div class="container">
+        <ExportView OnRefresh=@OnRefresh />
+        <div class="row">
+            <div class="col">
+                <ImportView Files=@Files />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <a class="btn btn-primary" href="#" title="Scan for importable files" @onclick="OnRefresh" @onclick:preventDefault>
+                    Scan for importable files
+                </a>
+            </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col">
-            <ImportView />
-        </div>
-    </div>
-</div>
+}
+else if (IsAuthorized == false)
+{
+    <p>You are not authorized to access OneDrive.  Try logging off and on again with your Microsoft account.</p>
+}
+
+@code {
+    private bool? IsAuthorized { get; set; }
+
+    private List<StoredFile> Files { get; set; }
+
+    protected override Task OnInitializedAsync() => PopulateFilesAsync();
+
+    private Task OnRefresh() => PopulateFilesAsync();
+
+    private async Task PopulateFilesAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var (isAuthorized, allFiles) = await FileStorageService.GetFilesAsync(authState.User);
+        Files = allFiles?.Where(f => f.Name.ToUpperInvariant().EndsWith(".JSON"))?.ToList();
+        IsAuthorized = isAuthorized;
+    }
+}

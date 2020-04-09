@@ -6,26 +6,38 @@
     <DataAnnotationsValidator />
     <ValidationSummary />
 
-    <div class="form-group">
-        <label for="fileName">File Name</label>
-        <input @bind-value=@ExportModel.FileName class="form-control" id="fileName">.json
+    <div class="form-group row">
+        <label for="fileName" class="col-lg-2 col-form-label">Export to</label>
+        <input @bind-value=@ExportModel.FileName class="form-control col-lg-7" id="fileName">
+        <div class="col-lg-1">.json</div>
+        <input class="btn btn-primary col-lg-2 float-lg-right" type="submit" value="Export"/>
     </div>
-    <input class="btn btn-primary" type="submit" value="Export"/>
 </EditForm>
-@if (ExportComplete)
+@if (ExportedTo != null)
 {
-    <p>Export complete.</p>
+    <p>Completed export to @ExportedTo.</p>
 }
 
 @code {
+    [Parameter]
+    public EventCallback<string> OnRefresh { get; set; }
+
     private ExportModel ExportModel = new ExportModel();
 
-    private bool ExportComplete { get; set; }
+    private string ExportedTo { get; set; }
 
     private async Task OnValidSubmit()
     {
+        ExportedTo = null;
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        await CharacterBuildService.ExportToFileAsync(authState.User, FileStorageService, ExportModel.FileName + ".json");
-        ExportComplete = true;
+
+        var fileName = ExportModel.FileName;
+        if (!fileName.ToUpperInvariant().EndsWith(".JSON"))
+        {
+            fileName += ".json";
+        }
+
+        await CharacterBuildService.ExportToFileAsync(authState.User, FileStorageService, fileName);
+        ExportedTo = fileName;
     }
 }

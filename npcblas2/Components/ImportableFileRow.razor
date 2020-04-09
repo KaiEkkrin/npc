@@ -1,0 +1,19 @@
+<tr>
+    <td>@File.Name</td>
+    <td><a class="btn btn-primary" href="#" title="Import" @onclick="OnImportClick" @onclick:preventDefault>
+        <span class="fa fa-cloud-download"></span>
+    </a></td>
+</tr>
+
+@code {
+    [Parameter]
+    public StoredFile File { get; set; }
+
+    [Parameter]
+    public EventCallback<StoredFile> OnImport { get; set; }
+
+    public async Task OnImportClick()
+    {
+        await OnImport.InvokeAsync(File);
+    }
+}

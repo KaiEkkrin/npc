@@ -1,6 +1,7 @@
 using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using npcblas2.Models;
 
 namespace npcblas2.Services
 {
@@ -18,18 +19,21 @@ namespace npcblas2.Services
             {
                 await characterBuildService.ExportJsonAsync(user, ms);
                 ms.Seek(0, SeekOrigin.Begin);
-                await fileStorageService.WriteAsync(fileName, ms);
+                await fileStorageService.WriteAsync(user, fileName, ms);
             }
         }
 
-        public static async Task ImportFromFileAsync(this ICharacterBuildService characterBuildService, ClaimsPrincipal user, IFileStorageService fileStorageService, string fileName)
+        public static async Task<ImportResult> ImportFromFileAsync(this ICharacterBuildService characterBuildService, ClaimsPrincipal user, IFileStorageService fileStorageService, StoredFile file)
         {
-            // TODO as above.
-            using (var ms = new MemoryStream())
+            var stream = await fileStorageService.ReadAsync(user, file);
+            if (stream == null)
             {
-                await fileStorageService.ReadAsync(fileName, ms);
-                ms.Seek(0, SeekOrigin.Begin);
-                await characterBuildService.ImportJsonAsync(user, ms);
+                return null; // Error should already have been reported via toast service
+            }
+
+            using (stream)
+            {
+                return await characterBuildService.ImportJsonAsync(user, stream);
             }
         }
     }
