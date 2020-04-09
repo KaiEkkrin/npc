@@ -67,14 +67,12 @@
     private async Task SetPublic(bool isPublic)
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var build = Build?.Build;
-        if (build == null)
+        if (Build?.Build?.Id == null)
         {
             return;
         }
 
-        build.IsPublic = isPublic;
-        await BuildService.UpdateAsync(authState.User, build);
+        await BuildService.SetPublicAsync(authState.User, Build.Build.Id, isPublic);
     }
 
     public async Task OnRemoveClick()

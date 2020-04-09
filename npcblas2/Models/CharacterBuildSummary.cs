@@ -1,5 +1,3 @@
-using npcblas2.Data;
-
 namespace npcblas2.Models
 {
     /// <summary>
@@ -10,7 +8,7 @@ namespace npcblas2.Models
         /// <summary>
         /// The build.
         /// </summary>
-        public CharacterBuild Build { get; set; }
+        public CharacterBuildDto Build { get; set; }
 
         /// <summary>
         /// The handle of the user that created it.  (Mustn't be null.)

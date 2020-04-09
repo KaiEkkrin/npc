@@ -1,14 +1,17 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using npcblas2.Data;
 using npcblas2.Models;
 
 namespace npcblas2.Services
 {
     /// <summary>
     /// Describes how to handle character builds.
+    /// Gotcha : This service should never return entities, because then we can end up with a dependency
+    /// on whether the entity is currently tracked or not.  Rather, it should return objects with valid
+    /// IDs so that we can do lookups again as required.
     /// </summary>
     public interface ICharacterBuildService
     {
@@ -51,12 +54,12 @@ namespace npcblas2.Services
         /// <summary>
         /// Removes the given character build.
         /// </summary>
-        Task<bool> RemoveAsync(ClaimsPrincipal user, CharacterBuild build);
+        Task<bool> RemoveAsync(ClaimsPrincipal user, Guid id);
 
         /// <summary>
-        /// Updates the database with any changes to the build record.  (For setting the public flag, etc.)
+        /// Sets the public flag.
         /// </summary>
-        Task<bool> UpdateAsync(ClaimsPrincipal user, CharacterBuild build);
+        Task<bool> SetPublicAsync(ClaimsPrincipal user, Guid id, bool isPublic);
 
         /// <summary>
         /// Exports the user's characters (or all characters for an admin) as JSON to the given stream.

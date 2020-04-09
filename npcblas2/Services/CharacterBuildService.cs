@@ -52,7 +52,7 @@ namespace npcblas2.Services
 
                 await context.CharacterBuilds.AddAsync(build);
                 await context.SaveChangesAsync();
-                return new CharacterBuildModel { Build = build, BuildOutput = buildOutput, CanEdit = true };
+                return new CharacterBuildModel { Build = mapper.Map<CharacterBuild, CharacterBuildDto>(build), BuildOutput = buildOutput, CanEdit = true };
             }
             catch (CharacterBuildException cbe)
             {
@@ -72,18 +72,14 @@ namespace npcblas2.Services
         {
             try
             {
-                model.BuildOutput = model.BuildOutput.Continue(choice);
-                if (model.Build.UserId != user.GetUserId())
-                {
-                    throw new InvalidOperationException("User id doesn't match");
-                }
-
-                var lastChoice = model.Build.Choices.OrderByDescending(ch => ch.Order).FirstOrDefault();
-                var thisChoice = new Choice { CharacterBuildId = model.Build.Id, Order = lastChoice?.Order + 1 ?? 0, Value = choice };
-                model.Build.Choices.Add(thisChoice);
-                model.Build.Summary = model.BuildOutput.Summarise();
+                var build = await GetBuildEntityAsync(user, model.Build.Id);
+                var buildOutput = model.BuildOutput.Continue(choice);
+                var lastChoice = build.Choices.OrderByDescending(ch => ch.Order).FirstOrDefault();
+                var thisChoice = new Choice { CharacterBuildId = build.Id, Order = lastChoice?.Order + 1 ?? 0, Value = choice };
+                build.Choices.Add(thisChoice);
+                build.Summary = model.BuildOutput.Summarise();
                 await context.SaveChangesAsync();
-                return model;
+                return new CharacterBuildModel { Build = mapper.Map<CharacterBuild, CharacterBuildDto>(build), BuildOutput = buildOutput, CanEdit = true };
             }
             catch (CharacterBuildException cbe)
             {
@@ -104,9 +100,14 @@ namespace npcblas2.Services
             try
             {
                 var userId = user.GetUserId();
-                return await context.CharacterBuilds.Where(b => b.UserId == userId)
-                    .Select(b => new CharacterBuildSummary { Build = b, Handle = string.Empty })
+                var handle = user.GetHandle();
+                var builds = await context.CharacterBuilds.Where(b => b.UserId == userId)
                     .ToListAsync();
+                return builds.Select(b => new CharacterBuildSummary
+                {
+                    Build = mapper.Map<CharacterBuild, CharacterBuildDto>(b),
+                    Handle = handle
+                }).ToList();
             }
             catch (CharacterBuildException cbe)
             {
@@ -139,7 +140,11 @@ namespace npcblas2.Services
                     handleById[g.Key] = user?.Handle ?? string.Empty;
                 }
 
-                return builds.Select(b => new CharacterBuildSummary { Build = b, Handle = handleById[GetUserId(b)] }).ToList();
+                return builds.Select(b => new CharacterBuildSummary
+                {
+                    Build = mapper.Map<CharacterBuild, CharacterBuildDto>(b),
+                    Handle = handleById[GetUserId(b)]
+                }).ToList();
             }
             catch (CharacterBuildException cbe)
             {
@@ -171,7 +176,12 @@ namespace npcblas2.Services
 
                 var buildOutput = build.Choices.OrderBy(ch => ch.Order)
                     .Aggregate(buildDriver.Create(build.Name, build.Level), (b, ch) => b.Continue(ch.Value));
-                return new CharacterBuildModel { Build = build, BuildOutput = buildOutput, CanEdit = build.UserId == userId };
+                return new CharacterBuildModel
+                {
+                    Build = mapper.Map<CharacterBuild, CharacterBuildDto>(build),
+                    BuildOutput = buildOutput,
+                    CanEdit = build.UserId == userId
+                };
             }
             catch (CharacterBuildException cbe)
             {
@@ -211,16 +221,11 @@ namespace npcblas2.Services
         public int GetMaximumCount() => MaximumNumberOfCharactersPerUser;
 
         /// <inheritdoc />
-        public async Task<bool> RemoveAsync(ClaimsPrincipal user, CharacterBuild build)
+        public async Task<bool> RemoveAsync(ClaimsPrincipal user, Guid id)
         {
             try
             {
-                var userId = user.GetUserId();
-                if (userId != build.UserId)
-                {
-                    return false;
-                }
-
+                var build = await GetBuildEntityAsync(user, id);
                 context.Remove(build);
                 return (await context.SaveChangesAsync()) > 0;
             }
@@ -231,23 +236,19 @@ namespace npcblas2.Services
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, $"Failed to remove {build?.Name} ({build?.Id}) for {user?.Identity?.Name} : {ex.Message}");
+                logger.LogError(ex, $"Failed to remove {id} for {user?.Identity?.Name} : {ex.Message}");
                 toastService.ShowError(ex.Message);
                 return false;
             }
         }
 
         /// <inheritdoc />
-        public async Task<bool> UpdateAsync(ClaimsPrincipal user, CharacterBuild build)
+        public async Task<bool> SetPublicAsync(ClaimsPrincipal user, Guid id, bool isPublic)
         {
             try
             {
-                var userId = user.GetUserId();
-                if (userId != build.UserId)
-                {
-                    return false;
-                }
-
+                var build = await GetBuildEntityAsync(user, id);
+                build.IsPublic = isPublic;
                 return (await context.SaveChangesAsync()) > 0;
             }
             catch (CharacterBuildException cbe)
@@ -257,7 +258,7 @@ namespace npcblas2.Services
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, $"Failed to update {build?.Name} ({build?.Id}) for {user?.Identity?.Name} : {ex.Message}");
+                logger.LogError(ex, $"Failed to update {id} for {user?.Identity?.Name} : {ex.Message}");
                 toastService.ShowError(ex.Message);
                 return false;
             }
@@ -344,6 +345,14 @@ namespace npcblas2.Services
                 toastService.ShowError(ex.Message);
                 return null;
             }
+        }
+
+        private Task<CharacterBuild> GetBuildEntityAsync(ClaimsPrincipal user, Guid id)
+        {
+            var userId = user.GetUserId();
+            return context.CharacterBuilds.Where(b => b.Id == id && b.UserId == userId)
+                .Include(b => b.Choices)
+                .FirstAsync();
         }
 
         private Task<int> GetCountAsync(string userId) => context.CharacterBuilds.Where(b => b.UserId == userId).CountAsync();

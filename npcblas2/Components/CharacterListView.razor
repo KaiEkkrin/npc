@@ -89,7 +89,7 @@
     private async Task OnRemove(CharacterBuildSummary build)
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        if (await BuildService.RemoveAsync(authState.User, build.Build))
+        if (await BuildService.RemoveAsync(authState.User, build.Build.Id))
         {
             Characters.Remove(build);
         }

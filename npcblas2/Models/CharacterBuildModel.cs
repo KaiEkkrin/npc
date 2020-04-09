@@ -1,5 +1,4 @@
 using Npc;
-using npcblas2.Data;
 
 namespace npcblas2.Models
 {
@@ -9,9 +8,9 @@ namespace npcblas2.Models
     public class CharacterBuildModel
     {
         /// <summary>
-        /// The build (from the database.)
+        /// The build.
         /// </summary>
-        public CharacterBuild Build { get; set; }
+        public CharacterBuildDto Build { get; set; }
 
         /// <summary>
         /// The build output (created dynamically.)
