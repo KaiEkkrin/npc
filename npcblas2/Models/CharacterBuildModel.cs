@@ -16,7 +16,7 @@ namespace npcblas2.Models
         /// <summary>
         /// The build output (created dynamically.)
         /// </summary>
-        public BuildOutput BuildOutput { get; set; }
+        public IBuildAbstraction BuildOutput { get; set; }
 
         /// <summary>
         /// True if this character build can be edited, else false.

@@ -6,7 +6,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Blazored.Toast.Services;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -25,9 +24,9 @@ namespace npcblas2.Services
         private readonly ILogger<CharacterBuildService> logger;
         private readonly IMapper mapper;
         private readonly IToastService toastService;
-        private readonly UserManager<ApplicationUser> userManager;
+        private readonly IUserManager userManager;
 
-        public CharacterBuildService(IBuildDriver buildDriver, ApplicationDbContext context, ILogger<CharacterBuildService> logger, IMapper mapper, IToastService toastService, UserManager<ApplicationUser> userManager)
+        public CharacterBuildService(IBuildDriver buildDriver, ApplicationDbContext context, ILogger<CharacterBuildService> logger, IMapper mapper, IToastService toastService, IUserManager userManager)
             => (this.buildDriver, this.context, this.logger, this.mapper, this.toastService, this.userManager) = (buildDriver, context, logger, mapper, toastService, userManager);
 
         /// <inheritdoc />
@@ -46,7 +45,7 @@ namespace npcblas2.Services
                     CreationDateTime = DateTime.UtcNow,
                     Name = model.Name,
                     Level = model.Level,
-                    Summary = buildDriver.Summarise(buildOutput),
+                    Summary = buildOutput.Summarise(),
                     Version = CharacterBuild.CurrentVersion,
                     Choices = new List<Choice>()
                 };
@@ -73,8 +72,7 @@ namespace npcblas2.Services
         {
             try
             {
-                model.BuildOutput = buildDriver.Continue(model.BuildOutput, choice);
-
+                model.BuildOutput = model.BuildOutput.Continue(choice);
                 if (model.Build.UserId != user.GetUserId())
                 {
                     throw new InvalidOperationException("User id doesn't match");
@@ -83,7 +81,7 @@ namespace npcblas2.Services
                 var lastChoice = model.Build.Choices.OrderByDescending(ch => ch.Order).FirstOrDefault();
                 var thisChoice = new Choice { CharacterBuildId = model.Build.Id, Order = lastChoice?.Order + 1 ?? 0, Value = choice };
                 model.Build.Choices.Add(thisChoice);
-                model.Build.Summary = buildDriver.Summarise(model.BuildOutput);
+                model.Build.Summary = model.BuildOutput.Summarise();
                 await context.SaveChangesAsync();
                 return model;
             }
@@ -171,8 +169,8 @@ namespace npcblas2.Services
                     return null;
                 }
 
-                var start = buildDriver.Create(build.Name, build.Level);
-                var buildOutput = buildDriver.Construct(start, build.Choices.OrderBy(ch => ch.Order).Select(ch => ch.Value));
+                var buildOutput = build.Choices.OrderBy(ch => ch.Order)
+                    .Aggregate(buildDriver.Create(build.Name, build.Level), (b, ch) => b.Continue(ch.Value));
                 return new CharacterBuildModel { Build = build, BuildOutput = buildOutput, CanEdit = build.UserId == userId };
             }
             catch (CharacterBuildException cbe)

@@ -30,8 +30,7 @@
     <Compile Include="Class.fs" />
     <Compile Include="Build.fs" />
     <Compile Include="CharacterSheet.fs" />
-    <Compile Include="Models.fs" />
-    <Compile Include="Services.fs" />
+    <Compile Include="Abstractions.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FSharp.SystemTextJson" Version="0.10.25" />

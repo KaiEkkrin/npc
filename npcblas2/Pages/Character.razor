@@ -47,9 +47,9 @@
 
     public CharacterBuildModel Model { get; set; }
 
-    private PromptModel Prompt => Model?.BuildOutput != null && Model.CanEdit && PromptModel.CanCreate(Model.BuildOutput) ? PromptModel.Create(Model.BuildOutput) : null;
+    private PromptModel Prompt => Model?.BuildOutput?.CanPrompt() == true && Model.CanEdit ? Model.BuildOutput.Prompt() : null;
 
-    private IEnumerable<CharacterSubHeading> Sheet => Model?.BuildOutput != null ? CharacterSheet.create(Model.BuildOutput.Character) : Enumerable.Empty<CharacterSubHeading>();
+    private IEnumerable<CharacterSubHeading> Sheet => Model?.BuildOutput?.CreateCharacterSheet() ?? Enumerable.Empty<CharacterSubHeading>();
 
     protected override async Task OnInitializedAsync()
     {

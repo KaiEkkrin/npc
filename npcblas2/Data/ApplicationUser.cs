@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using Microsoft.AspNetCore.Identity;
 
 namespace npcblas2.Data
@@ -11,16 +9,12 @@ namespace npcblas2.Data
     /// We associate our own permission system with this record rather than the real IdentityRole support
     /// because it appears to be broken when using the Cosmos DB provider for Entity Framework Core.
     /// </remarks>
-    public class ApplicationUser : IdentityUser
+    public class ApplicationUser : IdentityUser, IApplicationUser
     {
-        /// <summary>
-        /// This handle should be unique per user and is shown publically.
-        /// </summary>
+        /// <inheritdoc />
         public string Handle { get; set; }
 
-        /// <summary>
-        /// If true, this user has the Admin permission.
-        /// </summary>
+        /// <inheritdoc />
         public bool? IsAdmin { get; set; }
     }
 }

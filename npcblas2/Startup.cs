@@ -89,6 +89,7 @@ namespace npcblas2
             services.AddScoped<IFileStorageService, OneDriveFileStorageService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<RandomNumberGenerator, RNGCryptoServiceProvider>();
+            services.AddScoped<IUserManager, UserManagerWrapper>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
