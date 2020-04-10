@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Blazored.Toast.Services;
@@ -78,8 +79,13 @@ namespace npcblas2.Services
                     throw new InvalidOperationException("User id doesn't match");
                 }
 
-                var lastChoice = model.Build.Choices.OrderByDescending(ch => ch.Order).FirstOrDefault();
-                var thisChoice = new Choice { CharacterBuildId = model.Build.Id, Order = lastChoice?.Order + 1 ?? 0, Value = choice };
+                if (model.Build.Choices == null)
+                {
+                    model.Build.Choices = new List<Choice>();
+                }
+
+                var order = model.Build.Choices.Count > 0 ? model.Build.Choices.Max(ch => ch.Order) + 1 : 0;
+                var thisChoice = new Choice { CharacterBuildId = model.Build.Id, Order = order, Value = choice };
                 model.Build.Choices.Add(thisChoice);
                 model.Build.Summary = model.BuildOutput.Summarise();
                 await context.SaveChangesAsync();
@@ -169,7 +175,8 @@ namespace npcblas2.Services
                     return null;
                 }
 
-                var buildOutput = build.Choices.OrderBy(ch => ch.Order)
+                var buildOutput = build.Choices == null ? buildDriver.Create(build.Name, build.Level) :
+                    build.Choices.OrderBy(ch => ch.Order)
                     .Aggregate(buildDriver.Create(build.Name, build.Level), (b, ch) => b.Continue(ch.Value));
                 return new CharacterBuildModel { Build = build, BuildOutput = buildOutput, CanEdit = build.UserId == userId };
             }

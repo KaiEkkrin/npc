@@ -23,8 +23,8 @@ type TestBuildAbstraction(output: ITestOutputHelper, name: string, level: int, c
                 Title = "Basics"
                 Items = ["Name", name; "Level", sprintf "%d" level]
             }] @ (choices |> List.rev |> List.map (fun ch -> {
-                Title = ch
-                Items = ["1", ch]
+                Title = "Choice"
+                Items = ["Option", ch]
             }))
 
 type TestBuildDriver(output: ITestOutputHelper) =
